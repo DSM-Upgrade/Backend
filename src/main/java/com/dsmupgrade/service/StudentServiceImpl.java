@@ -5,6 +5,7 @@ import com.dsmupgrade.domain.entity.Student;
 import com.dsmupgrade.domain.repository.FieldRepository;
 import com.dsmupgrade.domain.repository.StudentRepository;
 import com.dsmupgrade.dto.request.SignUpRequest;
+import com.dsmupgrade.exception.FieldNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void signUp(SignUpRequest signUpRequest) {
         Field field = fieldRepository.findById(signUpRequest.getFieldId())
-                .orElseThrow(); // TODO exception
+                .orElseThrow(() -> new FieldNotFoundException(signUpRequest.getFieldId()));
 
         Student student = Student.builder()
                 .username(signUpRequest.getUsername())
