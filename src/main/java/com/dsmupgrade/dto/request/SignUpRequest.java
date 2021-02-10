@@ -20,7 +20,7 @@ public class SignUpRequest {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$")
     private String password;
 
-    @Pattern(regexp = "^[1-3][1-4][1-2][0-9]$")
+    @Pattern(regexp = "^[1-3][1-4][0-2][0-9]$")
     private String studentNum;
 
     @Pattern(regexp = "^[가-힣]{2,4}$")
