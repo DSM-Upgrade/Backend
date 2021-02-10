@@ -7,6 +7,7 @@ import com.dsmupgrade.domain.repository.StudentRepository;
 import com.dsmupgrade.dto.request.SignUpRequest;
 import com.dsmupgrade.exception.FieldNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final FieldRepository fieldRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void signUp(SignUpRequest signUpRequest) {
@@ -23,10 +25,8 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = Student.builder()
                 .username(signUpRequest.getUsername())
-                .password(signUpRequest.getPassword()) // TODO password encoding required
-                .grade(signUpRequest.getGrade())
-                .cls(signUpRequest.getCls())
-                .number(signUpRequest.getNumber())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                .studentNum(signUpRequest.getStudentNum())
                 .name(signUpRequest.getName())
                 .field(field)
                 .build();

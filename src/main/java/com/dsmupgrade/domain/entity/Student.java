@@ -1,14 +1,12 @@
 package com.dsmupgrade.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Setter(AccessLevel.PRIVATE)
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Student {
 
@@ -19,14 +17,8 @@ public class Student {
     @Column(length = 60, nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private Integer grade;
-
-    @Column(name = "class", nullable = false)
-    private Integer cls;
-
-    @Column(nullable = false)
-    private Integer number;
+    @Column(length = 4, nullable = false)
+    private String studentNum;
 
     @Column(nullable = false)
     private Boolean isAdmin;
@@ -37,25 +29,19 @@ public class Student {
     @Column(length = 4, nullable = false)
     private String name;
 
-    @Column(length = 16)
-    private String profile;
-
     @ManyToOne
     @JoinColumn(name = "field_id")
     private Field field;
 
     @Builder
-    public Student(String username, String password, int grade, int cls, int number, String name, Field field) {
+    public Student(String username, String password, String studentNum, String name, Field field) {
         setUsername(username);
         setPassword(password);
-        setGrade(grade);
-        setCls(cls);
-        setNumber(number);
+        setStudentNum(studentNum);
         setName(name);
         setField(field);
         setIsAdmin(false);
         setIsRegistered(false);
-        setProfile(null);
     }
 
     public void register() {
