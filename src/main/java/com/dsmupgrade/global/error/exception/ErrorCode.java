@@ -8,6 +8,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "C001", "Internal Server Error"),
     INVALID_INPUT_VALUE(400, "C002", "Invalid Input Value"),
 
+    INVALID_TOKEN(401, "A001", "Invalid Token"),
+
     FIELD_NOT_FOUND(404, "F001", "Field Not Found");
 
     private final String code;
