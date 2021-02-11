@@ -4,7 +4,7 @@ import com.dsmupgrade.dto.request.LoginRequest;
 import com.dsmupgrade.dto.request.SignUpRequest;
 import com.dsmupgrade.dto.response.LoginResponse;
 
-public interface StudentService {
+public interface AuthService {
     void signUp(SignUpRequest signUpRequest);
     LoginResponse login(LoginRequest loginRequest);
 }
