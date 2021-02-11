@@ -8,19 +8,21 @@ import com.dsmupgrade.dto.request.LoginRequest;
 import com.dsmupgrade.dto.request.SignUpRequest;
 import com.dsmupgrade.dto.response.LoginResponse;
 import com.dsmupgrade.global.error.exception.FieldNotFoundException;
-import com.dsmupgrade.global.error.exception.StudentNotFoundException;
+import com.dsmupgrade.global.error.exception.InvalidLoginInfoException;
 import com.dsmupgrade.global.error.exception.StudentNotRegisteredException;
+import com.dsmupgrade.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StudentServiceImpl implements StudentService {
+public class AuthServiceImpl implements AuthService {
 
     private final StudentRepository studentRepository;
     private final FieldRepository fieldRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void signUp(SignUpRequest signUpRequest) {
@@ -41,14 +43,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         Student student = studentRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new StudentNotFoundException(loginRequest.getUsername()));
+                .orElseThrow(InvalidLoginInfoException::new);
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), student.getPassword())) {
+            throw new InvalidLoginInfoException();
+        }
 
         if (!student.getIsRegistered()) {
             throw new StudentNotRegisteredException(loginRequest.getUsername());
         }
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), student.getPassword())) {
-
-        }
+        return LoginResponse.builder()
+                .accessToken(jwtTokenProvider.generateAccessToken(loginRequest.getUsername()))
+                .refreshToken(jwtTokenProvider.generateRefreshToken(loginRequest.getUsername()))
+                .build();
     }
 }
