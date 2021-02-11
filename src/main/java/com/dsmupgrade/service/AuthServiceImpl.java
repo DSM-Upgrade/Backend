@@ -4,8 +4,12 @@ import com.dsmupgrade.domain.entity.Field;
 import com.dsmupgrade.domain.entity.Student;
 import com.dsmupgrade.domain.repository.FieldRepository;
 import com.dsmupgrade.domain.repository.StudentRepository;
+import com.dsmupgrade.dto.request.LoginRequest;
 import com.dsmupgrade.dto.request.SignUpRequest;
-import com.dsmupgrade.exception.FieldNotFoundException;
+import com.dsmupgrade.dto.response.LoginResponse;
+import com.dsmupgrade.global.error.exception.FieldNotFoundException;
+import com.dsmupgrade.global.error.exception.StudentNotFoundException;
+import com.dsmupgrade.global.error.exception.StudentNotRegisteredException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,5 +36,19 @@ public class StudentServiceImpl implements StudentService {
                 .build();
 
         studentRepository.save(student);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        Student student = studentRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new StudentNotFoundException(loginRequest.getUsername()));
+
+        if (!student.getIsRegistered()) {
+            throw new StudentNotRegisteredException(loginRequest.getUsername());
+        }
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), student.getPassword())) {
+
+        }
     }
 }
