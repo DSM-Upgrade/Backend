@@ -55,4 +55,8 @@ public class Student {
     public void register() {
         setIsRegistered(true);
     }
+
+    public void updatePassword(String password) {
+        setPassword(password);
+    }
 }
