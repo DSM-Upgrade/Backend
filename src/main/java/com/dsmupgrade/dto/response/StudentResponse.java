@@ -1,7 +1,10 @@
 package com.dsmupgrade.dto.response;
 
 import com.dsmupgrade.domain.entity.Student;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
