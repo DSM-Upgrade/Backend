@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_LOGIN_INFO(401, "A003", "Invalid Login Info"),
 
     STUDENT_NOT_FOUND(404, "S001", "Student Not Found"),
+    PASSWORD_NOT_MATCHED(409, "S002", "Password Not Matched"),
 
     FIELD_NOT_FOUND(404, "F001", "Field Not Found");
 
