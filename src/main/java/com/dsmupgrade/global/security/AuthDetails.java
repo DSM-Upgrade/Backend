@@ -21,6 +21,12 @@ public class AuthDetails implements UserDetails {
         if (student.getIsAdmin()) {
             auth.add(new SimpleGrantedAuthority("ADMIN"));
         }
+        if (student.getIsFineManager()) {
+            auth.add(new SimpleGrantedAuthority("FINE_MANAGER"));
+        }
+        if (student.getIsNoticeManager()) {
+            auth.add(new SimpleGrantedAuthority("NOTICE_MANAGER"));
+        }
         return auth;
     }
 

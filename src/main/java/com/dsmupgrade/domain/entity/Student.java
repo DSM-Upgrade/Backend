@@ -26,6 +26,12 @@ public class Student {
     @Column(nullable = false)
     private Boolean isRegistered;
 
+    @Column(nullable = false)
+    private Boolean isFineManager;
+
+    @Column(nullable = false)
+    private Boolean isNoticeManager;
+
     @Column(length = 4, nullable = false)
     private String name;
 
@@ -42,6 +48,8 @@ public class Student {
         setField(field);
         setIsAdmin(false);
         setIsRegistered(false);
+        setIsFineManager(false);
+        setIsNoticeManager(false);
     }
 
     public void register() {
