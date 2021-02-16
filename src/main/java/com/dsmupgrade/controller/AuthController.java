@@ -5,12 +5,10 @@ import com.dsmupgrade.dto.request.SignUpRequest;
 import com.dsmupgrade.dto.response.LoginResponse;
 import com.dsmupgrade.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,5 +25,10 @@ public class AuthController {
     @PostMapping
     LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) {
         return authService.login(loginRequest);
+    }
+
+    @PatchMapping
+    String generateNewToken(@RequestBody @NotBlank String refreshToken) {
+        return authService.generateNewToken(refreshToken);
     }
 }
