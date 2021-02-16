@@ -1,6 +1,7 @@
 package com.dsmupgrade.controller;
 
 import com.dsmupgrade.dto.request.PasswordRequest;
+import com.dsmupgrade.dto.request.UpdateStudentRequest;
 import com.dsmupgrade.dto.response.StudentResponse;
 import com.dsmupgrade.global.security.AuthenticationFacade;
 import com.dsmupgrade.service.StudentService;
@@ -25,5 +26,10 @@ public class StudentController {
     @PatchMapping("/password")
     public void updatePassword(@RequestBody @Valid PasswordRequest passwordRequest) {
         studentService.updateStudentPassword(authenticationFacade.getUsername(), passwordRequest);
+    }
+
+    @PatchMapping("/")
+    public void updateStudentInfo(@RequestBody @Valid UpdateStudentRequest updateStudentRequest) {
+        studentService.updateStudentInfo(authenticationFacade.getUsername(), updateStudentRequest);
     }
 }
