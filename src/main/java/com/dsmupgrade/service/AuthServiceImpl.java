@@ -58,4 +58,9 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(jwtTokenProvider.generateRefreshToken(loginRequest.getUsername()))
                 .build();
     }
+
+    @Override
+    public String generateNewToken(String refreshToken) {
+        return null;
+    }
 }

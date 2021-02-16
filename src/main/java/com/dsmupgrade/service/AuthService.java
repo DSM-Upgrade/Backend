@@ -7,4 +7,5 @@ import com.dsmupgrade.dto.response.LoginResponse;
 public interface AuthService {
     void signUp(SignUpRequest signUpRequest);
     LoginResponse login(LoginRequest loginRequest);
+    String generateNewToken(String refreshToken);
 }
