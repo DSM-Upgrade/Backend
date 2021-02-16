@@ -18,7 +18,7 @@ public class StudentController {
     private final StudentService studentService;
     private final AuthenticationFacade authenticationFacade;
 
-    @GetMapping("/")
+    @GetMapping
     public StudentResponse getStudentInfoByUsername() {
         return studentService.getStudentByUsername(authenticationFacade.getUsername());
     }
@@ -28,7 +28,7 @@ public class StudentController {
         studentService.updateStudentPassword(authenticationFacade.getUsername(), passwordRequest);
     }
 
-    @PatchMapping("/")
+    @PatchMapping
     public void updateStudentInfo(@RequestBody @Valid UpdateStudentRequest updateStudentRequest) {
         studentService.updateStudentInfo(authenticationFacade.getUsername(), updateStudentRequest);
     }
