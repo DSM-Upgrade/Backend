@@ -59,4 +59,12 @@ public class Student {
     public void updatePassword(String password) {
         setPassword(password);
     }
+
+    public void updateStudentNum(String studentNum) {
+        setStudentNum(studentNum);
+    }
+
+    public void updateField(Field field) {
+        setField(field);
+    }
 }
