@@ -1,12 +1,16 @@
 package com.dsmupgrade.dto.request;
 
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
 public class ImpositionRequest {
+    @NotNull
     private String userName;
+    @NotNull
     private Integer fine;
+    @NotNull
     private String reason;
 }
