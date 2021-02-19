@@ -9,6 +9,7 @@ import com.dsmupgrade.dto.response.UserFineResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -20,7 +21,11 @@ import javax.validation.Valid;
 public class FineController {
     @Autowired
     private FineRepository fineRepository;
+    private SimpleDateFormat time_format;
 
+    public FineController() {
+        time_format = new SimpleDateFormat("yyyy-MM-dd");
+    }
     @GetMapping("list")
     public List<AllUserFineResponse> getAllUser_FineList(){ //모든 유저의 따른 벌금리스트를 받아옴
         List<Fine> all_fineList =  fineRepository.findAll();
@@ -30,7 +35,7 @@ public class FineController {
             fine.setFine_peopleName(all_fineList.get(i).getUsername());
             fine.setFine_id(all_fineList.get(i).getId());
             fine.setFine_reason(all_fineList.get(i).getReason());
-            fine.setFine_date(all_fineList.get(i).getDate()); // date 형식 바꿔야 함
+            fine.setFine_date(time_format.format(all_fineList.get(i).getDate()));
             fine.setFine(all_fineList.get(i).getAmount());
             fine.setIs_submitted(all_fineList.get(i).getIs_submitted());
             allUserListResponse.add(fine);
@@ -41,14 +46,14 @@ public class FineController {
     public List<UserFineResponse> getUser_FineList(@PathVariable("username") String username){ //유저의 따른 벌금리스트를 받아옴
         List<Fine> user_fineList =  fineRepository.findAllByUsername(username);
         List<UserFineResponse> UserListResponse = new ArrayList<>();
-        for(int i=0;i<user_fineList.size();i++){ // 형식을 바꾸기 위해서
+        for(int i=0;i<user_fineList.size();i++){
             UserFineResponse fine = new UserFineResponse();
             fine.setFine_id(user_fineList.get(i).getId());
             fine.setFine_reason(user_fineList.get(i).getReason());
-            fine.setFine_date(user_fineList.get(i).getDate()); // date 형식 바꿔야 함
+            fine.setFine_date(time_format.format(user_fineList.get(i).getDate()));
             fine.setFine(user_fineList.get(i).getAmount());
             fine.setIs_submitted(user_fineList.get(i).getIs_submitted());
-            UserListResponse.add(fine); // 여기가 문제임
+            UserListResponse.add(fine);
         }
         return UserListResponse;
     }
