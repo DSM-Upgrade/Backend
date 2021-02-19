@@ -29,5 +29,5 @@ public class Fine {
     private String username;
 
     @Column(nullable = false)
-    private String is_submitted;
+    private Boolean is_submitted;
 }

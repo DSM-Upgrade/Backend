@@ -13,5 +13,5 @@ public class AllUserFineResponse {
     private String fine_reason;
     private String fine_date;
     private Integer fine;
-    private String is_submitted;
+    private Boolean is_submitted;
 }

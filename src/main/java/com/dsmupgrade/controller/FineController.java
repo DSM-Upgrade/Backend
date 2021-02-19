@@ -58,20 +58,20 @@ public class FineController {
         return UserListResponse;
     }
     @PostMapping("imposition")
-    public void imposeFine(@RequestBody @Valid ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과 (아직 토큰 확인 안함)
+    public void imposeFine(@RequestBody @Valid ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과
         Fine fine = new Fine();
         fine.setAmount(impositionRequest.getFine());
         Calendar time = Calendar.getInstance();
         fine.setDate(time.getTime());
         fine.setReason(impositionRequest.getReason());
         fine.setUsername(impositionRequest.getUserName());
-        fine.setIs_submitted("no");
+        fine.setIs_submitted(false);
         fineRepository.save(fine);
     }
     @PatchMapping("completion")
-    public void completeFine(@RequestBody @Valid CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄 (아직 토큰 확인 안함)
+    public void completeFine(@RequestBody @Valid CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄
         Fine fine =  fineRepository.findAllById(completionFineRequest.getFine_id());
-        fine.setIs_submitted("yes");
+        fine.setIs_submitted(true);
         fineRepository.save(fine);
     }
     @DeleteMapping("elimination/{fineId}")
