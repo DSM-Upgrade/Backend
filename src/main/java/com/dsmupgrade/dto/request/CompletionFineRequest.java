@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class CompletionFine {
+public class CompletionFineRequest {
     @NotNull
     private Integer fine_id;
 }
