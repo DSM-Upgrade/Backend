@@ -1,6 +1,5 @@
 package com.dsmupgrade.dto.request;
 
-import com.dsmupgrade.global.error.exception.InvalidInputValueException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
