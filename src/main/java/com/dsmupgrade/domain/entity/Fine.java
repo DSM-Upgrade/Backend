@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -29,5 +28,5 @@ public class Fine {
     private String username;
 
     @Column(nullable = false)
-    private Boolean is_submitted;
+    private Boolean isSubmitted;
 }

@@ -8,5 +8,5 @@ import lombok.Setter;
 @Getter
 public class CompletionFineRequest {
     @NotNull
-    private Integer fine_id;
+    private Integer fineId;
 }

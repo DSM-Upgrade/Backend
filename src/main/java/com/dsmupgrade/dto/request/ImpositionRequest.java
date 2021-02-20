@@ -10,7 +10,7 @@ public class ImpositionRequest {
     @NotNull
     private String userName;
     @NotNull
-    private Integer fine;
+    private Integer fineAmount;
     @NotNull
     private String reason;
 }

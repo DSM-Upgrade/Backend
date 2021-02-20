@@ -8,10 +8,10 @@ import java.util.Date;
 @Getter
 @Setter
 public class AllUserFineResponse {
-    private String fine_peopleName;
-    private Integer fine_id;
-    private String fine_reason;
-    private String fine_date;
-    private Integer fine;
-    private Boolean is_submitted;
+    private String finePeopleName;
+    private Integer fineId;
+    private String fineReason;
+    private String fineDate;
+    private Integer fineAmount;
+    private Boolean isSubmitted;
 }

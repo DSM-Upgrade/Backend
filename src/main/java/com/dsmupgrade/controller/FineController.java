@@ -26,33 +26,34 @@ public class FineController {
     public FineController() {
         time_format = new SimpleDateFormat("yyyy-MM-dd");
     }
+
     @GetMapping("list")
-    public List<AllUserFineResponse> getAllUser_FineList(){ //모든 유저의 따른 벌금리스트를 받아옴
-        List<Fine> all_fineList =  fineRepository.findAll();
+    public List<AllUserFineResponse> getAllUserFineList(){ //모든 유저의 따른 벌금리스트를 받아옴
+        List<Fine> allFineList =  fineRepository.findAll();
         List<AllUserFineResponse> allUserListResponse = new ArrayList<>();
-        for(int i=0;i<all_fineList.size();i++){ // 형식을 바꾸기 위해서
+        for(int i=0;i<allFineList.size();i++){ // 형식을 바꾸기 위해서
             AllUserFineResponse fine = new AllUserFineResponse();
-            fine.setFine_peopleName(all_fineList.get(i).getUsername());
-            fine.setFine_id(all_fineList.get(i).getId());
-            fine.setFine_reason(all_fineList.get(i).getReason());
-            fine.setFine_date(time_format.format(all_fineList.get(i).getDate()));
-            fine.setFine(all_fineList.get(i).getAmount());
-            fine.setIs_submitted(all_fineList.get(i).getIs_submitted());
+            fine.setFinePeopleName(allFineList.get(i).getUsername());
+            fine.setFineId(allFineList.get(i).getId());
+            fine.setFineReason(allFineList.get(i).getReason());
+            fine.setFineDate(time_format.format(allFineList.get(i).getDate()));
+            fine.setFineAmount(allFineList.get(i).getAmount());
+            fine.setIsSubmitted(allFineList.get(i).getIsSubmitted());
             allUserListResponse.add(fine);
         }
         return allUserListResponse;
     }
     @GetMapping("list/{username}")
-    public List<UserFineResponse> getUser_FineList(@PathVariable("username") String username){ //유저의 따른 벌금리스트를 받아옴
-        List<Fine> user_fineList =  fineRepository.findAllByUsername(username);
+    public List<UserFineResponse> getUserFineList(@PathVariable("username") String username){ //유저의 따른 벌금리스트를 받아옴
+        List<Fine> userFineList =  fineRepository.findAllByUsername(username);
         List<UserFineResponse> UserListResponse = new ArrayList<>();
-        for(int i=0;i<user_fineList.size();i++){
+        for(int i=0;i<userFineList.size();i++){
             UserFineResponse fine = new UserFineResponse();
-            fine.setFine_id(user_fineList.get(i).getId());
-            fine.setFine_reason(user_fineList.get(i).getReason());
-            fine.setFine_date(time_format.format(user_fineList.get(i).getDate()));
-            fine.setFine(user_fineList.get(i).getAmount());
-            fine.setIs_submitted(user_fineList.get(i).getIs_submitted());
+            fine.setFineId(userFineList.get(i).getId());
+            fine.setFineReason(userFineList.get(i).getReason());
+            fine.setFineDate(time_format.format(userFineList.get(i).getDate()));
+            fine.setFineAmount(userFineList.get(i).getAmount());
+            fine.setIsSubmitted(userFineList.get(i).getIsSubmitted());
             UserListResponse.add(fine);
         }
         return UserListResponse;
@@ -60,18 +61,18 @@ public class FineController {
     @PostMapping("imposition")
     public void imposeFine(@RequestBody @Valid ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과
         Fine fine = new Fine();
-        fine.setAmount(impositionRequest.getFine());
+        fine.setAmount(impositionRequest.getFineAmount());
         Calendar time = Calendar.getInstance();
         fine.setDate(time.getTime());
         fine.setReason(impositionRequest.getReason());
         fine.setUsername(impositionRequest.getUserName());
-        fine.setIs_submitted(false);
+        fine.setIsSubmitted(false);
         fineRepository.save(fine);
     }
     @PatchMapping("completion")
     public void completeFine(@RequestBody @Valid CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄
-        Fine fine =  fineRepository.findAllById(completionFineRequest.getFine_id());
-        fine.setIs_submitted(true);
+        Fine fine =  fineRepository.findAllById(completionFineRequest.getFineId());
+        fine.setIsSubmitted(true);
         fineRepository.save(fine);
     }
     @DeleteMapping("elimination/{fineId}")
