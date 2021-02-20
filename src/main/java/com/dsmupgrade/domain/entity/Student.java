@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.function.Consumer;
 
 @Entity
 @Setter(AccessLevel.PRIVATE)
@@ -57,14 +58,19 @@ public class Student {
     }
 
     public void updatePassword(String password) {
-        setPassword(password);
+        setIfNotNull(this::setPassword, password);
     }
 
     public void updateStudentNum(String studentNum) {
-        setStudentNum(studentNum);
+        setIfNotNull(this::setStudentNum, studentNum);
     }
 
     public void updateField(Field field) {
-        setField(field);
+        setIfNotNull(this::setField, field);
+    }
+
+    private <T> void setIfNotNull(Consumer<T> setter, T value) {
+        if (value != null)
+            setter.accept(value);
     }
 }

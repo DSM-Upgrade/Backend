@@ -48,11 +48,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
 
-        updateStudentRequest.nullCheck();
-
-        if (updateStudentRequest.getStudentNum() != null) {
-            student.updateStudentNum(updateStudentRequest.getStudentNum());
-        }
+        student.updateStudentNum(updateStudentRequest.getStudentNum());
 
         if (updateStudentRequest.getFieldId() != null) {
             Field field = fieldRepository.findById(updateStudentRequest.getFieldId())

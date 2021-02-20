@@ -18,10 +18,4 @@ public class UpdateStudentRequest {
 
     @Min(1)
     private Integer fieldId;
-
-    public void nullCheck() {
-        if (studentNum == null && fieldId == null) {
-            throw new InvalidInputValueException();
-        }
-    }
 }
