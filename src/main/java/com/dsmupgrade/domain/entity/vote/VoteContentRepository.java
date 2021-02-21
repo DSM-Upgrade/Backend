@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface VoteContentRepository extends JpaRepository<VoteContent,String> {
     List<VoteContent> findAllByVote(Vote vote);
+    void deleteAllByVote(Vote vote);
 }

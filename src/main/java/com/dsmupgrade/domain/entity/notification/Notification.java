@@ -17,6 +17,8 @@ public class Notification {
 
     private boolean isVote;
 
+    private boolean isAttach;
+
     private Integer detailId;
 
 }

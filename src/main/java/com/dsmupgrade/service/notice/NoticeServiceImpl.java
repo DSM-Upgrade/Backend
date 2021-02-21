@@ -53,6 +53,7 @@ public class NoticeServiceImpl implements NoticeService {
         notificationRepository.save(
                 Notification.builder()
                         .isVote(false)
+                        .isAttach(true)
                         .detailId(notice.getId())
                         .build()
         );
