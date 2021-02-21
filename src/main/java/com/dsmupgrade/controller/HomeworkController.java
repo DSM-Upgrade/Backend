@@ -1,12 +1,10 @@
 package com.dsmupgrade.controller;
 
-import com.dsmupgrade.domain.entity.Fine;
 import com.dsmupgrade.domain.entity.Homework;
-import com.dsmupgrade.domain.entity.Personal_homework;
-import com.dsmupgrade.domain.repository.FineRepository;
+import com.dsmupgrade.domain.entity.PersonalHomework;
+import com.dsmupgrade.domain.entity.PersonalHomeworkPk;
 import com.dsmupgrade.domain.repository.HomeworkRepository;
-import com.dsmupgrade.domain.repository.Personal_homeworkPk;
-import com.dsmupgrade.domain.repository.Personal_homeworkRepository;
+import com.dsmupgrade.domain.repository.PersonalHomeworkRepository;
 import com.dsmupgrade.dto.response.UserAllHomeworkListResponse;
 import com.dsmupgrade.dto.response.UserHomeworkResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,7 @@ import java.util.Optional;
 @RestController
 public class HomeworkController {
     @Autowired
-    private Personal_homeworkRepository personal_homeworkRepository;
+    private PersonalHomeworkRepository personal_homeworkRepository;
     @Autowired
     private HomeworkRepository homeworkRepository;
     private SimpleDateFormat time_format;
@@ -35,7 +33,7 @@ public class HomeworkController {
 
     @GetMapping("list/{userName}")
     public List<UserAllHomeworkListResponse> getHomeworkList(@PathVariable("userName") String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        List<Personal_homework> allPersonalHomeworkList =  personal_homeworkRepository.findAllByStudentUsername(username);
+        List<PersonalHomework> allPersonalHomeworkList =  personal_homeworkRepository.findAllByStudentUsername(username);
         List<UserAllHomeworkListResponse> userAllHomeworkListResponse = new ArrayList<>();
         for(int i=0; i<allPersonalHomeworkList.size(); i++){
             UserAllHomeworkListResponse homework = new UserAllHomeworkListResponse();
@@ -52,10 +50,10 @@ public class HomeworkController {
     }
     @GetMapping("content/{userName}/{homeworkId}")
     public UserHomeworkResponse getUserHomework(@PathVariable("userName") String username, @PathVariable("homeworkId") int homeworkId){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        Personal_homeworkPk personalHomeworkPk = new Personal_homeworkPk();
+        PersonalHomeworkPk personalHomeworkPk = new PersonalHomeworkPk();
         personalHomeworkPk.setHomeworkId(homeworkId);
         personalHomeworkPk.setStudentUsername(username);
-        Optional<Personal_homework> personalHomeworkContent =  personal_homeworkRepository.findById(personalHomeworkPk);
+        Optional<PersonalHomework> personalHomeworkContent =  personal_homeworkRepository.findById(personalHomeworkPk);
         Optional<Homework> homeworkContent = homeworkRepository.findById(homeworkId);
         UserHomeworkResponse userHomeworkResponse = new UserHomeworkResponse();
         userHomeworkResponse.setHomeworkTitle(homeworkContent.get().getTitle());

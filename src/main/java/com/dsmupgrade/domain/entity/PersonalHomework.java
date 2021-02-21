@@ -1,9 +1,14 @@
 package com.dsmupgrade.domain.entity;
 
-import com.dsmupgrade.domain.repository.Personal_homeworkPk;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import java.util.Date;
 
 @Entity
@@ -11,8 +16,8 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-@IdClass(value = Personal_homeworkPk.class)
-public class Personal_homework {
+@IdClass(value = PersonalHomeworkPk.class)
+public class PersonalHomework {
     @Id
     @Column(nullable = false)
     private String studentUsername;
