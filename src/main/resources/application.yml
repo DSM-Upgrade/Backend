@@ -9,6 +9,9 @@ spring:
       enabled: true
   jackson:
     property-naming-strategy: SNAKE_CASE
+  jpa:
+    hibernate:
+      ddl-auto: create
 auth:
   jwt:
     secret: ${JWT_SECRET:upgrade_test}
