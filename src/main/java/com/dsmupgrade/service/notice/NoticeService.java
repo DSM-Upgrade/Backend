@@ -13,9 +13,9 @@ import java.io.IOException;
 public interface NoticeService {
     void noticeWrite(String title, MultipartFile file, String content);
 
-    void noticeUpdate(String title, MultipartFile file, String content, int id);
+    void noticeUpdate(String title, MultipartFile file, String content, Integer id);
 
     ResponseEntity<Resource> downloadFile(String fileName) throws IOException;
 
-    NoticeResponse getNotice(int id);
+    NoticeResponse getNotice(Integer id);
 }

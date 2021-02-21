@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 public class NoticeResponse {
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    private String title;
+    private final String title;
 
-    private String content;
+    private final String content;
 
-    private String fileName;
+    private final String fileName;
 
     public static NoticeResponse of(Notice notice){
         return NoticeResponse.builder()

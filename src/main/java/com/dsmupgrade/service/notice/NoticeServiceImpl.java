@@ -62,7 +62,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @SneakyThrows
     @Override
-    public void noticeUpdate(String title, MultipartFile file, String content, int id) {
+    public void noticeUpdate(String title, MultipartFile file, String content, Integer id) {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         Notification notification = notificationRepository.findById(id).orElseThrow();
@@ -90,7 +90,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public NoticeResponse getNotice(int id) {
+    public NoticeResponse getNotice(Integer id) {
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Notice notice = noticeRepository.findById(notification.getId()).orElseThrow();
 

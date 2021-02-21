@@ -1,5 +1,6 @@
 package com.dsmupgrade.domain.entity.vote;
 
+import com.dsmupgrade.domain.entity.notice.Notice;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,16 +24,25 @@ public class Vote {
 
     private boolean isDead;
 
-    private int count;
+    private Integer count;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime deadLine;
 
+    public Vote update(String title, boolean isEven, Integer count, LocalDateTime deadLine, LocalDateTime createdAt) {
+        this.title = title;
+        this.isEven = isEven;
+        this.count = count;
+        this.deadLine = deadLine;
+        this.createdAt = createdAt;
 
-    @OneToMany
-    @JoinColumn(name = "TEAM_ID")
-    private List<VoteContent> voteContent = new ArrayList<>();
+        return this;
+    }
 
+    public Vote deadIsDead() {
+        this.isDead = true;
+        return this;
+    }
 
 }

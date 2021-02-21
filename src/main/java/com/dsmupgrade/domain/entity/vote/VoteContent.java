@@ -18,7 +18,13 @@ public class VoteContent {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
+    @JoinColumn(name = "voteId")
     private Vote vote;
 
+    public VoteContent update(String content, Vote vote) {
+        this.content = content;
+        this.vote = vote;
+
+        return this;
+    }
 }

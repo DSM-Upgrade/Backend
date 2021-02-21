@@ -22,7 +22,7 @@ public class NoticeController {
     }
 
     @GetMapping("{id}")
-    public NoticeResponse getNotice(@PathVariable int id) {
+    public NoticeResponse getNotice(@PathVariable Integer id) {
         return noticeService.getNotice(id);
     }
 
@@ -35,7 +35,7 @@ public class NoticeController {
     public void noticeUpdate(@RequestParam String title,
                              @RequestParam MultipartFile file,
                              @RequestParam String content,
-                             @PathVariable int id) {
+                             @PathVariable Integer id) {
         noticeService.noticeUpdate(title, file, content, id);
     }
 }

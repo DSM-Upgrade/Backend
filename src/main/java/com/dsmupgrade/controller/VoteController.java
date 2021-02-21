@@ -19,5 +19,14 @@ public class VoteController {
     public VoteResponse getVote(@PathVariable Integer id){
         return voteService.getVote(id);
     }
+    @PostMapping("{id}")
+    public void voteDo(@RequestBody Integer[] choice,@PathVariable Integer id){
+        voteService.voteDo(choice,id);
+    }
+    @PatchMapping("{id}")
+    public void voteUpdate(@RequestBody VoteRequest voteRequest,@PathVariable Integer id){
+        voteService.voteUpdate(voteRequest,id);
+    }
+
 
 }

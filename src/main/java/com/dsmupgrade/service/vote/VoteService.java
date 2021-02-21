@@ -6,5 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface VoteService {
     void voteWrite(VoteRequest voteRequest);
+    void voteDo(Integer[] choice,Integer id);
     VoteResponse getVote(Integer id);
+    void voteUpdate(VoteRequest voteRequest,Integer id);
 }

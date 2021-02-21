@@ -15,7 +15,7 @@ public class VoteDo {
     @Id
     private Integer id;
 
-    private Integer userId;
+    private String username;
 
     private Integer voteId;
 
