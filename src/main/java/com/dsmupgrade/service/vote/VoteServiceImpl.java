@@ -96,6 +96,10 @@ public class VoteServiceImpl implements VoteService {
     public void voteUpdate(VoteRequest voteRequest, Integer id) {
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
+        //어드민
+//        voteRepository.save(vote.deadIsDead());
+        //일반유저
+
         voteRepository.save(vote.update(voteRequest.getTitle(), voteRequest.isEven(), voteRequest.getCount(),
                 voteRequest.getDeadLine(), LocalDateTime.now()));
         int i = 0;
