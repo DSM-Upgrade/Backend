@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 public class HomeworkController {
     @Autowired
-    private PersonalHomeworkRepository personal_homeworkRepository;
+    private PersonalHomeworkRepository personalHomeworkRepository;
     @Autowired
     private HomeworkRepository homeworkRepository;
     private SimpleDateFormat time_format;
@@ -33,7 +33,7 @@ public class HomeworkController {
 
     @GetMapping("list/{userName}")
     public List<UserAllHomeworkListResponse> getHomeworkList(@PathVariable("userName") String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        List<PersonalHomework> allPersonalHomeworkList =  personal_homeworkRepository.findAllByStudentUsername(username);
+        List<PersonalHomework> allPersonalHomeworkList =  personalHomeworkRepository.findAllByStudentUsername(username);
         List<UserAllHomeworkListResponse> userAllHomeworkListResponse = new ArrayList<>();
         for(int i=0; i<allPersonalHomeworkList.size(); i++){
             UserAllHomeworkListResponse homework = new UserAllHomeworkListResponse();
@@ -53,7 +53,7 @@ public class HomeworkController {
         PersonalHomeworkPk personalHomeworkPk = new PersonalHomeworkPk();
         personalHomeworkPk.setHomeworkId(homeworkId);
         personalHomeworkPk.setStudentUsername(username);
-        Optional<PersonalHomework> personalHomeworkContent =  personal_homeworkRepository.findById(personalHomeworkPk);
+        Optional<PersonalHomework> personalHomeworkContent =  personalHomeworkRepository.findById(personalHomeworkPk);
         Optional<Homework> homeworkContent = homeworkRepository.findById(homeworkId);
         UserHomeworkResponse userHomeworkResponse = new UserHomeworkResponse();
         userHomeworkResponse.setHomeworkTitle(homeworkContent.get().getTitle());
