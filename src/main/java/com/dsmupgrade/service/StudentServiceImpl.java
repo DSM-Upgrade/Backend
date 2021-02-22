@@ -13,6 +13,7 @@ import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +59,9 @@ public class StudentServiceImpl implements StudentService {
         }
 
         studentRepository.save(student);
+    }
+
+    @Override
+    public void updateStudentProfile(String username, MultipartFile file) {
     }
 }
