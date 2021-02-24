@@ -24,10 +24,21 @@ public class S3ImageUploader implements ImageUploader {
 
     @Override
     public String upload(String username, MultipartFile multipartFile, String dir) throws IOException {
+        validateFileType(multipartFile);
+
         File uploadFile = multipartToFile(multipartFile)
                 .orElseThrow();
 
         return upload(username, uploadFile, dir);
+    }
+
+    private void validateFileType(MultipartFile multipartFile) {
+        String contentType = multipartFile.getContentType();
+        if (contentType == null) {
+            // TODO add exception
+        } else if (!contentType.split("/").equals("image")) {
+            // TODO add exception
+        }
     }
 
     private String upload(String username, File uploadFile, String dir) {
