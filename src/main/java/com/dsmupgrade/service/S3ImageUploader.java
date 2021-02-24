@@ -32,8 +32,7 @@ public class S3ImageUploader implements ImageUploader {
 
     private String upload(String username, File uploadFile, String dir) {
         String filename = dir + "/" + username;
-        String uploadImageUrl = putS3(uploadFile, filename);
-        return uploadImageUrl;
+        return putS3(uploadFile, filename);
     }
 
     private String putS3(File uploadFile, String filename) {

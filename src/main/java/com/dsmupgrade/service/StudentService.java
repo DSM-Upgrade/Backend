@@ -13,5 +13,5 @@ public interface StudentService {
 
     void updateStudentInfo(String username, UpdateStudentRequest updateStudentRequest);
 
-    void updateStudentProfile(String username, MultipartFile file);
+    String updateStudentProfile(String username, MultipartFile file);
 }
