@@ -21,12 +21,12 @@ public class Fine {
     @Column(nullable = false)
     private Date date;
 
-    @Column(nullable = false)
+    @Column(length = 45,nullable = false)
     private String reason;
 
-    @Column(nullable = false)
+    @Column(length = 16,nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(length = 1,nullable = false)
     private Boolean isSubmitted;
 }
