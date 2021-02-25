@@ -36,7 +36,7 @@ public class S3ImageUploader implements ImageUploader {
         String contentType = multipartFile.getContentType();
         if (contentType == null) {
             // TODO add exception
-        } else if (!contentType.split("/").equals("image")) {
+        } else if (!contentType.split("/")[0].equals("image")) {
             // TODO add exception
         }
     }
