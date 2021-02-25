@@ -3,6 +3,7 @@ package com.dsmupgrade.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.dsmupgrade.global.error.exception.InvalidFileTypeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,10 +35,8 @@ public class S3ImageUploader implements ImageUploader {
 
     private void validateFileType(MultipartFile multipartFile) {
         String contentType = multipartFile.getContentType();
-        if (contentType == null) {
-            // TODO add exception
-        } else if (!contentType.split("/")[0].equals("image")) {
-            // TODO add exception
+        if (contentType == null || !contentType.split("/")[0].equals("image")) {
+            throw new InvalidFileTypeException();
         }
     }
 
