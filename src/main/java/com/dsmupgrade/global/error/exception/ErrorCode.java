@@ -11,11 +11,13 @@ public enum ErrorCode {
     INVALID_TOKEN(401, "A001", "Invalid Token"),
     STUDENT_NOT_REGISTERED(403, "A002", "Student Not Registered"),
     INVALID_LOGIN_INFO(401, "A003", "Invalid Login Info"),
+    EXPIRED_TOKEN(410, "A004", "Expired Token"),
 
     STUDENT_NOT_FOUND(404, "S001", "Student Not Found"),
     PASSWORD_NOT_MATCHED(409, "S002", "Password Not Matched"),
+    INVALID_FILE_TYPE(400, "S003", "Invalid File Type"),
 
-    FIELD_NOT_FOUND(404, "F001", "Field Not Found");
+    FIELD_NOT_FOUND(404, "F001", "Field Not Found (should be image)");
 
     private final String code;
     private final String message;
