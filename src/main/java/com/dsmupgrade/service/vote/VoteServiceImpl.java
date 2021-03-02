@@ -1,10 +1,14 @@
 package com.dsmupgrade.service.vote;
 
+import com.dsmupgrade.domain.entity.Student;
 import com.dsmupgrade.domain.entity.vote.*;
+import com.dsmupgrade.domain.repository.StudentRepository;
 import com.dsmupgrade.dto.request.VoteRequest;
 import com.dsmupgrade.domain.entity.Notification;
 import com.dsmupgrade.domain.repository.NotificationRepository;
 import com.dsmupgrade.dto.response.VoteResponse;
+import com.dsmupgrade.global.error.exception.StudentNotFoundException;
+import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +23,16 @@ public class VoteServiceImpl implements VoteService {
     private final VoteContentRepository voteContentRepository;
     private final VoteDoRepository voteDoRepository;
     private final NotificationRepository notificationRepository;
+    private final AuthenticationFacade authenticationFacade;
+    private final StudentRepository studentRepository;
 
     @Override
     public void voteWrite(VoteRequest voteRequest) {
+        String adminName = authenticationFacade.getUsername();
+        Student admin = studentRepository.findByUsername(adminName).orElseThrow(
+                () -> new StudentNotFoundException(adminName));
+        if (admin.getIsAdmin()) throw new StudentNotFoundException(admin.getUsername());
+
         Vote vote = voteRepository.save(
                 Vote.builder()
                         .isDead(false)
@@ -60,25 +71,41 @@ public class VoteServiceImpl implements VoteService {
             } catch (Exception exception) {
             }
         }).start();
+
     }
 
     @Override
     public void voteDo(Integer[] choice, Integer id) {
-//        Integer receiptCode = authenticationFacade.getReceiptCode();
+        String username = authenticationFacade.getUsername();
+        Student student = studentRepository.findByUsername(username).orElseThrow(
+                () -> new StudentNotFoundException(username));
+        if (!student.getIsRegistered()) throw new StudentNotFoundException(username);
 
+        if (voteDoRepository.existsByUsernameAndVoteId(username, id)) {
+            for (VoteDo voteDo : voteDoRepository.findAllByUsernameAndVoteId(username, id)) {
+                voteDoRepository.deleteById(voteDo.getId());
+                voteDoRepository.delete(voteDo);
+            }
+        }
         for (Integer i : choice) {
             voteDoRepository.save(
                     VoteDo.builder()
-                            .username("")
+                            .username(student.getName())
                             .voteId(id)
                             .voteContentId(choice[i - 1])
                             .build()
             );
+
         }
     }
 
     @Override
     public VoteResponse getVote(Integer id) {
+        String username = authenticationFacade.getUsername();
+        Student student = studentRepository.findByUsername(username).orElseThrow(
+                () -> new StudentNotFoundException(username));
+
+        if (student.getIsRegistered()) throw new StudentNotFoundException(student.getUsername());
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
         String[] content = new String[vote.getCount()];
@@ -92,11 +119,13 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public void voteUpdate(VoteRequest voteRequest, Integer id) {
+        String username = authenticationFacade.getUsername();
+        Student student = studentRepository.findByUsername(username).orElseThrow(
+                () -> new StudentNotFoundException(username));
+        if (student.getIsAdmin()) throw new StudentNotFoundException(username);
+
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
-        //어드민
-//        voteRepository.save(vote.deadIsDead());
-        //일반유저
 
         voteRepository.save(vote.update(voteRequest.getTitle(), voteRequest.isEven(), voteRequest.getCount(),
                 voteRequest.getDeadLine(), LocalDateTime.now()));
