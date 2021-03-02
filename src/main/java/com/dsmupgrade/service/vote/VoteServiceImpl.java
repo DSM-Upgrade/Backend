@@ -52,7 +52,6 @@ public class VoteServiceImpl implements VoteService {
                             .content(voteRequest.getContent()[i])
                             .vote(vote)
                             .build()
-
             );
         }
         notificationRepository.save(
@@ -121,10 +120,10 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public void voteUpdate(VoteRequest voteRequest, Integer id) {
-        String username = authenticationFacade.getUsername();
-        Student student = studentRepository.findByUsername(username).orElseThrow(
-                () -> new StudentNotFoundException(username));
-        if (student.getIsAdmin()) throw new StudentNotAdminException(username);
+        String adminName = authenticationFacade.getUsername();
+        Student admin = studentRepository.findByUsername(adminName).orElseThrow(
+                () -> new StudentNotFoundException(adminName));
+        if (admin.getIsAdmin()) throw new StudentNotAdminException(adminName);
 
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
