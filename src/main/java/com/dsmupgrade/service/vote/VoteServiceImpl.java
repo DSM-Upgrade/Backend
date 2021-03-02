@@ -7,7 +7,9 @@ import com.dsmupgrade.dto.request.VoteRequest;
 import com.dsmupgrade.domain.entity.Notification;
 import com.dsmupgrade.domain.repository.NotificationRepository;
 import com.dsmupgrade.dto.response.VoteResponse;
+import com.dsmupgrade.global.error.exception.StudentNotAdminException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
+import com.dsmupgrade.global.error.exception.StudentNotRegisteredException;
 import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class VoteServiceImpl implements VoteService {
         String adminName = authenticationFacade.getUsername();
         Student admin = studentRepository.findByUsername(adminName).orElseThrow(
                 () -> new StudentNotFoundException(adminName));
-        if (admin.getIsAdmin()) throw new StudentNotFoundException(admin.getUsername());
+        if (admin.getIsAdmin()) throw new StudentNotAdminException(admin.getUsername());
 
         Vote vote = voteRepository.save(
                 Vote.builder()
@@ -79,7 +81,7 @@ public class VoteServiceImpl implements VoteService {
         String username = authenticationFacade.getUsername();
         Student student = studentRepository.findByUsername(username).orElseThrow(
                 () -> new StudentNotFoundException(username));
-        if (!student.getIsRegistered()) throw new StudentNotFoundException(username);
+        if (!student.getIsRegistered()) throw new StudentNotRegisteredException(username);
 
         if (voteDoRepository.existsByUsernameAndVoteId(username, id)) {
             for (VoteDo voteDo : voteDoRepository.findAllByUsernameAndVoteId(username, id)) {
@@ -105,7 +107,7 @@ public class VoteServiceImpl implements VoteService {
         Student student = studentRepository.findByUsername(username).orElseThrow(
                 () -> new StudentNotFoundException(username));
 
-        if (student.getIsRegistered()) throw new StudentNotFoundException(student.getUsername());
+        if (student.getIsRegistered()) throw new StudentNotRegisteredException(student.getUsername());
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
         String[] content = new String[vote.getCount()];
@@ -122,7 +124,7 @@ public class VoteServiceImpl implements VoteService {
         String username = authenticationFacade.getUsername();
         Student student = studentRepository.findByUsername(username).orElseThrow(
                 () -> new StudentNotFoundException(username));
-        if (student.getIsAdmin()) throw new StudentNotFoundException(username);
+        if (student.getIsAdmin()) throw new StudentNotAdminException(username);
 
         Notification notification = notificationRepository.findById(id).orElseThrow();
         Vote vote = voteRepository.findById(notification.getDetailId()).orElseThrow();
