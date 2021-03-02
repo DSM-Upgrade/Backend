@@ -1,6 +1,8 @@
 package com.dsmupgrade.global.security;
 
+import com.dsmupgrade.global.error.exception.ExpiredTokenException;
 import com.dsmupgrade.global.error.exception.InvalidTokenException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -63,8 +65,23 @@ public class JwtTokenProvider {
 
     public void validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret)
-                    .parseClaimsJws(token).getBody().getSubject();
+            String type = Jwts.parser().setSigningKey(secret)
+                    .parseClaimsJws(token).getBody().get("type", String.class);
+            assert type.equals("access_token");
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (Exception e) {
+            throw new InvalidTokenException();
+        }
+    }
+
+    public void validateRefreshToken(String token) {
+        try {
+            String type = Jwts.parser().setSigningKey(secret)
+                    .parseClaimsJws(token).getBody().get("type", String.class);
+            assert type.equals("refresh_token");
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
         } catch (Exception e) {
             throw new InvalidTokenException();
         }
