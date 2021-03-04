@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     STUDENT_NOT_FOUND(404, "S001", "Student Not Found"),
     PASSWORD_NOT_MATCHED(409, "S002", "Password Not Matched"),
+    ADMIN_NOT_FOUND(404,"S003","Admin Not Found"),
     INVALID_FILE_TYPE(400, "S003", "Invalid File Type"),
 
     FIELD_NOT_FOUND(404, "F001", "Field Not Found (should be image)");
