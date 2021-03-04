@@ -7,6 +7,7 @@ import com.dsmupgrade.domain.repository.StudentRepository;
 import com.dsmupgrade.dto.request.LoginRequest;
 import com.dsmupgrade.dto.request.SignUpRequest;
 import com.dsmupgrade.dto.response.LoginResponse;
+import com.dsmupgrade.dto.response.TokenRefreshResponse;
 import com.dsmupgrade.global.error.exception.FieldNotFoundException;
 import com.dsmupgrade.global.error.exception.InvalidLoginInfoException;
 import com.dsmupgrade.global.error.exception.StudentNotRegisteredException;
@@ -60,7 +61,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String generateNewToken(String refreshToken) {
-        return null; // TODO implementation
+    public TokenRefreshResponse generateNewToken(String refreshToken) {
+        jwtTokenProvider.validateRefreshToken(refreshToken);
+
+        return TokenRefreshResponse.builder()
+                .accessToken(
+                        jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUsername(refreshToken))
+                )
+                .build();
     }
 }
