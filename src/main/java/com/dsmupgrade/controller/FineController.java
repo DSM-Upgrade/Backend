@@ -9,11 +9,12 @@ import com.dsmupgrade.dto.response.UserFineResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.validation.Valid;
 
 @RequestMapping("fine")
 @RestController

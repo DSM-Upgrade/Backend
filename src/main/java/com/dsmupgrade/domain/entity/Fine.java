@@ -1,14 +1,8 @@
 package com.dsmupgrade.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -27,12 +21,12 @@ public class Fine {
     @Column(nullable = false)
     private Date date;
 
-    @Column(nullable = false)
+    @Column(length = 45,nullable = false)
     private String reason;
 
-    @Column(nullable = false)
+    @Column(length = 16,nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(length = 1,nullable = false)
     private Boolean isSubmitted;
 }
