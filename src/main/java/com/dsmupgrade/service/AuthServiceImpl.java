@@ -61,6 +61,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String generateNewToken(String refreshToken) {
-        return null;
+        return null; // TODO implementation
     }
 }

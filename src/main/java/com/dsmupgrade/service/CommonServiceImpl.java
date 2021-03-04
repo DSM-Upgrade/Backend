@@ -17,7 +17,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public List<FieldResponse> getAllFields() {
         return fieldRepository.findAll()
-                .stream().map(FieldResponse::of)
+                .stream().map(FieldResponse::from)
                 .collect(Collectors.toList());
     }
 }

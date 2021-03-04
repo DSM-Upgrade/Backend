@@ -7,6 +7,7 @@ import com.dsmupgrade.global.security.AuthenticationFacade;
 import com.dsmupgrade.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -31,5 +32,9 @@ public class StudentController {
     @PatchMapping
     public void updateStudentInfo(@RequestBody @Valid UpdateStudentRequest updateStudentRequest) {
         studentService.updateStudentInfo(authenticationFacade.getUsername(), updateStudentRequest);
+    }
+
+    public void updateStudentProfile(MultipartFile file) {
+
     }
 }

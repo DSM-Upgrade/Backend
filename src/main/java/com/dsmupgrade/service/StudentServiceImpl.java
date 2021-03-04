@@ -7,12 +7,13 @@ import com.dsmupgrade.domain.repository.StudentRepository;
 import com.dsmupgrade.dto.request.PasswordRequest;
 import com.dsmupgrade.dto.request.UpdateStudentRequest;
 import com.dsmupgrade.dto.response.StudentResponse;
-import com.dsmupgrade.global.error.exception.FieldNotFoundException;
-import com.dsmupgrade.global.error.exception.PasswordNotMatchedException;
-import com.dsmupgrade.global.error.exception.StudentNotFoundException;
+import com.dsmupgrade.global.error.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +22,14 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FieldRepository fieldRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImageUploader imageUploader;
 
     @Override
     public StudentResponse getStudentByUsername(String username) {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
 
-        return StudentResponse.of(student);
+        return StudentResponse.from(student);
     }
 
     @Override
@@ -58,5 +60,18 @@ public class StudentServiceImpl implements StudentService {
         }
 
         studentRepository.save(student);
+    }
+
+    @Override
+    public String updateStudentProfile(String username, MultipartFile file) {
+        return upload(username, file, "profile");
+    }
+
+    private String upload(String username, MultipartFile file, String dir) {
+        try {
+            return imageUploader.upload(username, file, dir);
+        } catch (IOException exception) {
+            throw new InvalidInputValueException(); // TODO change exception
+        }
     }
 }

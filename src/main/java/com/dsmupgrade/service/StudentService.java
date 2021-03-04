@@ -3,6 +3,7 @@ package com.dsmupgrade.service;
 import com.dsmupgrade.dto.request.PasswordRequest;
 import com.dsmupgrade.dto.request.UpdateStudentRequest;
 import com.dsmupgrade.dto.response.StudentResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StudentService {
 
@@ -11,4 +12,6 @@ public interface StudentService {
     void updateStudentPassword(String username, PasswordRequest passwordRequest);
 
     void updateStudentInfo(String username, UpdateStudentRequest updateStudentRequest);
+
+    String updateStudentProfile(String username, MultipartFile file);
 }
