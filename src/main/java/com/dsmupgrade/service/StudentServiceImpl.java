@@ -29,7 +29,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
 
-        return StudentResponse.of(student);
+        return StudentResponse.from(student);
     }
 
     @Override

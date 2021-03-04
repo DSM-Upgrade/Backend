@@ -19,7 +19,7 @@ public class StudentResponse {
 
     private final String field;
 
-    public static StudentResponse of(Student student) {
+    public static StudentResponse from(Student student) {
         return StudentResponse.builder()
                 .name(student.getName())
                 .studentNum(student.getStudentNum())

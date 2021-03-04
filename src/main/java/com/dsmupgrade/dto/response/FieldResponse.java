@@ -15,7 +15,7 @@ public class FieldResponse {
 
     private final String name;
 
-    public static FieldResponse of(Field field) {
+    public static FieldResponse from(Field field) {
         return FieldResponse.builder()
                 .id(field.getId())
                 .name(field.getName())
