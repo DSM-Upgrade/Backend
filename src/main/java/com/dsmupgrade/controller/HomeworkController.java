@@ -1,8 +1,8 @@
 package com.dsmupgrade.controller;
 
-import com.dsmupgrade.domain.entity.Homework;
-import com.dsmupgrade.domain.entity.PersonalHomework;
-import com.dsmupgrade.domain.entity.PersonalHomeworkPk;
+import com.dsmupgrade.domain.entity.homework.Homework;
+import com.dsmupgrade.domain.entity.homework.PersonalHomework;
+import com.dsmupgrade.domain.entity.homework.PersonalHomeworkPk;
 import com.dsmupgrade.domain.repository.HomeworkRepository;
 import com.dsmupgrade.domain.repository.PersonalHomeworkRepository;
 import com.dsmupgrade.dto.response.UserAllHomeworkListResponse;

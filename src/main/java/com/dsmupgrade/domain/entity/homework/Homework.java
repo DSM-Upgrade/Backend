@@ -1,4 +1,4 @@
-package com.dsmupgrade.domain.entity;
+package com.dsmupgrade.domain.entity.homework;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.dsmupgrade.domain.repository;
 
-import com.dsmupgrade.domain.entity.PersonalHomework;
-import com.dsmupgrade.domain.entity.PersonalHomeworkPk;
+import com.dsmupgrade.domain.entity.homework.PersonalHomework;
+import com.dsmupgrade.domain.entity.homework.PersonalHomeworkPk;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

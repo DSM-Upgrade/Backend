@@ -1,6 +1,6 @@
 package com.dsmupgrade.domain.repository;
 
-import com.dsmupgrade.domain.entity.Homework;
+import com.dsmupgrade.domain.entity.homework.Homework;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
