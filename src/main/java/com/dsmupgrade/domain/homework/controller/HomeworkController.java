@@ -1,10 +1,6 @@
 package com.dsmupgrade.domain.homework.controller;
 
-import com.dsmupgrade.domain.homework.domain.Homework;
-import com.dsmupgrade.domain.homework.domain.PersonalHomework;
-import com.dsmupgrade.domain.homework.domain.PersonalHomeworkPk;
-import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
-import com.dsmupgrade.domain.homework.domain.PersonalHomeworkRepository;
+import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
 import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
 import org.springframework.beans.factory.annotation.Autowired;

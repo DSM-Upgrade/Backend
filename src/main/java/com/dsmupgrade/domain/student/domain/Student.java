@@ -13,28 +13,28 @@ import java.util.function.Consumer;
 public class Student {
 
     @Id
-    @Column(length = 16, nullable = false)
+    @Column(length = 16, nullable = false, name = "username")
     private String username;
 
-    @Column(length = 60, nullable = false)
+    @Column(length = 60, nullable = false, name = "password")
     private String password;
 
-    @Column(length = 4, nullable = false)
+    @Column(length = 4, nullable = false, name = "student_num")
     private String studentNum;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_admin")
     private Boolean isAdmin;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_registered")
     private Boolean isRegistered;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_fine_manager")
     private Boolean isFineManager;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_notice_manager")
     private Boolean isNoticeManager;
 
-    @Column(length = 4, nullable = false)
+    @Column(length = 4, nullable = false, name = "name")
     private String name;
 
     @ManyToOne

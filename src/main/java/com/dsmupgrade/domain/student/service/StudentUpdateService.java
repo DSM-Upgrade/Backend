@@ -1,13 +1,15 @@
 package com.dsmupgrade.domain.student.service;
 
 import com.dsmupgrade.domain.field.domain.Field;
-import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.field.domain.FieldRepository;
+import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
 import com.dsmupgrade.domain.student.dto.request.UpdateStudentRequest;
-import com.dsmupgrade.domain.student.dto.response.StudentResponse;
-import com.dsmupgrade.global.error.exception.*;
+import com.dsmupgrade.global.error.exception.FieldNotFoundException;
+import com.dsmupgrade.global.error.exception.InvalidInputValueException;
+import com.dsmupgrade.global.error.exception.PasswordNotMatchedException;
+import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,22 +19,13 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class StudentServiceImpl implements StudentService {
+public class StudentUpdateService {
 
     private final StudentRepository studentRepository;
     private final FieldRepository fieldRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageUploader imageUploader;
 
-    @Override
-    public StudentResponse getStudentByUsername(String username) {
-        Student student = studentRepository.findByUsername(username)
-                .orElseThrow(() -> new StudentNotFoundException(username));
-
-        return StudentResponse.from(student);
-    }
-
-    @Override
     public void updateStudentPassword(String username, PasswordRequest passwordRequest) {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
@@ -45,7 +38,6 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
-    @Override
     public void updateStudentInfo(String username, UpdateStudentRequest updateStudentRequest) {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
@@ -62,7 +54,6 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
     }
 
-    @Override
     public String updateStudentProfile(String username, MultipartFile file) {
         return upload(username, file, "profile");
     }
