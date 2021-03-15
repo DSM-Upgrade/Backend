@@ -33,7 +33,7 @@ public class AuthorityServiceImpl implements AuthorityService {
         Student admin = studentRepository.findByUsername(adminName).orElseThrow();
         if (admin.getIsAdmin()) {
             Student student = studentRepository.findByUsername(adminAuthRequest.getUsername()).orElseThrow();
-//            student.fineManager();
+            student.fineManager();
             studentRepository.save(student);
         }    }
 
@@ -43,7 +43,7 @@ public class AuthorityServiceImpl implements AuthorityService {
         Student admin = studentRepository.findByUsername(adminName).orElseThrow();
         if (admin.getIsAdmin()) {
             Student student = studentRepository.findByUsername(adminAuthRequest.getUsername()).orElseThrow();
-//            student.register();
+            student.register();
             studentRepository.save(student);
         }
     }

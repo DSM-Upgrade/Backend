@@ -20,3 +20,12 @@ auth:
       refresh: ${JWT_REFRESH_EXP:3600}
     header: ${JWT_HEADER:Authorization}
     prefix: ${JWT_PREFIX:Bearer}
+image:
+  file:
+    path: djfdwfjo
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

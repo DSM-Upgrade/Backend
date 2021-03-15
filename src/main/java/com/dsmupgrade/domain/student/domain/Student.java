@@ -58,6 +58,14 @@ public class Student {
         setIsRegistered(true);
     }
 
+    public void noticeManager() {
+        setIsNoticeManager(true);
+    }
+
+    public void fineManager() {
+        setIsFineManager(true);
+    }
+
     public void updatePassword(String password) {
         setIfNotNull(this::setPassword, password);
     }
