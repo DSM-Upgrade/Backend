@@ -1,6 +1,6 @@
 package com.dsmupgrade.global.security;
 
-import com.dsmupgrade.domain.repository.StudentRepository;
+import com.dsmupgrade.domain.student.domain.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
 package com.dsmupgrade.global.security;
 
-import com.dsmupgrade.domain.entity.Student;
+import com.dsmupgrade.domain.student.domain.Student;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

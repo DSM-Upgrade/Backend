@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.testing'
+group = 'com'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -26,7 +26,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.h2database:h2:1.4.199'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
