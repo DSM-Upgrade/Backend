@@ -3,7 +3,6 @@ package com.dsmupgrade.test.setup.domain;
 import com.dsmupgrade.domain.field.domain.Field;
 import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
-import com.dsmupgrade.test.config.TestProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@Profile(TestProfile.TEST)
+@Profile("test")
 @RequiredArgsConstructor
 @Component
 public class StudentSetup {

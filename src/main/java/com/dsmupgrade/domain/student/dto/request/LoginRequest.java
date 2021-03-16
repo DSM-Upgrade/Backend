@@ -1,6 +1,7 @@
 package com.dsmupgrade.domain.student.dto.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.Pattern;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class LoginRequest {
 
     @Pattern(regexp = "^[A-za-z0-9]{6,16}$")

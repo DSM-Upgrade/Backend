@@ -1,10 +1,7 @@
 package com.dsmupgrade.domain.field.domain;
 
 import com.dsmupgrade.domain.student.domain.Student;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,4 +21,11 @@ public class Field {
 
     @OneToMany(mappedBy = "field")
     private List<Student> students;
+
+    @Builder
+    public Field(int id, String name) {
+        this.id = id;
+        this.name = name;
+        this.students = null;
+    }
 }

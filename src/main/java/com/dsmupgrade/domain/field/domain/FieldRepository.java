@@ -7,4 +7,5 @@ public interface FieldRepository {
 
     Optional<Field> findById(Integer id);
     List<Field> findAll();
+    Field save(Field field);
 }
