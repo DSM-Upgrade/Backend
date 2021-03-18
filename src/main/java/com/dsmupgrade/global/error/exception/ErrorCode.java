@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_LOGIN_INFO(401, "A003", "Invalid Login Info"),
     EXPIRED_TOKEN(410, "A004", "Expired Token"),
 
+    FINE_NOT_FOUND(404, "S004", "Fine Not Found"), //
     STUDENT_NOT_FOUND(404, "S001", "Student Not Found"),
     PASSWORD_NOT_MATCHED(409, "S002", "Password Not Matched"),
     ADMIN_NOT_FOUND(404,"S003","Admin Not Found"),

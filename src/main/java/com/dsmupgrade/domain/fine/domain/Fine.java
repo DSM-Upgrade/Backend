@@ -1,9 +1,6 @@
 package com.dsmupgrade.domain.fine.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,9 +9,9 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-@NoArgsConstructor
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Fine {
     @Id
@@ -35,4 +32,8 @@ public class Fine {
 
     @Column(nullable = false)
     private Boolean isSubmitted;
+
+    public void setIsSubmitted(Boolean isSubmitted){
+        this.isSubmitted = isSubmitted;
+    }
 }
