@@ -2,17 +2,12 @@ plugins {
     id 'org.springframework.boot' version '2.4.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'org.asciidoctor.convert' version '1.5.6'
+    id 'jacoco'
 }
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
-
-asciidoctor {
-    sourceDir 'src/main/asciidoc'
-    attributes 'snippets': file('target/snippets')
-}
 
 configurations {
     compileOnly {
@@ -22,7 +17,19 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/libs-milestone'}
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
 }
 
 dependencies {
@@ -32,14 +39,12 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation("com.google.guava:guava:30.1-jre")
     runtimeOnly 'com.h2database:h2:1.4.199'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("org.assertj:assertj-core")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
