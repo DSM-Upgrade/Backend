@@ -22,10 +22,12 @@ auth:
     prefix: ${JWT_PREFIX:Bearer}
 image:
   file:
-    path: djfdwfjo
+    path: ${FILE_PATH:test-path}
 cloud:
   aws:
     region:
       static: ap-northeast-2
     stack:
       auto: false
+    s3:
+      bucket: ${S3_BUCKET:test-bucket}
