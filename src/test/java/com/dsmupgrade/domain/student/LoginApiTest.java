@@ -2,10 +2,12 @@ package com.dsmupgrade.domain.student;
 
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.student.dto.request.LoginRequest;
+import com.dsmupgrade.global.error.exception.ErrorCode;
 import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LoginApiTest extends IntegrationTest {
@@ -22,7 +24,11 @@ public class LoginApiTest extends IntegrationTest {
 
         //then
         resultActions
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("message").value(ErrorCode.STUDENT_NOT_REGISTERED.getMessage()))
+                .andExpect(jsonPath("status").value(ErrorCode.STUDENT_NOT_REGISTERED.getStatus()))
+                .andExpect(jsonPath("code").value(ErrorCode.STUDENT_NOT_REGISTERED.getCode()))
+                .andExpect(jsonPath("errors").isEmpty());
     }
 
     @Test
@@ -37,7 +43,9 @@ public class LoginApiTest extends IntegrationTest {
 
         //then
         resultActions
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("access_token").isNotEmpty())
+                .andExpect(jsonPath("refresh_token").isNotEmpty());
     }
 
     private ResultActions requestLogin(LoginRequest dto) throws Exception {
