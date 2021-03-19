@@ -29,7 +29,6 @@ public class LoginApiTest extends IntegrationTest {
                 .andExpect(jsonPath("status").value(ErrorCode.STUDENT_NOT_REGISTERED.getStatus()))
                 .andExpect(jsonPath("code").value(ErrorCode.STUDENT_NOT_REGISTERED.getCode()))
                 .andExpect(jsonPath("errors").isEmpty());
-        throw new Exception();
     }
 
     @Test
