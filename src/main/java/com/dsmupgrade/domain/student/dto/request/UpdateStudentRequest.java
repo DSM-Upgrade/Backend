@@ -12,7 +12,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 public class UpdateStudentRequest {
 
-    @Pattern(regexp = "^[1-3][1-4][0-2][0-9]$")
+    @Pattern(regexp = "^[1-3][1-4]([01][0-9]|2[0-1])$")
     private String studentNum;
 
     @Min(1)
