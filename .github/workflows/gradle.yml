@@ -22,7 +22,7 @@ jobs:
         run: ./gradlew check
 
       - name: code coverage
-        run: ./gradlew codeCoverageReport
+        run: ./gradlew jacocoTestReport
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
