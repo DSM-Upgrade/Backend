@@ -15,7 +15,7 @@ public class LoginApiTest extends IntegrationTest {
     @Test
     public void 로그인_등록안됨() throws Exception {
         //given
-        String username = "nonregister123";
+        String username = "unregister123";
         String password = "@Passw0rd";
         LoginRequest dto = new LoginRequest(username, password);
 
@@ -46,6 +46,44 @@ public class LoginApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("access_token").isNotEmpty())
                 .andExpect(jsonPath("refresh_token").isNotEmpty());
+    }
+
+    @Test
+    public void 로그인_없는유저() throws Exception {
+        //given
+        String username = "nonexistent1";
+        String password = "@Passw0rd";
+        LoginRequest dto = new LoginRequest(username, password);
+
+        //when
+        ResultActions resultActions = requestLogin(dto);
+
+        //then
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value(ErrorCode.INVALID_LOGIN_INFO.getMessage()))
+                .andExpect(jsonPath("status").value(ErrorCode.INVALID_LOGIN_INFO.getStatus()))
+                .andExpect(jsonPath("code").value(ErrorCode.INVALID_LOGIN_INFO.getCode()))
+                .andExpect(jsonPath("errors").isEmpty());
+    }
+
+    @Test
+    public void 로그인_잘못된_비밀번호() throws Exception {
+        //given
+        String username = "register123";
+        String password = "P@ssw0rd";
+        LoginRequest dto = new LoginRequest(username, password);
+
+        //when
+        ResultActions resultActions = requestLogin(dto);
+
+        //then
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value(ErrorCode.INVALID_LOGIN_INFO.getMessage()))
+                .andExpect(jsonPath("status").value(ErrorCode.INVALID_LOGIN_INFO.getStatus()))
+                .andExpect(jsonPath("code").value(ErrorCode.INVALID_LOGIN_INFO.getCode()))
+                .andExpect(jsonPath("errors").isEmpty());
     }
 
     private ResultActions requestLogin(LoginRequest dto) throws Exception {
