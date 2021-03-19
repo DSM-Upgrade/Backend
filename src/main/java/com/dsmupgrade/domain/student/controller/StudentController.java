@@ -22,7 +22,7 @@ public class StudentController {
     private final AuthenticationFacade authenticationFacade;
 
     @GetMapping
-    public StudentResponse getStudentInfoByUsername() {
+    public StudentResponse getStudentByUsername() {
         return studentFindService.getStudentByUsername(getUsername());
     }
 
