@@ -107,6 +107,25 @@ public class StudentApiTest extends IntegrationTest {
         assertThat(student.getField().getId()).isEqualTo(newFieldId);
     }
 
+    @Test
+    @WithMockUser(username = "register123")
+    public void 회원_정보_변경_없는분야() throws Exception {
+        //given
+        int nonexistentFieldId = Integer.MAX_VALUE;
+        UpdateStudentRequest dto = new UpdateStudentRequest(null, nonexistentFieldId);
+
+        //when
+        ResultActions resultActions = requestUpdateStudent(dto);
+
+        //then
+        resultActions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("message").value(ErrorCode.FIELD_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("status").value(ErrorCode.FIELD_NOT_FOUND.getStatus()))
+                .andExpect(jsonPath("code").value(ErrorCode.FIELD_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("errors").isEmpty());
+    }
+
     private Student findStudentByUsername(String username) {
         return studentRepository.findByUsername(username).orElseThrow();
     }
