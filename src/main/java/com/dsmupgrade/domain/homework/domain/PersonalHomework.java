@@ -1,21 +1,15 @@
 package com.dsmupgrade.domain.homework.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@NoArgsConstructor
+@Builder
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @IdClass(value = PersonalHomeworkPk.class)
 public class PersonalHomework {
     @Id
@@ -23,7 +17,7 @@ public class PersonalHomework {
     private String studentUsername;
 
     @Column(nullable = false)
-    private Boolean status;
+    private PersonalHomeworkStatus status; // 과제를 제출해서 완료가 되었는지
 
     @Column(nullable = true)
     private Date submittedAt;
@@ -34,4 +28,8 @@ public class PersonalHomework {
     @Id
     @Column(nullable = false)
     private Integer homeworkId;
+
+    @JoinColumn(name = "homework_id", referencedColumnName = "id")
+    @ManyToOne
+    private Homework homework;
 }

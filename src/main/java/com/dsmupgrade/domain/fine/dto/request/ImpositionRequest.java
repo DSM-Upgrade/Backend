@@ -4,7 +4,6 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
 public class ImpositionRequest {
     @NotNull

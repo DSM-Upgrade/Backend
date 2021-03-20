@@ -1,22 +1,21 @@
 package com.dsmupgrade.domain.homework.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
-@Entity
-@NoArgsConstructor
+@Builder
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Homework {
     @Id
+    @GeneratedValue
     private Integer id;
 
     @Column(nullable = false)

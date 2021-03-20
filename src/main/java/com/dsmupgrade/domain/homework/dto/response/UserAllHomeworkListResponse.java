@@ -1,15 +1,29 @@
 package com.dsmupgrade.domain.homework.dto.response;
 
+import com.dsmupgrade.domain.homework.domain.PersonalHomework;
+import com.dsmupgrade.domain.homework.domain.PersonalHomeworkStatus;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
-@Setter
+@Builder(access = AccessLevel.PRIVATE)
 public class UserAllHomeworkListResponse {
     private Integer homeworkId;
     private String homeworkTitle;
-    private String homeworkStart;
-    private String homeworkEnd;
-    private Boolean homeworkSubmitted;
-    private Boolean homeworkFinished;
+    private Date homeworkStart;
+    private Date homeworkEnd;
+    private String homeworkStatus;
+
+    public static UserAllHomeworkListResponse from(PersonalHomework personalHomework){
+        return UserAllHomeworkListResponse.builder()
+                .homeworkId(personalHomework.getHomeworkId())
+                .homeworkTitle(personalHomework.getHomework().getTitle())
+                .homeworkStart(personalHomework.getHomework().getCreatedAt())
+                .homeworkEnd(personalHomework.getHomework().getDeadline())
+                .homeworkStatus(personalHomework.getStatus().name())
+                .build();
+    }
 }

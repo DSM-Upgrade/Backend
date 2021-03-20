@@ -39,7 +39,7 @@ public class FineServiceImpl implements FineService {
     @Override
     public void imposeFine(ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과
         studentRepository.findByUsername(impositionRequest.getUserName())
-                .orElseThrow(() -> new StudentNotFoundException(impositionRequest.getUserName())); // Exception 만들어서 넣어야 함
+                .orElseThrow(() -> new StudentNotFoundException(impositionRequest.getUserName()));
         Calendar time = Calendar.getInstance();
         Fine fine = Fine.builder()
                 .amount(impositionRequest.getFineAmount())
@@ -52,8 +52,7 @@ public class FineServiceImpl implements FineService {
     }
     @Override
     public void completeFine(CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄
-        fineRepository.findAllById(completionFineRequest.getFineId()).orElseThrow(); // Exception 만들어서 넣어야 함
-        Fine fine =  fineRepository.findAllById(completionFineRequest.getFineId()).get();
+        Fine fine = fineRepository.findAllById(completionFineRequest.getFineId()).orElseThrow(); // Exception 만들어서 넣어야 함
         fine.setIsSubmitted(true);
         fineRepository.save(fine);
     }

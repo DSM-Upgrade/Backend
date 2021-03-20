@@ -1,12 +1,13 @@
 package com.dsmupgrade.domain.homework.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PersonalHomeworkPk implements Serializable {
     private String studentUsername;
     private Integer homeworkId;
