@@ -42,11 +42,12 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     public void assignmentHomework(AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
-        assignmentHomeworkRequest.getUserName()
+        /*assignmentHomeworkRequest.getUserName()
                 .stream()
                 .forEach((username)->{
                     studentRepository.findByUsername(username).orElseThrow(()->new StudentNotFoundException(username));
-                });
+                });*/
+        studentRepository.existsAllByUsername(assignmentHomeworkRequest.getUserName());
         Calendar time = Calendar.getInstance();
         Homework homework = Homework.builder()
                 .title(assignmentHomeworkRequest.getHomeworkTitle())
@@ -128,11 +129,12 @@ public class HomeworkServiceImpl implements HomeworkService{
     public void changeHomework(ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         int homeworkId = changeHomeworkRequest.getHomeworkId();
         if(isEmptyHomework(homeworkId)) throw new HomeworkNotFoundException(homeworkId);
-        changeHomeworkRequest.getUserName()
+        /*changeHomeworkRequest.getUserName()
                 .stream()
                 .forEach((username)->{
                     studentRepository.findByUsername(username).orElseThrow(()->new StudentNotFoundException(username));
-                });
+                });*/
+        studentRepository.existsAllByUsername(changeHomeworkRequest.getUserName());
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
         Calendar time = Calendar.getInstance();
         Homework homework = Homework.builder()
