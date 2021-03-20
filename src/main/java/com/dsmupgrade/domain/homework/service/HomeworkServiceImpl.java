@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HomeworkServiceImpl implements HomeworkService{
     private final PersonalHomeworkRepository personalHomeworkRepository;
-    private HomeworkRepository homeworkRepository;
+    private final HomeworkRepository homeworkRepository;
     private final StudentRepository studentRepository;
 
     @Override
