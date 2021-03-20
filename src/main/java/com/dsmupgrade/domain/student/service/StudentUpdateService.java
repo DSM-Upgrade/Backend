@@ -34,7 +34,8 @@ public class StudentUpdateService {
             throw new PasswordNotMatchedException();
         }
 
-        student.updatePassword(passwordRequest.getNewPassword());
+        String newPassword = passwordEncoder.encode(passwordRequest.getNewPassword());
+        student.updatePassword(newPassword);
         studentRepository.save(student);
     }
 

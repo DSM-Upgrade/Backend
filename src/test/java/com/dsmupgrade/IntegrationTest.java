@@ -38,4 +38,10 @@ public class IntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
     }
+
+    protected ResultActions requestMvc(MockHttpServletRequestBuilder method) throws Exception {
+        return mvc.perform(method
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
 }

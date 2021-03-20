@@ -37,7 +37,7 @@ public class SignUpApiTest extends IntegrationTest {
         String password = "@Passw0rd";
         String studentNum = "3402";
         String name = "김대웅";
-        int fieldId = 2;
+        int fieldId = Integer.MAX_VALUE;
         SignUpRequest dto = new SignUpRequest(username, password, studentNum, name, fieldId);
 
         //when
