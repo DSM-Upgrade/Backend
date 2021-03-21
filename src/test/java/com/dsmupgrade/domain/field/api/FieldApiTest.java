@@ -24,7 +24,6 @@ public class FieldApiTest extends IntegrationTest {
         ResultActions resultActions = requestGetFields();
 
         //then
-        List<Field> fields = fieldRepository.findAll();
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
