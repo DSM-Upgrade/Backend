@@ -9,7 +9,7 @@ import org.junit.Ignore;
 import org.mockito.Mock;
 
 @Ignore
-public class StudentServiceTest extends ServiceTest {
+class StudentServiceTest extends ServiceTest {
 
     @Mock
     protected StudentRepository studentRepository;
