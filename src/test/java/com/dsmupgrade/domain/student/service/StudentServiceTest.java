@@ -5,8 +5,10 @@ import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentBuilder;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.mockito.Mock;
 
+@Ignore
 public class StudentServiceTest extends ServiceTest {
 
     @Mock
