@@ -1,4 +1,4 @@
-package com.dsmupgrade.domain.student;
+package com.dsmupgrade.domain.student.api;
 
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.field.domain.Field;
