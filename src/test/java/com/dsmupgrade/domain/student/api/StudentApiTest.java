@@ -107,6 +107,24 @@ public class StudentApiTest extends IntegrationTest {
 
     @Test
     @WithMockUser(username = "register123")
+    public void 회원_정보_변경_분야변경_없음() throws Exception {
+        //given
+        String newStudentNum = "2304";
+        UpdateStudentRequest dto = new UpdateStudentRequest(newStudentNum, null);
+
+        //when
+        ResultActions resultActions = requestUpdateStudent(dto);
+
+        //then
+        resultActions.andExpect(status().isOk());
+
+        Student student = findStudentByUsername(registeredUsername);
+        assertThat(student.getStudentNum()).isEqualTo(newStudentNum);
+        assertThat(student.getField().getId()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = "register123")
     public void 회원_정보_변경_없는분야() throws Exception {
         //given
         int nonexistentFieldId = Integer.MAX_VALUE;

@@ -1,6 +1,7 @@
 package com.dsmupgrade.domain.student.service;
 
 import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
+import com.dsmupgrade.global.error.exception.InvalidInputValueException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -49,6 +50,18 @@ public class StudentUpdateServiceTest extends StudentServiceTest {
 
         //then
         assertThat(uploadedFileName).isEqualTo(username);
+    }
+
+    @Test(expected = InvalidInputValueException.class)
+    public void 프로필_이미지_IOException() throws IOException {
+        //given
+        String username = student.getUsername();
+        MultipartFile file = createEmptyMultipartFile();
+
+        given(imageUploader.upload(any(), any(), any())).willThrow(IOException.class);
+
+        //when
+        studentUpdateService.updateStudentProfile(username, file);
     }
 
     private MultipartFile createEmptyMultipartFile() {
