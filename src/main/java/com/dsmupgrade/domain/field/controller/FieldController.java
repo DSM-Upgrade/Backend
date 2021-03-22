@@ -11,12 +11,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/common")
+@RequestMapping("/fields")
 public class FieldController {
 
     private final FieldService fieldService;
 
-    @GetMapping("/fields")
+    @GetMapping
     public List<FieldResponse> getAllFields() {
         return fieldService.getAllFields();
     }
