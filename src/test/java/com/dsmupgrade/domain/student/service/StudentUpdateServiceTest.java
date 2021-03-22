@@ -4,6 +4,7 @@ import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public class StudentUpdateServiceTest extends StudentServiceTest {
     @InjectMocks
     private StudentUpdateService studentUpdateService;
 
-    @MockBean
+    @Mock
     private ImageUploader imageUploader;
 
     @Test(expected = StudentNotFoundException.class)
@@ -42,7 +43,7 @@ public class StudentUpdateServiceTest extends StudentServiceTest {
         String username = student.getUsername();
         MultipartFile file = createEmptyMultipartFile();
 
-        given(imageUploader.upload(username, any(), any())).willReturn(username);
+        given(imageUploader.upload(any(), any(), any())).willReturn(username);
 
         //when
         String uploadedFileName = studentUpdateService.updateStudentProfile(username, file);
