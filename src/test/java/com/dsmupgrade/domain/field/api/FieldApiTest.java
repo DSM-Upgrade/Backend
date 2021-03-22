@@ -1,13 +1,10 @@
 package com.dsmupgrade.domain.field.api;
 
 import com.dsmupgrade.IntegrationTest;
-import com.dsmupgrade.domain.field.domain.Field;
 import com.dsmupgrade.domain.field.domain.FieldRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

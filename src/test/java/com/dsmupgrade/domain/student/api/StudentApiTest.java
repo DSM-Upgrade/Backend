@@ -1,8 +1,6 @@
 package com.dsmupgrade.domain.student.api;
 
 import com.dsmupgrade.IntegrationTest;
-import com.dsmupgrade.domain.field.domain.Field;
-import com.dsmupgrade.domain.field.domain.FieldRepository;
 import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
@@ -17,8 +15,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class StudentApiTest extends IntegrationTest {
 
