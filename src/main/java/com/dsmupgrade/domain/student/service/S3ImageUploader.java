@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-@Profile("!test")
 public class S3ImageUploader implements ImageUploader {
 
     private final AmazonS3Client s3Client;
@@ -35,24 +34,24 @@ public class S3ImageUploader implements ImageUploader {
         return upload(username, uploadFile, dir);
     }
 
-    private void validateFileType(MultipartFile multipartFile) {
+    protected void validateFileType(MultipartFile multipartFile) {
         String contentType = multipartFile.getContentType();
         if (contentType == null || !contentType.split("/")[0].equals("image")) {
             throw new InvalidFileTypeException();
         }
     }
 
-    private String upload(String username, File uploadFile, String dir) {
+    protected String upload(String username, File uploadFile, String dir) {
         String filename = dir + "/" + username;
         return putS3(uploadFile, filename);
     }
 
-    private String putS3(File uploadFile, String filename) {
+    protected String putS3(File uploadFile, String filename) {
         s3Client.putObject(new PutObjectRequest(bucket, filename, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return s3Client.getUrl(bucket, filename).toString();
     }
 
-    private Optional<File> multipartToFile(MultipartFile multipart) throws IOException {
+    protected Optional<File> multipartToFile(MultipartFile multipart) throws IOException {
         File file = new File(multipart.getOriginalFilename());
         if (file.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
