@@ -36,7 +36,8 @@ public class StudentController {
         studentUpdateService.updateStudentInfo(getUsername(), updateStudentRequest);
     }
 
-    public void updateStudentProfile(MultipartFile file) {
+    @PatchMapping("/profile")
+    public void updateStudentProfile(@RequestPart MultipartFile file) {
         studentUpdateService.updateStudentProfile(getUsername(), file);
     }
 
