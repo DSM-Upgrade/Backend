@@ -1,4 +1,8 @@
 spring:
+  profiles:
+    include:
+      - aws
+      - credentials
   datasource:
     driver-class-name: org.h2.Driver
     url: ${MYSQL_URL:jdbc:h2:~/test}
@@ -12,6 +16,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 215MB
+      file-size-threshold: 2KB
 auth:
   jwt:
     secret: ${JWT_SECRET:upgrade_test}
@@ -22,12 +32,4 @@ auth:
     prefix: ${JWT_PREFIX:Bearer}
 image:
   file:
-    path: ${FILE_PATH:test-path}
-cloud:
-  aws:
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: false
-    s3:
-      bucket: ${S3_BUCKET:test-bucket}
+    path: ${FILE_PATH:filepath}
