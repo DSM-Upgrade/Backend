@@ -1,7 +1,5 @@
 package com.dsmupgrade.domain.student.dto.request;
 
-import com.dsmupgrade.domain.field.domain.Field;
-import com.dsmupgrade.domain.student.domain.Student;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,14 +28,4 @@ public class SignUpRequest {
 
     @NotNull
     private Integer fieldId;
-
-    public Student toStudentEntity(Field field) {
-        return Student.builder()
-                .username(username)
-                .password(password)
-                .studentNum(studentNum)
-                .name(name)
-                .field(field)
-                .build();
-    }
 }
