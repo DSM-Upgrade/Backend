@@ -8,6 +8,7 @@ import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
 import com.dsmupgrade.domain.fine.dto.response.UserFineResponse;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.FineNotFoundException;
+import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,9 @@ public class FineServiceImpl implements FineService {
     public void imposeFine(ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과
         studentRepository.findByUsername(impositionRequest.getUserName())
                 .orElseThrow(() -> new StudentNotFoundException(impositionRequest.getUserName()));
-        Calendar time = Calendar.getInstance();
         Fine fine = Fine.builder()
                 .amount(impositionRequest.getFineAmount())
-                .date(time.getTime())
+                .date(Calendar.getInstance().getTime())
                 .reason(impositionRequest.getReason())
                 .username(impositionRequest.getUserName())
                 .isSubmitted(false)
@@ -52,7 +52,8 @@ public class FineServiceImpl implements FineService {
     }
     @Override
     public void completeFine(CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄
-        Fine fine = fineRepository.findAllById(completionFineRequest.getFineId()).orElseThrow(); // Exception 만들어서 넣어야 함
+        Fine fine = fineRepository.findAllById(completionFineRequest.getFineId()).
+                orElseThrow(()->new FineNotFoundException(completionFineRequest.getFineId())); // Exception 만들어서 넣어야 함
         fine.setIsSubmitted(true);
         fineRepository.save(fine);
     }

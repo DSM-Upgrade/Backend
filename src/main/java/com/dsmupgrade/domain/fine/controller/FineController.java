@@ -19,9 +19,9 @@ import java.util.List;
 
 @RequestMapping("fine")
 @RestController
+@RequiredArgsConstructor
 public class FineController {
-    @Autowired
-    private FineService fineService;
+    private final FineService fineService;
 
     @GetMapping("list")
     public List<AllUserFineResponse> getAllUserFineList(){ //모든 유저의 따른 벌금리스트를 받아옴
