@@ -7,5 +7,5 @@ public interface StudentRepository {
 
     Student save(Student student);
     Optional<Student> findByUsername(String username);
-    List<Student> existsAllByUsername(List<String> username);
+    boolean existsByUsernameIn(List<String> username);
 }

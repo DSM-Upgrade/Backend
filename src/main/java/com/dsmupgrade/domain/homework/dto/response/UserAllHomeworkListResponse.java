@@ -19,7 +19,7 @@ public class UserAllHomeworkListResponse {
 
     public static UserAllHomeworkListResponse from(PersonalHomework personalHomework){
         return UserAllHomeworkListResponse.builder()
-                .homeworkId(personalHomework.getHomeworkId())
+                .homeworkId(personalHomework.getHomework().getId())
                 .homeworkTitle(personalHomework.getHomework().getTitle())
                 .homeworkStart(personalHomework.getHomework().getCreatedAt())
                 .homeworkEnd(personalHomework.getHomework().getDeadline())

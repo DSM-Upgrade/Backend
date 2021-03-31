@@ -8,7 +8,6 @@ import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
 import com.dsmupgrade.domain.fine.dto.response.UserFineResponse;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.FineNotFoundException;
-import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

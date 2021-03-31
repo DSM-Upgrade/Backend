@@ -25,11 +25,7 @@ public class PersonalHomework {
     @Column(nullable = false)
     private String content;
 
-    @Id
-    @Column(nullable = false)
-    private Integer homeworkId;
-
-    @JoinColumn(name = "homework_id", referencedColumnName = "id")
+    @PrimaryKeyJoinColumn(name = "homework_id", referencedColumnName = "id")
     @ManyToOne
     private Homework homework;
 }

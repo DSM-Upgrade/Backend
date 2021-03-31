@@ -3,19 +3,24 @@ package com.dsmupgrade.domain.student.api;
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.fine.domain.Fine;
 import com.dsmupgrade.domain.fine.domain.FineRepository;
+import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Calendar;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 public class FineApiTest extends IntegrationTest {
 
@@ -42,18 +47,23 @@ public class FineApiTest extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "register123")
+    @WithMockUser(username = "register123", roles = { "ADMIN" })
     public void 모든_유저_리스트_반환() throws Exception {
         //given
+
         //when
         ResultActions resultActions = requestGetUserList();
         //then
-        resultActions
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("username").value(student.getUsername()))
-//                .andExpect(jsonPath("student_num").value(student.getStudentNum()))
-//                .andExpect(jsonPath("name").value(student.getName()))
-//                .andExpect(jsonPath("field").value(student.getField().getName()));
+        MvcResult result = resultActions
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<AllUserFineResponse> responses = new ObjectMapper().readValue(
+                result.getResponse().getContentAsString(),
+                new TypeReference<List<AllUserFineResponse>>(){});
+
+        Assertions.assertEquals(responses.get(0).getFineReason(), "test");
+        Assertions.assertEquals(responses.get(0).getFinePeopleName(), "register123");
     }
 
     private ResultActions requestGetUserList() throws Exception {

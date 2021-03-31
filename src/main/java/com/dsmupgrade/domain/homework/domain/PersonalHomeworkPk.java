@@ -10,5 +10,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class PersonalHomeworkPk implements Serializable {
     private String studentUsername;
-    private Integer homeworkId;
+    private Homework homework;
 }
