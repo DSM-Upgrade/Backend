@@ -15,6 +15,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class FineApiTest extends IntegrationTest {
 
     @Autowired
     private FineRepository fineRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Before
     public void setup(){
@@ -49,7 +52,6 @@ public class FineApiTest extends IntegrationTest {
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 모든_유저_리스트_반환() throws Exception {
-        //given
         //when
         ResultActions resultActions = requestGetUserList();
         //then
@@ -57,20 +59,8 @@ public class FineApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-        System.out.println("\n--------------------------------");
-        System.out.println(result);
-        System.out.println(result.getResponse());
-        System.out.println(result.getResponse().getContentAsString());
-        System.out.println("--------------------------------");
-
-        List<AllUserFineResponse> responses = new ObjectMapper().readValue( // 안됨
-                result.getResponse().getContentAsString(), new TypeReference<List<AllUserFineResponse>>() {});
-
-        System.out.println(responses.get(0));
-        System.out.println(responses.getClass().getName());
-        System.out.println(responses.get(0).getClass().getName());
-        System.out.println(responses.get(0).getFineReason());
-
+        ArrayList<AllUserFineResponse> responses = objectMapper.readValue( // 안됨
+                result.getResponse().getContentAsString(), new TypeReference<ArrayList<AllUserFineResponse>>() {});
         Assertions.assertEquals(responses.get(0).getFineReason(), "test");
         Assertions.assertEquals(responses.get(0).getFinePeopleName(), registeredUsername);
     }
