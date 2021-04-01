@@ -5,8 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dsmupgrade.global.error.exception.InvalidFileTypeException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,13 +17,15 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-@Profile("!test")
 public class S3ImageUploader implements ImageUploader {
 
     private final AmazonS3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${image.file.path}")
+    private String filePath;
 
     @Override
     public String upload(String username, MultipartFile multipartFile, String dir) throws IOException {
@@ -32,28 +34,35 @@ public class S3ImageUploader implements ImageUploader {
         File uploadFile = multipartToFile(multipartFile)
                 .orElseThrow();
 
-        return upload(username, uploadFile, dir);
+        String filename = username + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+        return upload(filename, uploadFile, dir);
     }
 
-    private void validateFileType(MultipartFile multipartFile) {
+    protected void validateFileType(MultipartFile multipartFile) {
         String contentType = multipartFile.getContentType();
         if (contentType == null || !contentType.split("/")[0].equals("image")) {
             throw new InvalidFileTypeException();
         }
     }
 
-    private String upload(String username, File uploadFile, String dir) {
-        String filename = dir + "/" + username;
-        return putS3(uploadFile, filename);
+    protected String upload(String filename, File uploadFile, String dir) {
+        String fullFilename = dir + "/" + filename;
+        String url = putS3(uploadFile, fullFilename);
+        removeNewFile(uploadFile);
+        return url;
     }
 
-    private String putS3(File uploadFile, String filename) {
+    protected void removeNewFile(File file) {
+        file.delete();
+    }
+
+    protected String putS3(File uploadFile, String filename) {
         s3Client.putObject(new PutObjectRequest(bucket, filename, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return s3Client.getUrl(bucket, filename).toString();
     }
 
-    private Optional<File> multipartToFile(MultipartFile multipart) throws IOException {
-        File file = new File(multipart.getOriginalFilename());
+    protected Optional<File> multipartToFile(MultipartFile multipart) throws IOException {
+        File file = new File(filePath + "/" + multipart.getOriginalFilename());
         if (file.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(multipart.getBytes());

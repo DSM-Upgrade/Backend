@@ -1,8 +1,6 @@
 package com.dsmupgrade.domain.student.api;
 
 import com.dsmupgrade.IntegrationTest;
-import com.dsmupgrade.domain.field.domain.Field;
-import com.dsmupgrade.domain.field.domain.FieldRepository;
 import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
@@ -17,8 +15,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class StudentApiTest extends IntegrationTest {
 
@@ -105,6 +103,24 @@ public class StudentApiTest extends IntegrationTest {
         Student student = findStudentByUsername(registeredUsername);
         assertThat(student.getStudentNum()).isEqualTo(newStudentNum);
         assertThat(student.getField().getId()).isEqualTo(newFieldId);
+    }
+
+    @Test
+    @WithMockUser(username = "register123")
+    public void 회원_정보_변경_분야변경_없음() throws Exception {
+        //given
+        String newStudentNum = "2304";
+        UpdateStudentRequest dto = new UpdateStudentRequest(newStudentNum, null);
+
+        //when
+        ResultActions resultActions = requestUpdateStudent(dto);
+
+        //then
+        resultActions.andExpect(status().isOk());
+
+        Student student = findStudentByUsername(registeredUsername);
+        assertThat(student.getStudentNum()).isEqualTo(newStudentNum);
+        assertThat(student.getField().getId()).isEqualTo(1);
     }
 
     @Test

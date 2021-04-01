@@ -1,8 +1,10 @@
 package com.dsmupgrade.global.error.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 @Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
 
     INTERNAL_SERVER_ERROR(500, "C001", "Internal Server Error"),
@@ -17,6 +19,7 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCHED(409, "S002", "Password Not Matched"),
     ADMIN_NOT_FOUND(404,"S003","Admin Not Found"),
     INVALID_FILE_TYPE(400, "S003", "Invalid File Type (should be image)"),
+    DUPLICATE_USERNAME(409, "S004", "Duplicate Username"),
 
     FIELD_NOT_FOUND(404, "F001", "Field Not Found");
 
