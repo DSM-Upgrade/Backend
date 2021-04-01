@@ -32,7 +32,7 @@ public class FineServiceImpl implements FineService {
 
     @Override
     public List<UserFineResponse> getUserFineList(String username){ //유저의 따른 벌금리스트를 받아옴
-        return fineRepository.findAllByUsername(username)
+        return fineRepository.findByUsername(username)
                 .stream().map(UserFineResponse::from)
                 .collect(Collectors.toList());
     }
@@ -51,14 +51,14 @@ public class FineServiceImpl implements FineService {
     }
     @Override
     public void completeFine(CompletionFineRequest completionFineRequest){ // 유저가 벌금을 냄
-        Fine fine = fineRepository.findAllById(completionFineRequest.getFineId()).
+        Fine fine = fineRepository.findById(completionFineRequest.getFineId()).
                 orElseThrow(()->new FineNotFoundException(completionFineRequest.getFineId())); // Exception 만들어서 넣어야 함
         fine.setIsSubmitted(true);
         fineRepository.save(fine);
     }
     @Override
     public void eliminateFine(Integer fineId){ // 유저에게 부과된 벌금을 없앰 (아직 토큰 확인 안함)
-        fineRepository.findAllById(fineId).orElseThrow(() -> new FineNotFoundException(fineId)); // Exception 만들어서 넣어야 함
+        fineRepository.findById(fineId).orElseThrow(() -> new FineNotFoundException(fineId)); // Exception 만들어서 넣어야 함
         fineRepository.deleteById(fineId);
     }
 }

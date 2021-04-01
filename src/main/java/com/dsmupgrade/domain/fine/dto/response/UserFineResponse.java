@@ -1,21 +1,20 @@
 package com.dsmupgrade.domain.fine.dto.response;
 
 import com.dsmupgrade.domain.fine.domain.Fine;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 public class UserFineResponse {
-    private final Integer fineId;
-    private final String fineReason;
-    private final Date fineDate;
-    private final Integer fineAmount;
-    private final Boolean isSubmitted;
+    private Integer fineId;
+    private String fineReason;
+    private Date fineDate;
+    private Integer fineAmount;
+    private Boolean isSubmitted;
 
     public static UserFineResponse from(Fine fine){
         return UserFineResponse.builder()

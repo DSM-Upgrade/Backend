@@ -6,10 +6,10 @@ import com.dsmupgrade.domain.fine.domain.FineRepository;
 import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
@@ -19,17 +19,17 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 public class FineApiTest extends IntegrationTest {
 
     private static final String registeredUsername = "register123";
 
     @Autowired
-    private FineRepository findRepository;
+    private FineRepository fineRepository;
 
-    @BeforeEach
+    @Before
     public void setup(){
         Fine fine = Fine.builder()
                 .amount(1000)
@@ -38,32 +38,41 @@ public class FineApiTest extends IntegrationTest {
                 .username(registeredUsername)
                 .isSubmitted(false)
                 .build();
-        findRepository.save(fine);
+        fineRepository.save(fine);
     }
 
-    @AfterEach
+    @After
     public void cleanup(){
-        findRepository.deleteAll();
+        fineRepository.deleteAll();
     }
 
     @Test
-    @WithMockUser(username = "register123", roles = { "ADMIN" })
+    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 모든_유저_리스트_반환() throws Exception {
         //given
-
         //when
         ResultActions resultActions = requestGetUserList();
         //then
         MvcResult result = resultActions
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andReturn();
+        System.out.println("\n--------------------------------");
+        System.out.println(result);
+        System.out.println(result.getResponse());
+        System.out.println(result.getResponse().getContentAsString());
+        System.out.println("--------------------------------");
 
-        List<AllUserFineResponse> responses = new ObjectMapper().readValue(
-                result.getResponse().getContentAsString(),
-                new TypeReference<List<AllUserFineResponse>>(){});
+        List<AllUserFineResponse> responses = new ObjectMapper().readValue( // 안됨
+                result.getResponse().getContentAsString(), new TypeReference<List<AllUserFineResponse>>() {});
+
+        System.out.println(responses.get(0));
+        System.out.println(responses.getClass().getName());
+        System.out.println(responses.get(0).getClass().getName());
+        System.out.println(responses.get(0).getFineReason());
 
         Assertions.assertEquals(responses.get(0).getFineReason(), "test");
-        Assertions.assertEquals(responses.get(0).getFinePeopleName(), "register123");
+        Assertions.assertEquals(responses.get(0).getFinePeopleName(), registeredUsername);
     }
 
     private ResultActions requestGetUserList() throws Exception {

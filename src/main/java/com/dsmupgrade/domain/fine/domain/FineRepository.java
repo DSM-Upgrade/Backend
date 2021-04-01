@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface FineRepository extends JpaRepository<Fine, Integer> {
-    List<Fine> findAllByUsername(String username);
-    Optional<Fine> findAllById(Integer id);
+    List<Fine> findByUsername(String username);
+    Optional<Fine> findById(Integer id);
     void deleteById(Integer id);
 }
