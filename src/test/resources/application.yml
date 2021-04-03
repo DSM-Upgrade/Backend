@@ -27,4 +27,4 @@ cloud:
     stack:
       auto: false
     s3:
-      bucket: ${S3_BUCKET:test-bucket}
+      bucket: ${S3_BUCKET:dsm-upgrade}
