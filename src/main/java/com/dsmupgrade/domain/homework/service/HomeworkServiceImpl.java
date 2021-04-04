@@ -26,7 +26,8 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     public List<UserAllHomeworkListResponse> getHomeworkList(String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        return personalHomeworkRepository.findAllByStudentUsername(username)
+        System.out.println("여기까지 실행됨2");
+        return personalHomeworkRepository.findByStudentUsername(username)
                 .stream().map(UserAllHomeworkListResponse::from)
                 .collect(Collectors.toList());
     }
@@ -35,13 +36,9 @@ public class HomeworkServiceImpl implements HomeworkService{
     public UserHomeworkResponse getUserHomework (String username, int homeworkId){ // 유저마다 할당된 숙제의 내용을 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-
-        PersonalHomeworkPk personalHomeworkPk = PersonalHomeworkPk.builder()
-                .homework(homework)
-                .studentUsername(username)
-                .build();
-
-        return UserHomeworkResponse.from(personalHomeworkRepository.findById(personalHomeworkPk).orElseThrow(()-> new HomeworkNotFoundException(homeworkId)));
+        studentRepository.findByUsername(username)
+                .orElseThrow(()->new StudentNotFoundException(username));
+        return UserHomeworkResponse.from(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).orElseThrow(()-> new HomeworkNotFoundException(homeworkId)));
     }
 
     @Override
@@ -60,7 +57,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                     PersonalHomework personalHomework = PersonalHomework.builder()
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
-                            .submittedAt(Calendar.getInstance().getTime())
+                            .submittedAt(null)
                             .content(null)
                             .homework(homework)
                             .build();
@@ -73,18 +70,16 @@ public class HomeworkServiceImpl implements HomeworkService{
         int homeworkId = returnHomeworkRequest.getHomeworkId();
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-        PersonalHomeworkPk personalHomeworkPk = PersonalHomeworkPk.builder()
-                .homework(homework)
-                .studentUsername(returnHomeworkRequest.getUserName())
-                .build();
-        boolean isEmpty = isEmptyPersonalHomework(personalHomeworkPk);
-        if (isEmpty) {
+        String username = returnHomeworkRequest.getUserName();
+        studentRepository.findByUsername(username)
+                .orElseThrow(() -> new StudentNotFoundException(username));
+        if (homeworkRepository.findById(homeworkId).isEmpty()) {
             throw new HomeworkNotFoundException(homeworkId);
         } else {
-            PersonalHomework findPersonalHomework = personalHomeworkRepository.findById(personalHomeworkPk)
-                    .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
+            PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
+                    .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentUsername(findPersonalHomework.getStudentUsername())
+                    .studentUsername(username)
                     .status(PersonalHomeworkStatus.SUBMITTED)
                     .submittedAt(Calendar.getInstance().getTime())
                     .content(returnHomeworkRequest.getHomeworkContent())
@@ -94,35 +89,25 @@ public class HomeworkServiceImpl implements HomeworkService{
         }
     }
 
-    private boolean isEmptyHomework(int id){
-        return homeworkRepository.findById(id).isEmpty();
-    }
-
-    private boolean isEmptyPersonalHomework(PersonalHomeworkPk personalHomeworkPk){
-        return personalHomeworkRepository.findById(personalHomeworkPk).isEmpty();
-    }
-
     @Override
     public void completionHomework(CompletionHomeworkRequest completionHomeworkRequest){ // 숙제 완료
         int homeworkId = completionHomeworkRequest.getHomeworkId();
+        String username = completionHomeworkRequest.getUserName();
+        studentRepository.findByUsername(username)
+                .orElseThrow(() -> new StudentNotFoundException(username));
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
-        PersonalHomeworkPk personalHomeworkPk = PersonalHomeworkPk.builder()
-                .homework(homework)
-                .studentUsername(completionHomeworkRequest.getUserName())
-                .build();
-        boolean isEmpty = isEmptyPersonalHomework(personalHomeworkPk);
-        if (isEmpty) {
+        if (homeworkRepository.findById(homeworkId).isEmpty()) {
             throw new HomeworkNotFoundException(homeworkId);
         } else {
-            PersonalHomework findPersonalHomework = personalHomeworkRepository.findById(personalHomeworkPk)
+            PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
                     .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentUsername(findPersonalHomework.getStudentUsername())
+                    .studentUsername(username)
                     .status(PersonalHomeworkStatus.FINISHED)
                     .submittedAt(findPersonalHomework.getSubmittedAt())
                     .content(findPersonalHomework.getContent())
-                    .homework(findPersonalHomework.getHomework())
+                    .homework(homework)
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }
@@ -131,7 +116,7 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Override
     public void changeHomework(ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         int homeworkId = changeHomeworkRequest.getHomeworkId();
-        if(isEmptyHomework(homeworkId)) throw new HomeworkNotFoundException(homeworkId);
+        if(homeworkRepository.findById(homeworkId).isEmpty()) throw new HomeworkNotFoundException(homeworkId);
         studentRepository.existsByUsernameIn(changeHomeworkRequest.getUserName());
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
         Homework homework = Homework.builder()

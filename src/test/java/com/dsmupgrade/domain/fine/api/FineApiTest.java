@@ -1,4 +1,4 @@
-package com.dsmupgrade.domain.student.api;
+package com.dsmupgrade.domain.fine.api;
 
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.fine.domain.Fine;
@@ -33,8 +33,7 @@ public class FineApiTest extends IntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //@Before
-    public int addFine(){
+    private int addFine(){
         Fine fine = Fine.builder()
                 .amount(1000)
                 .date(Calendar.getInstance().getTime())
@@ -63,11 +62,11 @@ public class FineApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-        List<AllUserFineResponse> responses = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<List<AllUserFineResponse>>() {});
-        Assertions.assertEquals(responses.get(0).getFineReason(), "test");
-        Assertions.assertEquals(responses.get(0).getFinePeopleName(), registeredUsername);
-        Assertions.assertEquals(responses.get(0).getFineAmount(), 1000);
+        AllUserFineResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<AllUserFineResponse>>() {}).get(0);
+        Assertions.assertEquals(response.getFineReason(), "test");
+        Assertions.assertEquals(response.getFinePeopleName(), registeredUsername);
+        Assertions.assertEquals(response.getFineAmount(), 1000);
     }
 
     private ResultActions requestGetAllUserList() throws Exception {
@@ -86,10 +85,10 @@ public class FineApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-        List<UserFineResponse> responses = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<List<UserFineResponse>>() {});
-        Assertions.assertEquals(responses.get(0).getFineReason(), "test");
-        Assertions.assertEquals(responses.get(0).getFineAmount(), 1000);
+        UserFineResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<UserFineResponse>>() {}).get(0);
+        Assertions.assertEquals(response.getFineReason(), "test");
+        Assertions.assertEquals(response.getFineAmount(), 1000);
     }
 
     private ResultActions requestGetUserList(String username) throws Exception {
@@ -111,8 +110,9 @@ public class FineApiTest extends IntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(print());
-        Assertions.assertEquals(fineRepository.findByUsername(registeredUsername).get(0).getReason(), "test");
-        Assertions.assertEquals(fineRepository.findByUsername(registeredUsername).get(0).getAmount(), 1000);
+        Fine fine = fineRepository.findByUsername(registeredUsername).get(0);
+        Assertions.assertEquals(fine.getReason(), "test");
+        Assertions.assertEquals(fine.getAmount(), 1000);
     }
 
     private ResultActions imposeFine(ImpositionRequest dto) throws Exception {

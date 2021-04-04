@@ -2,13 +2,13 @@ package com.dsmupgrade.domain.homework.dto.response;
 
 import com.dsmupgrade.domain.homework.domain.PersonalHomework;
 import com.dsmupgrade.domain.homework.domain.PersonalHomeworkStatus;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Date;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 public class UserAllHomeworkListResponse {
     private Integer homeworkId;

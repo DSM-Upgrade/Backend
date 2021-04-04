@@ -10,9 +10,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@IdClass(value = PersonalHomeworkPk.class)
 public class PersonalHomework {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @Column(nullable = false)
     private String studentUsername;
 
@@ -22,10 +24,9 @@ public class PersonalHomework {
     @Column(nullable = true)
     private Date submittedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
-    @PrimaryKeyJoinColumn(name = "homework_id", referencedColumnName = "id")
     @ManyToOne
     private Homework homework;
 }
