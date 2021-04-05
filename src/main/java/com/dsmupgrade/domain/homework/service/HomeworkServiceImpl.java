@@ -97,21 +97,17 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .orElseThrow(() -> new StudentNotFoundException(username));
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
-        if (homeworkRepository.findById(homeworkId).isEmpty()) {
-            throw new HomeworkNotFoundException(homeworkId);
-        } else {
-            PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
-                    .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
-            PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentHomeworkId(homework+username)
-                    .studentUsername(username)
-                    .status(PersonalHomeworkStatus.FINISHED)
-                    .submittedAt(findPersonalHomework.getSubmittedAt())
-                    .content(findPersonalHomework.getContent())
-                    .homework(homework)
-                    .build();
-            personalHomeworkRepository.save(personalHomework);
-        }
+        PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
+                .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
+        PersonalHomework personalHomework = PersonalHomework.builder()
+                .studentHomeworkId(homework+username)
+                .studentUsername(username)
+                .status(PersonalHomeworkStatus.FINISHED)
+                .submittedAt(findPersonalHomework.getSubmittedAt())
+                .content(findPersonalHomework.getContent())
+                .homework(homework)
+                .build();
+        personalHomeworkRepository.save(personalHomework);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.homework.api;
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.ReturnHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
 import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
@@ -64,8 +65,8 @@ public class HomeworkApiTest extends IntegrationTest {
 
     @After
     public void clenaup(){
-        homeworkRepository.deleteAll();
         personalHomeworkRepository.deleteAll();
+        homeworkRepository.deleteAll();
     }
 
     @Test
@@ -134,8 +135,7 @@ public class HomeworkApiTest extends IntegrationTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
+                .andDo(print());
         Assertions.assertEquals(personalHomeworkRepository.findByStudentUsername(registeredUsername).isEmpty(), false);
     }
 
@@ -160,8 +160,7 @@ public class HomeworkApiTest extends IntegrationTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
+                .andDo(print());
         homework = homeworkRepository.findById(homeworkId).get();
         PersonalHomework personalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).get();
         Assertions.assertEquals(personalHomework.getHomework().getId(), homeworkId);
@@ -177,7 +176,24 @@ public class HomeworkApiTest extends IntegrationTest {
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제완료() throws Exception{
+        //given
+        Homework homework = this.addHomework();
+        this.addPersonalHomework(homework);
+        CompletionHomeworkRequest completionHomeworkRequest = CompletionHomeworkRequest.builder()
+                .userName(registeredUsername)
+                .homeworkId(homework.getId())
+                .build();
+        //when
+        ResultActions resultActions = comlpleteHomework(completionHomeworkRequest);
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print());
+        Assertions.assertEquals(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername,homework).get().getStatus(), PersonalHomeworkStatus.FINISHED);
+    }
 
+    private ResultActions comlpleteHomework(CompletionHomeworkRequest dto) throws Exception {
+        return requestMvc(post("/homework/completion"), dto);
     }
 
     @Test
