@@ -5,14 +5,13 @@ import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
 import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
 import com.dsmupgrade.domain.homework.domain.PersonalHomework;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 public class UserHomeworkResponse {
     private String homeworkTitle;

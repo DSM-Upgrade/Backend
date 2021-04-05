@@ -26,7 +26,6 @@ public class HomeworkController {
 
     @GetMapping("/list/{userName}")
     public List<UserAllHomeworkListResponse> getHomeworkList(@PathVariable("userName") String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        System.out.println("여기까지 실행됨1");
         return homeworkService.getHomeworkList(username);
     }
 

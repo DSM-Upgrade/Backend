@@ -1,6 +1,5 @@
 package com.dsmupgrade.domain.homework.service;
 
-import com.dsmupgrade.domain.homework.domain.PersonalHomeworkPk;
 import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.ChangeHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;

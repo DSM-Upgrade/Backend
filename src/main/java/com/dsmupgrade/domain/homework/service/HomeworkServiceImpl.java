@@ -26,7 +26,6 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     public List<UserAllHomeworkListResponse> getHomeworkList(String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        System.out.println("여기까지 실행됨2");
         return personalHomeworkRepository.findByStudentUsername(username)
                 .stream().map(UserAllHomeworkListResponse::from)
                 .collect(Collectors.toList());
@@ -38,7 +37,9 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
         studentRepository.findByUsername(username)
                 .orElseThrow(()->new StudentNotFoundException(username));
-        return UserHomeworkResponse.from(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).orElseThrow(()-> new HomeworkNotFoundException(homeworkId)));
+        if(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).isEmpty())
+            throw new HomeworkNotFoundException(homeworkId);
+        return UserHomeworkResponse.from(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).get());
     }
 
     @Override
@@ -55,6 +56,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
+                            .studentHomeworkId(homework+username)
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(null)
@@ -73,20 +75,18 @@ public class HomeworkServiceImpl implements HomeworkService{
         String username = returnHomeworkRequest.getUserName();
         studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
-        if (homeworkRepository.findById(homeworkId).isEmpty()) {
-            throw new HomeworkNotFoundException(homeworkId);
-        } else {
-            PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
-                    .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
-            PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentUsername(username)
-                    .status(PersonalHomeworkStatus.SUBMITTED)
-                    .submittedAt(Calendar.getInstance().getTime())
-                    .content(returnHomeworkRequest.getHomeworkContent())
-                    .homework(findPersonalHomework.getHomework())
-                    .build();
-            personalHomeworkRepository.save(personalHomework);
-        }
+        PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
+                .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
+        PersonalHomework personalHomework = PersonalHomework.builder()
+                .studentHomeworkId(homework+username)
+                .homework(homework)
+                .studentUsername(username)
+                .status(PersonalHomeworkStatus.SUBMITTED)
+                .submittedAt(Calendar.getInstance().getTime())
+                .content(returnHomeworkRequest.getHomeworkContent())
+                .homework(findPersonalHomework.getHomework())
+                .build();
+        personalHomeworkRepository.save(personalHomework);
     }
 
     @Override
@@ -101,8 +101,9 @@ public class HomeworkServiceImpl implements HomeworkService{
             throw new HomeworkNotFoundException(homeworkId);
         } else {
             PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
-                    .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
+                    .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
             PersonalHomework personalHomework = PersonalHomework.builder()
+                    .studentHomeworkId(homework+username)
                     .studentUsername(username)
                     .status(PersonalHomeworkStatus.FINISHED)
                     .submittedAt(findPersonalHomework.getSubmittedAt())
@@ -130,6 +131,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
+                            .studentHomeworkId(homework+username)
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(Calendar.getInstance().getTime())

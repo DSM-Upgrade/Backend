@@ -12,14 +12,13 @@ import java.util.Date;
 @Entity
 public class PersonalHomework {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String studentHomeworkId;
 
     @Column(nullable = false)
     private String studentUsername;
 
     @Column(nullable = false)
-    private PersonalHomeworkStatus status; // 과제를 제출해서 완료가 되었는지
+    private PersonalHomeworkStatus status;
 
     @Column(nullable = true)
     private Date submittedAt;
