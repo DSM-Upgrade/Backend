@@ -4,7 +4,7 @@ spring:
       - aws
       - credentials
   datasource:
-    driver-class-name: org.h2.Driver
+    driver-class-name: ${MYSQL_DRIVER_CLASS:org.h2.Driver}
     url: ${MYSQL_URL:jdbc:h2:~/test}
     username: ${MYSQL_USERNAME:sa}
     password: ${MYSQL_PASSWORD:}
