@@ -3,11 +3,17 @@ spring:
     include:
       - aws
       - credentials
+    active: ${ACTIVE_PROFILE:dev}
+
+---
+
+spring:
+  profiles: dev
   datasource:
-    driver-class-name: ${MYSQL_DRIVER_CLASS:org.h2.Driver}
-    url: ${MYSQL_URL:jdbc:h2:~/test}
-    username: ${MYSQL_USERNAME:sa}
-    password: ${MYSQL_PASSWORD:}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:~/test
+    username: sa
+    password:
   h2:
     console:
       enabled: true
@@ -33,3 +39,32 @@ auth:
 image:
   file:
     path: ${FILE_PATH:filepath}
+
+---
+
+spring:
+  profiles: production
+  datasource:
+    driver-class-name: ${MYSQL_DRIVER_CLASS:org.h2.Driver}
+    url: ${MYSQL_URL:jdbc:h2:~/test}
+    username: ${MYSQL_USERNAME:sa}
+    password: ${MYSQL_PASSWORD:}
+    jackson:
+      property-naming-strategy: SNAKE_CASE
+    servlet:
+      multipart:
+        enabled: true
+        max-file-size: 200MB
+        max-request-size: 215MB
+        file-size-threshold: 2KB
+  auth:
+    jwt:
+      secret: ${JWT_SECRET:upgrade_test}
+      exp:
+        access: ${JWT_ACCESS_EXP:3600}
+        refresh: ${JWT_REFRESH_EXP:3600}
+      header: ${JWT_HEADER:Authorization}
+      prefix: ${JWT_PREFIX:Bearer}
+  image:
+    file:
+      path: ${FILE_PATH:filepath}
