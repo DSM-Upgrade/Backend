@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.homework.api;
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.ChangeHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.ReturnHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
@@ -21,8 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -199,12 +199,51 @@ public class HomeworkApiTest extends IntegrationTest {
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제변경() throws Exception{
+        //given
+        Homework homework = this.addHomework();
+        this.addPersonalHomework(homework);
+        List<String> user = new ArrayList<>();
+        user.add(registeredUsername);
+        ChangeHomeworkRequest changeHomeworkRequest = ChangeHomeworkRequest.builder()
+                .homeworkId(homework.getId())
+                .userName(user)
+                .homeworkTitle("newTest")
+                .homeworkContent("newTest")
+                .deadline(Calendar.getInstance().getTime())
+                .build();
+        //when
+        ResultActions resultActions = changeHomework(changeHomeworkRequest);
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print());
+        System.out.println("여기" + homeworkRepository.findById(homework.getId()).get().getTitle());
+        System.out.println("여기" + homeworkRepository.findById(homework.getId()).get().getContent());
+        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getTitle(), "newTest");
+        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getContent(), "newTest");
+    }
 
+    private ResultActions changeHomework(ChangeHomeworkRequest dto) throws Exception {
+        return requestMvc(patch("/homework/change"), dto);
     }
 
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제삭제() throws Exception{
+        //given
+        Homework homework = this.addHomework();
+        this.addPersonalHomework(homework);
+        //when
+        ResultActions resultActions = deleteHomework(homework.getId());
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print());
+        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).isEmpty(), true);
+        Assertions.assertEquals(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).isEmpty(), true);
+    }
 
+    private ResultActions deleteHomework(int homeworkId) throws Exception {
+        return requestMvc(delete("/homework/elimination/" + homeworkId));
     }
 }

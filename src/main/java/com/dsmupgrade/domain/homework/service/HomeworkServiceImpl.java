@@ -113,10 +113,11 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Override
     public void changeHomework(ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         int homeworkId = changeHomeworkRequest.getHomeworkId();
-        if(homeworkRepository.findById(homeworkId).isEmpty()) throw new HomeworkNotFoundException(homeworkId);
+        homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
         studentRepository.existsByUsernameIn(changeHomeworkRequest.getUserName());
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
         Homework homework = Homework.builder()
+                .id(changeHomeworkRequest.getHomeworkId())
                 .title(changeHomeworkRequest.getHomeworkTitle())
                 .content(changeHomeworkRequest.getHomeworkContent())
                 .createdAt(Calendar.getInstance().getTime())

@@ -1,11 +1,17 @@
 package com.dsmupgrade.domain.homework.dto.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ChangeHomeworkRequest {
     Integer homeworkId;
     private List<String> userName;
