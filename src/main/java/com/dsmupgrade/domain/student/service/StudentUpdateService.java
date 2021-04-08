@@ -24,7 +24,7 @@ public class StudentUpdateService {
     private final StudentRepository studentRepository;
     private final FieldRepository fieldRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploader imageUploader;
+    private final S3ImageUploader imageUploader;
 
     public void updateStudentPassword(String username, PasswordRequest passwordRequest) {
         Student student = studentRepository.findByUsername(username)

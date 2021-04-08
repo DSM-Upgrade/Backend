@@ -1,6 +1,7 @@
 package com.dsmupgrade.domain.student.service;
 
 import com.dsmupgrade.domain.student.dto.request.PasswordRequest;
+import com.dsmupgrade.global.FileUploader;
 import com.dsmupgrade.global.error.exception.InvalidInputValueException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class StudentUpdateServiceTest extends StudentServiceTest {
     private StudentUpdateService studentUpdateService;
 
     @Mock
-    private ImageUploader imageUploader;
+    private S3ImageUploader imageUploader;
 
     @Test(expected = StudentNotFoundException.class)
     public void 비밀번호_변경_학생없음() {
