@@ -17,7 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,7 +36,7 @@ public class FineApiTest extends IntegrationTest {
     private int addFine(){
         Fine fine = Fine.builder()
                 .amount(1000)
-                .date(Calendar.getInstance().getTime())
+                .date(LocalDateTime.now())
                 .reason("test")
                 .username(registeredUsername)
                 .isSubmitted(false)

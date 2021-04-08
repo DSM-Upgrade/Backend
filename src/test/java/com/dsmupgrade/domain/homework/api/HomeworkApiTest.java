@@ -18,8 +18,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -41,8 +42,8 @@ public class HomeworkApiTest extends IntegrationTest {
         Homework homework = Homework.builder()
                 .title("test")
                 .content("test")
-                .createdAt(Calendar.getInstance().getTime())
-                .deadline(Calendar.getInstance().getTime())
+                .createdAt(LocalDateTime.now())
+                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
                 .build();
         homeworkRepository.save(homework);
         return homework;
@@ -128,7 +129,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .userName(userName)
                 .homeworkTitle("test")
                 .homeworkContent("test")
-                .deadline(Calendar.getInstance().getTime())
+                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
                 .build();
         //when
         ResultActions resultActions = assignmentHomework(assignmentHomeworkRequest);
@@ -209,7 +210,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .userName(user)
                 .homeworkTitle("newTest")
                 .homeworkContent("newTest")
-                .deadline(Calendar.getInstance().getTime())
+                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
                 .build();
         //when
         ResultActions resultActions = changeHomework(changeHomeworkRequest);
@@ -217,8 +218,6 @@ public class HomeworkApiTest extends IntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(print());
-        System.out.println("여기" + homeworkRepository.findById(homework.getId()).get().getTitle());
-        System.out.println("여기" + homeworkRepository.findById(homework.getId()).get().getContent());
         Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getTitle(), "newTest");
         Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getContent(), "newTest");
     }

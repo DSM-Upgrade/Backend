@@ -4,6 +4,8 @@ import com.dsmupgrade.domain.fine.domain.Fine;
 import lombok.*;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -14,7 +16,7 @@ public class AllUserFineResponse {
     private String finePeopleName;
     private Integer fineId;
     private String fineReason;
-    private Date fineDate;
+    private LocalDateTime fineDate;
     private Integer fineAmount;
     private Boolean isSubmitted;
 

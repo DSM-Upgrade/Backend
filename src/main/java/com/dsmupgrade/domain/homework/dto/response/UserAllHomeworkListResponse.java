@@ -4,6 +4,7 @@ import com.dsmupgrade.domain.homework.domain.PersonalHomework;
 import com.dsmupgrade.domain.homework.domain.PersonalHomeworkStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -13,8 +14,8 @@ import java.util.Date;
 public class UserAllHomeworkListResponse {
     private Integer homeworkId;
     private String homeworkTitle;
-    private Date homeworkStart;
-    private Date homeworkEnd;
+    private LocalDateTime homeworkStart;
+    private LocalDateTime homeworkEnd;
     private String homeworkStatus;
 
     public static UserAllHomeworkListResponse from(PersonalHomework personalHomework){

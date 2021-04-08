@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.fine.dto.response;
 import com.dsmupgrade.domain.fine.domain.Fine;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -12,7 +13,7 @@ import java.util.Date;
 public class UserFineResponse {
     private Integer fineId;
     private String fineReason;
-    private Date fineDate;
+    private LocalDateTime fineDate;
     private Integer fineAmount;
     private Boolean isSubmitted;
 

@@ -13,6 +13,8 @@ import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,11 +46,12 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     public void assignmentHomework(AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
+        System.out.println("할당");
         studentRepository.existsByUsernameIn(assignmentHomeworkRequest.getUserName());
         Homework homework = Homework.builder()
                 .title(assignmentHomeworkRequest.getHomeworkTitle())
                 .content(assignmentHomeworkRequest.getHomeworkContent())
-                .createdAt(Calendar.getInstance().getTime())
+                .createdAt(LocalDateTime.now())
                 .deadline(assignmentHomeworkRequest.getDeadline())
                 .build();
         homeworkRepository.save(homework);
@@ -82,7 +85,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .homework(homework)
                 .studentUsername(username)
                 .status(PersonalHomeworkStatus.SUBMITTED)
-                .submittedAt(Calendar.getInstance().getTime())
+                .submittedAt(LocalDateTime.now())
                 .content(returnHomeworkRequest.getHomeworkContent())
                 .homework(findPersonalHomework.getHomework())
                 .build();
@@ -120,7 +123,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .id(changeHomeworkRequest.getHomeworkId())
                 .title(changeHomeworkRequest.getHomeworkTitle())
                 .content(changeHomeworkRequest.getHomeworkContent())
-                .createdAt(Calendar.getInstance().getTime())
+                .createdAt(LocalDateTime.now())
                 .deadline(changeHomeworkRequest.getDeadline())
                 .build();
         homeworkRepository.save(homework);
@@ -131,7 +134,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                             .studentHomeworkId(homework+username)
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
-                            .submittedAt(Calendar.getInstance().getTime())
+                            .submittedAt(LocalDateTime.now())
                             .content(null)
                             .homework(homework)
                             .build();

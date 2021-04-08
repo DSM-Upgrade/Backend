@@ -7,6 +7,7 @@ import com.dsmupgrade.domain.homework.domain.PersonalHomework;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,9 +16,9 @@ import java.util.Date;
 @Builder(access = AccessLevel.PRIVATE)
 public class UserHomeworkResponse {
     private String homeworkTitle;
-    private Date homeworkStart;
-    private Date homeworkEnd;
-    private Date homeworkSubmittedDate;
+    private LocalDateTime homeworkStart;
+    private LocalDateTime homeworkEnd;
+    private LocalDateTime homeworkSubmittedDate;
     private String homeworkContent;
     private String homeworkReturn;
 

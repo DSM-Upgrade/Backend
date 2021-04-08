@@ -12,6 +12,7 @@ import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class FineServiceImpl implements FineService {
         System.out.println(impositionRequest.getReason());
         Fine fine = Fine.builder()
                 .amount(impositionRequest.getFineAmount())
-                .date(Calendar.getInstance().getTime())
+                .date(LocalDateTime.now())
                 .reason(impositionRequest.getReason())
                 .username(impositionRequest.getUserName())
                 .isSubmitted(false)

@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.homework.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -21,7 +22,7 @@ public class PersonalHomework {
     private PersonalHomeworkStatus status;
 
     @Column(nullable = true)
-    private Date submittedAt;
+    private LocalDateTime submittedAt;
 
     @Column(nullable = true)
     private String content;

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,22 +36,22 @@ public class HomeworkController {
     }
 
     @PostMapping("/assignment")
-    public void assignmentHomework(@RequestBody AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
+    public void assignmentHomework(@RequestBody @Valid AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
         homeworkService.assignmentHomework(assignmentHomeworkRequest);
     }
 
     @PostMapping("/return")
-    public void returnHomework(@RequestBody ReturnHomeworkRequest returnHomeworkRequest){ // 숙제 반환
+    public void returnHomework(@RequestBody @Valid ReturnHomeworkRequest returnHomeworkRequest){ // 숙제 반환
         homeworkService.returnHomework(returnHomeworkRequest);
     }
 
     @PostMapping("/completion")
-    public void completionHomework(@RequestBody CompletionHomeworkRequest completionHomeworkRequest){ // 숙제 완료
+    public void completionHomework(@RequestBody @Valid CompletionHomeworkRequest completionHomeworkRequest){ // 숙제 완료
         homeworkService.completionHomework(completionHomeworkRequest);
     }
 
     @PatchMapping("/change")
-    public void changeHomework(@RequestBody ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
+    public void changeHomework(@RequestBody @Valid ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         homeworkService.changeHomework(changeHomeworkRequest);
     }
 
