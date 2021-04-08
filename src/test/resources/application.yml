@@ -20,11 +20,15 @@ auth:
 image:
   file:
     path: ${FILE_PATH:test-path}
+aws:
+  s3:
+    bucket: ${AWS_BUCKET:bucket}
+    region: ${AWS_REGION:ap-northeast-2}
+    access-key: ${AWS_CREDENTIAL_ACCESS:access-key}
+    secret-key: ${AWS_CREDENTIAL_SECRET:secret-key}
 cloud:
   aws:
     region:
-      static: ap-northeast-2
+      static: ${AWS_REGION:ap-northeast-2}
     stack:
       auto: false
-    s3:
-      bucket: ${S3_BUCKET:dsm-upgrade}
