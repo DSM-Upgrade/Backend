@@ -11,9 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-
 public class ImageUploaderTest extends StudentServiceTest {
 
     @InjectMocks

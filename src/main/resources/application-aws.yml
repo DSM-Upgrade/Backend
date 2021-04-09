@@ -1,0 +1,10 @@
+aws:
+  s3:
+    bucket: ${AWS_BUCKET:bucket}
+    region: ${AWS_REGION:region}
+cloud:
+  aws:
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+    stack:
+      auto: false
