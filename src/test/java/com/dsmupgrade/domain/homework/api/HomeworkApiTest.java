@@ -90,6 +90,7 @@ public class HomeworkApiTest extends IntegrationTest {
         Assertions.assertEquals(response.getHomeworkId(), homework.getId());
         Assertions.assertEquals(response.getHomeworkStatus(), "ASSIGNED");
         Assertions.assertEquals(response.getHomeworkTitle(), "test");
+        Assertions.assertEquals(response.getHomeworkContent(), "test");
     }
 
     private ResultActions requestGetUserHomeworkList(String username) throws Exception {

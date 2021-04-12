@@ -16,6 +16,7 @@ public class UserAllHomeworkListResponse {
     private String homeworkTitle;
     private LocalDateTime homeworkStart;
     private LocalDateTime homeworkEnd;
+    private String homeworkContent;
     private String homeworkStatus;
 
     public static UserAllHomeworkListResponse from(PersonalHomework personalHomework){
@@ -24,6 +25,7 @@ public class UserAllHomeworkListResponse {
                 .homeworkTitle(personalHomework.getHomework().getTitle())
                 .homeworkStart(personalHomework.getHomework().getCreatedAt())
                 .homeworkEnd(personalHomework.getHomework().getDeadline())
+                .homeworkContent(personalHomework.getHomework().getContent())
                 .homeworkStatus(personalHomework.getStatus().name())
                 .build();
     }
