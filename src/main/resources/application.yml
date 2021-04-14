@@ -57,6 +57,8 @@ spring:
       max-file-size: 200MB
       max-request-size: 215MB
       file-size-threshold: 2KB
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 auth:
   jwt:
     secret: ${JWT_SECRET:upgrade_test}
