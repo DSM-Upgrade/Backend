@@ -9,6 +9,7 @@ import com.dsmupgrade.domain.homework.dto.request.ReturnHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
 import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
+import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @RestController
 public class HomeworkController {
     private final HomeworkService homeworkService;
+    private final AuthenticationFacade authenticationFacade;
 
     @GetMapping("/list/{userName}")
     public List<UserAllHomeworkListResponse> getHomeworkList(@PathVariable("userName") String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
@@ -37,12 +39,12 @@ public class HomeworkController {
 
     @PostMapping("/assignment")
     public void assignmentHomework(@RequestBody @Valid AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
-        homeworkService.assignmentHomework(assignmentHomeworkRequest);
+        homeworkService.assignmentHomework(authenticationFacade.getUsername(), assignmentHomeworkRequest);
     }
 
     @PostMapping("/return")
     public void returnHomework(@RequestBody @Valid ReturnHomeworkRequest returnHomeworkRequest){ // 숙제 반환
-        homeworkService.returnHomework(returnHomeworkRequest);
+        homeworkService.returnHomework(authenticationFacade.getUsername(), returnHomeworkRequest);
     }
 
     @PostMapping("/completion")

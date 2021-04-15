@@ -3,8 +3,10 @@ package com.dsmupgrade.domain.homework.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.lang.invoke.StringConcatFactory;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Builder
 @Getter
@@ -18,6 +20,7 @@ public class PersonalHomework {
     @Column(nullable = false)
     private String studentUsername;
 
+    @Setter
     @Column(nullable = false)
     private PersonalHomeworkStatus status;
 
@@ -29,4 +32,7 @@ public class PersonalHomework {
 
     @ManyToOne
     private Homework homework;
+
+    @OneToMany
+    private List<PersonalHomeworkFile> personalHomeworkFile;
 }

@@ -1,14 +1,11 @@
 package com.dsmupgrade.domain.homework.dto.response;
 
-import com.dsmupgrade.domain.fine.domain.Fine;
-import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
-import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
 import com.dsmupgrade.domain.homework.domain.PersonalHomework;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -21,6 +18,8 @@ public class UserHomeworkResponse {
     private LocalDateTime homeworkSubmittedDate;
     private String homeworkContent;
     private String homeworkReturn;
+    private List<String> homeworkFileName;
+    private List<String> personalHomeworkFileName;
 
     public static UserHomeworkResponse from(PersonalHomework personalHomework){
         return UserHomeworkResponse.builder()
@@ -30,6 +29,12 @@ public class UserHomeworkResponse {
                 .homeworkSubmittedDate(personalHomework.getSubmittedAt())
                 .homeworkContent(personalHomework.getHomework().getContent())
                 .homeworkReturn(personalHomework.getContent())
+                .homeworkFileName(personalHomework.getHomework().getHomeworkFile().stream().map(
+                        (file)-> { return file.getName(); }
+                ).collect(Collectors.toList()))
+                .homeworkFileName(personalHomework.getPersonalHomeworkFile().stream().map(
+                        (file)-> { return file.getName(); }
+                ).collect(Collectors.toList()))
                 .build();
     }
 }

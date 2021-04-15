@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -29,5 +30,6 @@ public class AssignmentHomeworkRequest {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm:ss")
     private LocalDateTime deadline;
-    // private MultipartFile File;
+
+    private List<MultipartFile> homeworkFile;
 }
