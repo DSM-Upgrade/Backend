@@ -19,7 +19,6 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,10 +106,8 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Transactional
     public void returnHomework(String requestUser, ReturnHomeworkRequest returnHomeworkRequest){ // 숙제 반환
         int homeworkId = returnHomeworkRequest.getHomeworkId();
-
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-
         String username = returnHomeworkRequest.getUserName();
 
         studentRepository.findByUsername(username)
@@ -118,17 +115,17 @@ public class HomeworkServiceImpl implements HomeworkService{
         PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
 
-        List<PersonalHomeworkFile> personalHomeworks = returnHomeworkRequest.getPersonalHomeworkFile().isEmpty()?null:returnHomeworkRequest.getPersonalHomeworkFile()
-                .stream().map(
-                        (file) -> {
+        List<PersonalHomeworkFile> personalHomeworks = returnHomeworkRequest.getPersonalHomeworkFile().isEmpty()
+                ? null:returnHomeworkRequest.getPersonalHomeworkFile().stream()
+                .map((file) -> {
                             String name = uploadFile(requestUser, file);
                             PersonalHomeworkFile personalHomeworkFile = PersonalHomeworkFile.builder()
                                     .name(name)
                                     .build();
                             personalHomeworkFileRepository.save(personalHomeworkFile);
                             return personalHomeworkFile;
-                        }
-                ).collect(Collectors.toList());
+                        }).collect(Collectors.toList());
+
         PersonalHomework personalHomework = PersonalHomework.builder()
                 .studentHomeworkId(findPersonalHomework.getStudentHomeworkId())
                 .homework(homework)
@@ -152,8 +149,9 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .orElseThrow(()->new HomeworkNotFoundException(homeworkId));
         PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
+
         PersonalHomework personalHomework = PersonalHomework.builder()
-                .studentHomeworkId(homework+username)
+                .studentHomeworkId(findPersonalHomework.getStudentHomeworkId())
                 .studentUsername(username)
                 .status(PersonalHomeworkStatus.FINISHED)
                 .submittedAt(findPersonalHomework.getSubmittedAt())
@@ -169,7 +167,6 @@ public class HomeworkServiceImpl implements HomeworkService{
         homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
         studentRepository.existsByUsernameIn(changeHomeworkRequest.getUserName());
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
-        deleteFile(homeworkId);
         Homework homework = Homework.builder()
                 .id(changeHomeworkRequest.getHomeworkId())
                 .title(changeHomeworkRequest.getHomeworkTitle())
@@ -178,6 +175,8 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .deadline(changeHomeworkRequest.getDeadline())
                 .build();
         homeworkRepository.save(homework);
+
+        deletePersonalHomeworkFile(homeworkId);
         changeHomeworkRequest.getUserName()
                 .stream()
                 .forEach((username) -> {
@@ -193,34 +192,46 @@ public class HomeworkServiceImpl implements HomeworkService{
                 });
     }
 
-    private void deleteFile(Integer homeworkId){
-        personalHomeworkRepository.findByHomeworkId(homeworkId).stream().forEach(
-                (personalHomework)->{
-                    personalHomework.getPersonalHomeworkFile().stream().forEach(
-                            (file)->{
-                                personalHomeworkFileRepository.deleteByName(file.getName());
-                            }
-                    );
-                }
-        );
-        //aws에서 파일 삭제시켜야 함
-        homeworkRepository.findById(homeworkId).stream().forEach(
-                (homework)->{
-                    homework.getHomeworkFile().stream().forEach(
-                            (file)->{
-                                homeworkFileRepository.deleteByName(file.getName());
-                            }
-                    );
-                }
-        );
-        //aws에서 파일 삭제시켜야 함
-    }
-
     @Override
     public void deleteHomework(Integer homeworkId){ // 숙제를 삭제
-        deleteFile(homeworkId);
+        homeworkFileRepository
+                .deleteByHomework(homeworkRepository
+                        .findById(homeworkId).orElseThrow(()->new HomeworkNotFoundException(homeworkId)));
+        personalHomeworkFileRepository
+                .deleteByPersonalHomework(personalHomeworkRepository
+                        .findByHomeworkId(homeworkId).orElseThrow(()->new HomeworkNotFoundException(homeworkId)));
+        deletePersonalHomeworkFile(homeworkId);
+        deleteHomeworkFile(homeworkId);
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
         homeworkRepository.deleteById(homeworkId);
+    }
+
+    private void deletePersonalHomeworkFile(Integer homeworkId){
+        personalHomeworkRepository.findByHomeworkId(homeworkId)
+                .stream().forEach(
+                (personalHomework)->{
+                    personalHomework.getPersonalHomeworkFile().stream()
+                            .forEach(
+                                    (file)->{
+                                        fileUploader.delete(file.getName());
+                                    }
+                            );
+                }
+        );
+    }
+
+    private void deleteHomeworkFile(Integer homeworkId){
+        homeworkRepository.findById(homeworkId)
+                .stream().forEach(
+                (homework)->{
+                    homework.getHomeworkFile().stream()
+                            .forEach(
+                                    (file)->{
+                                        fileUploader.delete(file.getName());
+                                    }
+                            );
+                }
+        );
     }
 
     private String uploadFile(String username, MultipartFile file) {

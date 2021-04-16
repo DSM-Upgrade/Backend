@@ -18,4 +18,7 @@ public class PersonalHomeworkFile {
     @Id
     private Integer id;
     private String name;
+
+    @ManyToOne
+    private PersonalHomework personalHomework;
 }

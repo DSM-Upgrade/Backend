@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HomeworkFileRepository extends JpaRepository<HomeworkFile, Integer> {
-    void deleteByName(String name);
+    void deleteByHomework(Homework homework);
+    boolean existsByNameIn(String name);
 }
