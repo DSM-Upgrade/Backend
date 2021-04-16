@@ -38,16 +38,17 @@ public class HomeworkApiTest extends IntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Homework addHomework(){
+    private Homework addHomework(LocalDateTime deadline){
         Homework homework = Homework.builder()
                 .title("test")
                 .content("test")
                 .createdAt(LocalDateTime.now())
-                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
+                .deadline(deadline)
                 .build();
         homeworkRepository.save(homework);
         return homework;
     }
+
     private void addPersonalHomework(Homework homework){
         List<String> usernameList = new ArrayList<String>();
         usernameList.add(registeredUsername);
@@ -70,27 +71,42 @@ public class HomeworkApiTest extends IntegrationTest {
         homeworkRepository.deleteAll();
     }
 
+    private List<Homework> makeHomeworkDate(int amount){
+        List<Homework> homework = new ArrayList<>();
+        for(int i=0; i<amount; i++){
+            homework.add(this.addHomework(LocalDateTime.of(LocalDateTime.now().getYear()+4-((int)((Math.random()*10000)%10)), Month.JANUARY, 1, 10, 10, 30)));
+            this.addPersonalHomework(homework.get(i));
+        }
+        return homework;
+    }
+
     @Test
     @WithMockUser(username = registeredUsername)
     public void 유저_할당된_숙제리스트() throws Exception {
         //given
-        Homework homework = this.addHomework();
-        this.addPersonalHomework(homework);
+        List<Homework> homework = makeHomeworkDate(10);
         //when
         ResultActions resultActions = requestGetUserHomeworkList(registeredUsername);
+
         //then
         MvcResult result = resultActions
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
 
-        UserAllHomeworkListResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<List<UserAllHomeworkListResponse>>() {}).get(0);
+        List<UserAllHomeworkListResponse> response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<UserAllHomeworkListResponse>>() {});
 
-        Assertions.assertEquals(response.getHomeworkId(), homework.getId());
-        Assertions.assertEquals(response.getHomeworkStatus(), "ASSIGNED");
-        Assertions.assertEquals(response.getHomeworkTitle(), "test");
-        Assertions.assertEquals(response.getHomeworkContent(), "test");
+        for (int i=0; i<response.size(); i++) {
+            Assertions.assertEquals(response.get(i).getHomeworkId(), homework.get(i).getId());
+            Assertions.assertEquals(response.get(i).getHomeworkStart(), homework.get(i).getCreatedAt());
+            Assertions.assertEquals(response.get(i).getHomeworkEnd(), homework.get(i).getDeadline());
+            Assertions.assertEquals(response.get(i).getHomeworkTitle(), homework.get(i).getTitle());
+            Assertions.assertEquals(response.get(i).getHomeworkContent(), homework.get(i).getContent());
+            if(response.get(i).getHomeworkEnd().isBefore(LocalDateTime.now()))
+                Assertions.assertEquals(response.get(i).getHomeworkStatus(), "UN_SUBMITTED");
+            else Assertions.assertEquals(response.get(i).getHomeworkStatus(), "ASSIGNED");
+        }
     }
 
     private ResultActions requestGetUserHomeworkList(String username) throws Exception {
@@ -101,7 +117,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername)
     public void 유저_할당된_숙제내용() throws Exception {
         //given
-        Homework homework = this.addHomework();
+        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         //when
         ResultActions resultActions = requestGetUserHomeworkContent(registeredUsername, homework.getId());
@@ -149,7 +165,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제반환() throws Exception{
         //given
-        Homework homework = this.addHomework();
+        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         int homeworkId = homework.getId();
         ReturnHomeworkRequest returnHomeworkRequest = ReturnHomeworkRequest.builder()
@@ -179,7 +195,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제완료() throws Exception{
         //given
-        Homework homework = this.addHomework();
+        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         CompletionHomeworkRequest completionHomeworkRequest = CompletionHomeworkRequest.builder()
                 .userName(registeredUsername)
@@ -202,7 +218,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제변경() throws Exception{
         //given
-        Homework homework = this.addHomework();
+        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         List<String> user = new ArrayList<>();
         user.add(registeredUsername);
@@ -231,7 +247,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
     public void 숙제삭제() throws Exception{
         //given
-        Homework homework = this.addHomework();
+        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         //when
         ResultActions resultActions = deleteHomework(homework.getId());
