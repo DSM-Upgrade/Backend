@@ -22,6 +22,16 @@ public class UserHomeworkResponse {
     private List<String> personalHomeworkFileName;
 
     public static UserHomeworkResponse from(PersonalHomework personalHomework){
+        List<String> homeworks = personalHomework.getHomework().getHomeworkFile()==null?null
+                :personalHomework.getHomework().getHomeworkFile().stream().map(
+                (file)-> { return file.getName(); }
+        ).collect(Collectors.toList());
+
+        List<String> personalHomeworks = personalHomework.getPersonalHomeworkFile()==null?null
+                :personalHomework.getPersonalHomeworkFile().stream().map(
+                (file)-> { return file.getName(); }
+        ).collect(Collectors.toList());
+
         return UserHomeworkResponse.builder()
                 .homeworkTitle(personalHomework.getHomework().getTitle())
                 .homeworkStart(personalHomework.getHomework().getCreatedAt())
@@ -29,12 +39,8 @@ public class UserHomeworkResponse {
                 .homeworkSubmittedDate(personalHomework.getSubmittedAt())
                 .homeworkContent(personalHomework.getHomework().getContent())
                 .homeworkReturn(personalHomework.getContent())
-                .homeworkFileName(personalHomework.getHomework().getHomeworkFile().stream().map(
-                        (file)-> { return file.getName(); }
-                ).collect(Collectors.toList()))
-                .homeworkFileName(personalHomework.getPersonalHomeworkFile().stream().map(
-                        (file)-> { return file.getName(); }
-                ).collect(Collectors.toList()))
+                .homeworkFileName(homeworks)
+                .personalHomeworkFileName(personalHomeworks)
                 .build();
     }
 }

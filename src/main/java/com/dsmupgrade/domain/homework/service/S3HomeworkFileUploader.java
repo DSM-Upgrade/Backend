@@ -5,8 +5,10 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.dsmupgrade.global.S3FileUploader;
 import com.dsmupgrade.global.error.exception.InvalidFileTypeException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Service
 public class S3HomeworkFileUploader extends S3FileUploader {
 
     @Value("${aws.s3.bucket}")
