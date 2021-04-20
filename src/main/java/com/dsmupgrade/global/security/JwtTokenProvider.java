@@ -11,7 +11,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Date;
 
 @Component
@@ -34,6 +39,13 @@ public class JwtTokenProvider {
     private String prefix;
 
     private final AuthDetailsService authDetailsService;
+
+    @PostConstruct
+    public void postConstruct() {
+        Encoder encoder = Base64.getEncoder();
+        byte[] encoded = encoder.encode(secret.getBytes());
+        secret = Arrays.toString(encoded);
+    }
 
     public String generateAccessToken(String username) {
         return Jwts.builder()
