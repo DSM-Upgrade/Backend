@@ -39,13 +39,6 @@ public class JwtTokenProvider {
 
     private final AuthDetailsService authDetailsService;
 
-    @PostConstruct
-    public void postConstruct() {
-        Encoder encoder = Base64.getEncoder();
-        byte[] encoded = encoder.encode(secret.getBytes());
-        secret = Arrays.toString(encoded);
-    }
-
     public String generateAccessToken(String username) {
         return Jwts.builder()
                 .setIssuedAt(new Date())
@@ -88,7 +81,7 @@ public class JwtTokenProvider {
 
     public void validateRefreshToken(String token) {
         try {
-            String type = Jwts.parser().setSigningKey(secret)
+            String type = Jwts.parser().setSigningKey(secret.getBytes())
                     .parseClaimsJws(token).getBody().get("type", String.class);
             assert type.equals("refresh_token");
         } catch (ExpiredJwtException e) {
@@ -105,7 +98,7 @@ public class JwtTokenProvider {
 
     public String getUsername(String token) {
         try {
-            return Jwts.parser().setSigningKey(secret)
+            return Jwts.parser().setSigningKey(secret.getBytes())
                     .parseClaimsJws(token).getBody().getSubject();
         } catch (Exception e) {
             throw new InvalidTokenException();
