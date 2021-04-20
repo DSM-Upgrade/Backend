@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
@@ -53,7 +52,7 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(System.currentTimeMillis() + accessExpiration * 1000))
                 .setSubject(username)
                 .claim("type", "access_token")
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(SignatureAlgorithm.HS256, secret.getBytes())
                 .compact();
     }
 
@@ -63,7 +62,7 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration * 1000))
                 .setSubject(username)
                 .claim("type", "refresh_token")
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(SignatureAlgorithm.HS256, secret.getBytes())
                 .compact();
     }
 
@@ -77,7 +76,7 @@ public class JwtTokenProvider {
 
     public void validateToken(String token) {
         try {
-            String type = Jwts.parser().setSigningKey(secret)
+            String type = Jwts.parser().setSigningKey(secret.getBytes())
                     .parseClaimsJws(token).getBody().get("type", String.class);
             assert type.equals("access_token");
         } catch (ExpiredJwtException e) {
