@@ -1,5 +1,8 @@
 package com.dsmupgrade.global;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +13,15 @@ import java.io.IOException;
 import java.util.Optional;
 
 public abstract class S3FileUploader implements FileUploader {
+
+    private AmazonS3Client s3Client;
+
+    public S3FileUploader(AmazonS3Client s3Client) {
+        this.s3Client = s3Client;
+    }
+
+    @Value("${aws.s3.bucket}")
+    private String bucket;
 
     @Value("${image.file.path}")
     private String filePath;
@@ -42,7 +54,11 @@ public abstract class S3FileUploader implements FileUploader {
         return putS3(uploadFile, fullFilename);
     }
 
-    abstract protected String putS3(File uploadFile, String filename);
+    protected String putS3(File uploadFile, String filename) {
+        s3Client.putObject(new PutObjectRequest(bucket, filename, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        removeLocalFile(uploadFile);
+        return s3Client.getUrl(bucket, filename).toString();
+    }
 
     protected void removeLocalFile(File file) {
         file.delete();
