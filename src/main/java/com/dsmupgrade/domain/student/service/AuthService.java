@@ -60,6 +60,7 @@ public class AuthService {
         return LoginResponse.builder()
                 .accessToken(jwtTokenProvider.generateAccessToken(loginRequest.getUsername()))
                 .refreshToken(jwtTokenProvider.generateRefreshToken(loginRequest.getUsername()))
+                .isAdmin(student.getIsAdmin())
                 .build();
     }
 
