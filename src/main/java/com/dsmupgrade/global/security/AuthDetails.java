@@ -19,13 +19,13 @@ public class AuthDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auth = new ArrayList<>();
         if (student.getIsAdmin()) {
-            auth.add(new SimpleGrantedAuthority("ADMIN"));
+            auth.add(new SimpleGrantedAuthority(Authority.ADMIN.name()));
         }
         if (student.getIsFineManager()) {
-            auth.add(new SimpleGrantedAuthority("FINE_MANAGER"));
+            auth.add(new SimpleGrantedAuthority(Authority.FINE_MANAGER.name()));
         }
         if (student.getIsNoticeManager()) {
-            auth.add(new SimpleGrantedAuthority("NOTICE_MANAGER"));
+            auth.add(new SimpleGrantedAuthority(Authority.NOTICE_MANAGER.name()));
         }
         return auth;
     }
