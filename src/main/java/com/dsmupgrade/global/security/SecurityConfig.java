@@ -3,6 +3,7 @@ package com.dsmupgrade.global.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,8 +34,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                    .antMatchers("/student/**").authenticated()
-                    .anyRequest().permitAll().and()
+                    .antMatchers("/auth/**", "/fields").permitAll()
+                    .antMatchers("/authority/**").hasAuthority(Authority.ADMIN.name())
+                    .antMatchers(HttpMethod.POST, "/notification/notice", "/notification/vote").hasAuthority(Authority.NOTICE_MANAGER.name())
+                    .antMatchers(HttpMethod.PATCH, "/notification/notice/*", "/notification/vote/*").hasAuthority(Authority.NOTICE_MANAGER.name())
+                    .antMatchers(HttpMethod.DELETE, "/notification/*").hasAuthority(Authority.NOTICE_MANAGER.name())
+                    .anyRequest().authenticated().and()
                 .apply(new JwtConfigurer(jwtTokenProvider)).and()
                 .apply(new ExceptionConfigurer()).and()
                 .apply(new CorsConfigurer());
