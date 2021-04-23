@@ -37,6 +37,9 @@ public class Student {
     @Column(length = 4, nullable = false, name = "name")
     private String name;
 
+    @Column(length = 25, name = "profile_image_name")
+    private String profileImageName;
+
     @ManyToOne
     @JoinColumn(name = "field_id")
     private Field field;
@@ -76,6 +79,10 @@ public class Student {
 
     public void updateField(Field field) {
         setIfNotNull(this::setField, field);
+    }
+
+    public void updateProfileImageName(String profileImageName) {
+        setProfileImageName(profileImageName);
     }
 
     private <T> void setIfNotNull(Consumer<T> setter, T value) {
