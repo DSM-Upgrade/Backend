@@ -23,23 +23,22 @@ public abstract class S3FileUploader implements FileUploader {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
-    @Value("${image.file.path}")
-    private String filePath;
-
     public String upload(String username, MultipartFile multipartFile, String dir) throws IOException {
         validateFileType(multipartFile);
 
-        File uploadFile = multipartToFile(multipartFile)
+        File uploadFile = multipartToFile(multipartFile, username)
                 .orElseThrow();
 
-        String filename = username + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+        String filename = resolveFileName(multipartFile, username);
         return uploadS3(filename, uploadFile, dir);
     }
 
     abstract protected void validateFileType(MultipartFile multipartFile);
 
-    protected Optional<File> multipartToFile(MultipartFile multipart) throws IOException {
-        File file = new File(filePath + "/" + multipart.getOriginalFilename());
+    abstract protected String resolveFileName(MultipartFile multipart, String username);
+
+    protected Optional<File> multipartToFile(MultipartFile multipart, String username) throws IOException {
+        File file = new File(resolveLocalFilePath(multipart, username));
         if (file.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(multipart.getBytes());
@@ -48,6 +47,8 @@ public abstract class S3FileUploader implements FileUploader {
         }
         return Optional.empty();
     }
+
+    abstract protected String resolveLocalFilePath(MultipartFile multipart, String username);
 
     protected String uploadS3(String filename, File uploadFile, String dir) {
         String fullFilename = dir + "/" + filename;
