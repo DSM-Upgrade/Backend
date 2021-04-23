@@ -63,6 +63,7 @@ public class StudentUpdateService {
         try {
             return imageUploader.upload(username, file, dir);
         } catch (IOException exception) {
+            exception.printStackTrace();
             throw new InvalidInputValueException(); // TODO change exception
         }
     }
