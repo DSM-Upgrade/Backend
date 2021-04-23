@@ -56,7 +56,13 @@ public class StudentUpdateService {
     }
 
     public String updateStudentProfile(String username, MultipartFile file) {
-        return upload(username, file, "profile");
+        Student student = studentRepository.findByUsername(username)
+                .orElseThrow(() -> new StudentNotFoundException(username));
+
+        String imageUrl = upload(username, file, "profile");
+        student.updateProfileImageName(extractFileNameFromUrl(imageUrl));
+        studentRepository.save(student);
+        return extractFileNameFromUrl(imageUrl);
     }
 
     private String upload(String username, MultipartFile file, String dir) {
@@ -66,5 +72,10 @@ public class StudentUpdateService {
             exception.printStackTrace();
             throw new InvalidInputValueException(); // TODO change exception
         }
+    }
+
+    private String extractFileNameFromUrl(String url) {
+        String[] splitUrl = url.split("/");
+        return splitUrl[splitUrl.length-1];
     }
 }
