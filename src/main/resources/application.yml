@@ -38,7 +38,7 @@ auth:
     prefix: ${JWT_PREFIX:Bearer}
 file:
   path:
-    profile-image: ${PROFILE_IMAGE_PATH}
+    profile-image: ${PROFILE_IMAGE_PATH:}
 
 ---
 
