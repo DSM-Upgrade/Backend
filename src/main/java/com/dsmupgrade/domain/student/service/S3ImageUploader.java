@@ -17,7 +17,7 @@ public class S3ImageUploader extends S3FileUploader {
         super(s3Client);
     }
 
-    @Value("${image.file.path}")
+    @Value("${file.path.profile-image}")
     private String filePath;
 
     protected void validateFileType(MultipartFile multipartFile) {
