@@ -50,7 +50,7 @@ public class NoticeServiceImpl implements NoticeService {
         String adminName = authenticationFacade.getUsername();
         Student admin = studentRepository.findByUsername(adminName).orElseThrow(
                 () -> new StudentNotFoundException(adminName));
-        if (admin.getIsAdmin()) throw new StudentNotAdminException(admin.getUsername());
+        if (!admin.getIsAdmin()) throw new StudentNotAdminException(admin.getUsername());
 
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
@@ -80,7 +80,7 @@ public class NoticeServiceImpl implements NoticeService {
         String adminName = authenticationFacade.getUsername();
         Student admin = studentRepository.findByUsername(adminName).orElseThrow(
                 () -> new StudentNotFoundException(adminName));
-        if (admin.getIsAdmin()) throw new StudentNotAdminException(admin.getUsername());
+        if (!admin.getIsAdmin()) throw new StudentNotAdminException(admin.getUsername());
 
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
