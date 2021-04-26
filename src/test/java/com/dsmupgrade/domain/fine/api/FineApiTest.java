@@ -70,7 +70,7 @@ public class FineApiTest extends IntegrationTest {
     }
 
     private ResultActions requestGetAllUserList() throws Exception {
-        return requestMvc(get("/fine/list"));
+        return requestMvc(get("/fine/list/all"));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FineApiTest extends IntegrationTest {
         //given
         this.addFine();
         //when
-        ResultActions resultActions = requestGetUserList(registeredUsername);
+        ResultActions resultActions = requestGetUserList();
         //then
         MvcResult result = resultActions
                 .andExpect(status().isOk())
@@ -91,8 +91,8 @@ public class FineApiTest extends IntegrationTest {
         Assertions.assertEquals(response.getFineAmount(), 1000);
     }
 
-    private ResultActions requestGetUserList(String username) throws Exception {
-        return requestMvc(get("/fine/list/" + username));
+    private ResultActions requestGetUserList() throws Exception {
+        return requestMvc(get("/fine/list"));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class FineApiTest extends IntegrationTest {
     public void 벌금_부과() throws Exception {
         //given
         ImpositionRequest impositionRequest = ImpositionRequest.builder()
-                .userName(registeredUsername)
+                .username(registeredUsername)
                 .fineAmount(1000)
                 .reason("test")
                 .build();

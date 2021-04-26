@@ -5,6 +5,7 @@ import com.dsmupgrade.domain.fine.dto.request.ImpositionRequest;
 import com.dsmupgrade.domain.fine.dto.response.AllUserFineResponse;
 import com.dsmupgrade.domain.fine.dto.response.UserFineResponse;
 import com.dsmupgrade.domain.fine.service.FineService;
+import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,15 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FineController {
     private final FineService fineService;
+    private final AuthenticationFacade authenticationFacade;
 
-    @GetMapping("/list")
+    @GetMapping("/list/all")
     public List<AllUserFineResponse> getAllUserFineList(){ //모든 유저의 따른 벌금리스트를 받아옴
         return fineService.getAllUserFineList();
     }
 
-    @GetMapping("/list/{username}")
-    public List<UserFineResponse> getUserFineList(@PathVariable("username") String username){ //유저의 따른 벌금리스트를 받아옴
-        return fineService.getUserFineList(username);
+    @GetMapping("/list")
+    public List<UserFineResponse> getUserFineList(){ //유저의 따른 벌금리스트를 받아옴
+        return fineService.getUserFineList(authenticationFacade.getUsername());
     }
 
     @PostMapping("/imposition")

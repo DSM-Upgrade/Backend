@@ -28,13 +28,13 @@ public class HomeworkController {
     private final AuthenticationFacade authenticationFacade;
 
     @GetMapping("/list/{userName}")
-    public List<UserAllHomeworkListResponse> getHomeworkList(@PathVariable("userName") String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        return homeworkService.getHomeworkList(username);
+    public List<UserAllHomeworkListResponse> getHomeworkList(){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
+        return homeworkService.getHomeworkList(authenticationFacade.getUsername());
     }
 
-    @GetMapping("/content/{userName}/{homeworkId}")
-    public UserHomeworkResponse getUserHomework(@PathVariable("userName") String username, @PathVariable("homeworkId") int homeworkId){ // 유저마다 할당된 숙제의 내용을 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        return homeworkService.getUserHomework(username, homeworkId);
+    @GetMapping("/content/{homeworkId}")
+    public UserHomeworkResponse getUserHomework(@PathVariable("homeworkId") int homeworkId){ // 유저마다 할당된 숙제의 내용을 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
+        return homeworkService.getUserHomework(authenticationFacade.getUsername(), homeworkId);
     }
 
     @PostMapping("/assignment")
@@ -54,7 +54,7 @@ public class HomeworkController {
 
     @PatchMapping("/change")
     public void changeHomework(@RequestBody @Valid ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
-        homeworkService.changeHomework(changeHomeworkRequest);
+        homeworkService.changeHomework(authenticationFacade.getUsername(), changeHomeworkRequest);
     }
 
     @DeleteMapping("/elimination/{homeworkId}")

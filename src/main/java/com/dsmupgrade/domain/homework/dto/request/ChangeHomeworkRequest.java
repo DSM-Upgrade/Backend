@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class ChangeHomeworkRequest {
     @NotNull
     private Integer homeworkId;
     @NotNull
-    private List<String> userName;
+    private List<String> username;
     @NotNull
     private String homeworkTitle;
     @NotNull
@@ -30,5 +31,6 @@ public class ChangeHomeworkRequest {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")
     private LocalDateTime deadline;
-    // private MultipartFile File;
+
+    private List<MultipartFile> homeworkFile;
 }

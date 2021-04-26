@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class ImpositionRequest {
     @NotNull
-    private String userName;
+    private String username;
     @NotNull
     private Integer fineAmount;
     @NotNull

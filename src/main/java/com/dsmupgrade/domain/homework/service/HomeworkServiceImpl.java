@@ -61,13 +61,14 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .orElseThrow(()->new StudentNotFoundException(username));
         if(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).isEmpty())
             throw new HomeworkNotFoundException(homeworkId);
-        return UserHomeworkResponse.from(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).get()); //여기 문제
+        return UserHomeworkResponse.from(personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework).get());
     }
 
     @Override
     @Transactional
     public void assignmentHomework(String requestUser, AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
-        studentRepository.existsByUsernameIn(assignmentHomeworkRequest.getUserName());
+        studentRepository.existsByUsernameIn(assignmentHomeworkRequest.getUsername());
+
         List<HomeworkFile> homeworkFiles = assignmentHomeworkRequest.getHomeworkFile()==null
                 ? null : assignmentHomeworkRequest.getHomeworkFile().stream()
                 .map((file)-> {
@@ -86,7 +87,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .homeworkFile(homeworkFiles)
                 .build();
         homeworkRepository.save(homework);
-        assignmentHomeworkRequest.getUserName()
+        assignmentHomeworkRequest.getUsername()
                 .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
@@ -108,11 +109,10 @@ public class HomeworkServiceImpl implements HomeworkService{
         int homeworkId = returnHomeworkRequest.getHomeworkId();
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-        String username = returnHomeworkRequest.getUserName();
-        studentRepository.findByUsername(username)
-                .orElseThrow(() -> new StudentNotFoundException(username));
-        PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(username, homework)
-                .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
+        studentRepository.findByUsername(requestUser)
+                .orElseThrow(() -> new StudentNotFoundException(requestUser));
+        PersonalHomework findPersonalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(requestUser, homework)
+                .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, requestUser));
         List<PersonalHomeworkFile> personalHomeworks = returnHomeworkRequest.getPersonalHomeworkFile()==null
                 ? null:returnHomeworkRequest.getPersonalHomeworkFile().stream()
                 .map((file) -> {
@@ -126,7 +126,7 @@ public class HomeworkServiceImpl implements HomeworkService{
         PersonalHomework personalHomework = PersonalHomework.builder()
                 .studentHomeworkId(findPersonalHomework.getStudentHomeworkId())
                 .homework(homework)
-                .studentUsername(username)
+                .studentUsername(requestUser)
                 .status(PersonalHomeworkStatus.SUBMITTED)
                 .submittedAt(LocalDateTime.now())
                 .content(returnHomeworkRequest.getHomeworkContent())
@@ -139,7 +139,7 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Override
     public void completionHomework(CompletionHomeworkRequest completionHomeworkRequest){ // 숙제 완료
         int homeworkId = completionHomeworkRequest.getHomeworkId();
-        String username = completionHomeworkRequest.getUserName();
+        String username = completionHomeworkRequest.getUsername();
         studentRepository.findByUsername(username)
                 .orElseThrow(() -> new StudentNotFoundException(username));
         Homework homework = homeworkRepository.findById(homeworkId)
@@ -160,11 +160,13 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     @Transactional
-    public void changeHomework(ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
+    public void changeHomework(String requestUser, ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         int homeworkId = changeHomeworkRequest.getHomeworkId();
         homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-        studentRepository.existsByUsernameIn(changeHomeworkRequest.getUserName());
+        studentRepository.existsByUsernameIn(changeHomeworkRequest.getUsername());
+
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
+
         Homework homework = Homework.builder()
                 .id(changeHomeworkRequest.getHomeworkId())
                 .title(changeHomeworkRequest.getHomeworkTitle())
@@ -175,7 +177,8 @@ public class HomeworkServiceImpl implements HomeworkService{
         homeworkRepository.save(homework);
 
         deletePersonalHomeworkFile(homeworkId);
-        changeHomeworkRequest.getUserName()
+
+        changeHomeworkRequest.getUsername()
                 .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
@@ -188,6 +191,16 @@ public class HomeworkServiceImpl implements HomeworkService{
                             .build();
                     personalHomeworkRepository.save(personalHomework);
                 });
+
+        List<HomeworkFile> homeworkFiles = changeHomeworkRequest.getHomeworkFile()==null
+                ? null : changeHomeworkRequest.getHomeworkFile().stream()
+                .map((file)-> {
+                    HomeworkFile homeworkFile = HomeworkFile.builder()
+                            .name(uploadFile(requestUser, file))
+                            .build();
+                    homeworkFileRepository.save(homeworkFile);
+                    return homeworkFile; }
+                ).collect(Collectors.toList());
     }
 
     @Override

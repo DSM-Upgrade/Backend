@@ -14,9 +14,9 @@ import java.util.List;
 public interface HomeworkService {
     List<UserAllHomeworkListResponse> getHomeworkList(String username);
     UserHomeworkResponse getUserHomework (String username, int homeworkId);
-    void assignmentHomework(String requestUser, AssignmentHomeworkRequest assignmentHomeworkRequest);
-    void returnHomework(String requestUser, ReturnHomeworkRequest returnHomeworkRequest);
+    void assignmentHomework(String username, AssignmentHomeworkRequest assignmentHomeworkRequest);
+    void returnHomework(String username, ReturnHomeworkRequest returnHomeworkRequest);
     void completionHomework(CompletionHomeworkRequest completionHomeworkRequest);
-    void changeHomework(ChangeHomeworkRequest changeHomeworkRequest);
+    void changeHomework(String usernames, ChangeHomeworkRequest changeHomeworkRequest);
     void deleteHomework(Integer homeworkId);
 }

@@ -21,7 +21,7 @@ import java.util.List;
 @Builder
 public class AssignmentHomeworkRequest {
     @NotNull
-    private List<String> userName;
+    private List<String> username;
     @NotNull
     private String homeworkTitle;
     @NotNull

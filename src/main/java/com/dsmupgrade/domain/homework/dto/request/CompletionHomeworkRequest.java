@@ -1,15 +1,15 @@
 package com.dsmupgrade.domain.homework.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.sun.istack.NotNull;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CompletionHomeworkRequest {
-    private String userName;
+    @NotNull
+    private String username;
+    @NotNull
     private Integer homeworkId;
 }

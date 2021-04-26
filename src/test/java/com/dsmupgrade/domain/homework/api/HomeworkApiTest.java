@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,6 +45,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .content("test")
                 .createdAt(LocalDateTime.now())
                 .deadline(deadline)
+                .homeworkFile(null)
                 .build();
         homeworkRepository.save(homework);
         return homework;
@@ -58,8 +60,9 @@ public class HomeworkApiTest extends IntegrationTest {
                     .studentUsername(user)
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
-                    .content(null)
+                    .content("test")
                     .homework(homework)
+                    .personalHomeworkFile(null)
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }
@@ -71,7 +74,7 @@ public class HomeworkApiTest extends IntegrationTest {
         homeworkRepository.deleteAll();
     }
 
-    private List<Homework> makeHomeworkDate(int amount){
+    private List<Homework> makeHomeworkList(int amount){
         List<Homework> homework = new ArrayList<>();
         for(int i=0; i<amount; i++){
             homework.add(this.addHomework(LocalDateTime.of(LocalDateTime.now().getYear()+4-((int)((Math.random()*10000)%10)), Month.JANUARY, 1, 10, 10, 30)));
@@ -84,7 +87,7 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername)
     public void 유저_할당된_숙제리스트() throws Exception {
         //given
-        List<Homework> homework = makeHomeworkDate(10);
+        List<Homework> homeworks = makeHomeworkList(10);
         //when
         ResultActions resultActions = requestGetUserHomeworkList(registeredUsername);
 
@@ -96,13 +99,12 @@ public class HomeworkApiTest extends IntegrationTest {
 
         List<UserAllHomeworkListResponse> response = objectMapper.readValue(
                 result.getResponse().getContentAsString(), new TypeReference<List<UserAllHomeworkListResponse>>() {});
-
         for (int i=0; i<response.size(); i++) {
-            Assertions.assertEquals(response.get(i).getHomeworkId(), homework.get(i).getId());
-            Assertions.assertEquals(response.get(i).getHomeworkStart(), homework.get(i).getCreatedAt());
-            Assertions.assertEquals(response.get(i).getHomeworkEnd(), homework.get(i).getDeadline());
-            Assertions.assertEquals(response.get(i).getHomeworkTitle(), homework.get(i).getTitle());
-            Assertions.assertEquals(response.get(i).getHomeworkContent(), homework.get(i).getContent());
+            Assertions.assertEquals(response.get(i).getHomeworkId(), homeworks.get(i).getId());
+            Assertions.assertEquals(response.get(i).getHomeworkStart(), homeworks.get(i).getCreatedAt());
+            Assertions.assertEquals(response.get(i).getHomeworkEnd(), homeworks.get(i).getDeadline());
+            Assertions.assertEquals(response.get(i).getHomeworkTitle(), homeworks.get(i).getTitle());
+            Assertions.assertEquals(response.get(i).getHomeworkContent(), homeworks.get(i).getContent());
             if(response.get(i).getHomeworkEnd().isBefore(LocalDateTime.now()))
                 Assertions.assertEquals(response.get(i).getHomeworkStatus(), "UN_SUBMITTED");
             else Assertions.assertEquals(response.get(i).getHomeworkStatus(), "ASSIGNED");
@@ -117,23 +119,35 @@ public class HomeworkApiTest extends IntegrationTest {
     @WithMockUser(username = registeredUsername)
     public void 유저_할당된_숙제내용() throws Exception {
         //given
-        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
-        this.addPersonalHomework(homework);
+        List<Homework> homeworks = makeHomeworkList(10);
+        List<PersonalHomework> personalHomeworks = homeworks.stream().map(
+                (homework)->{
+                    return personalHomeworkRepository.findByHomeworkId(homework.getId()).get();
+                }
+        ).collect(Collectors.toList());
+
+        for(int i=0; i<=9; i++) {
         //when
-        ResultActions resultActions = requestGetUserHomeworkContent(registeredUsername, homework.getId());
+            ResultActions resultActions = requestGetUserHomeworkContent(homeworks.get(i).getId());
         //then
-        MvcResult result = resultActions
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-        UserHomeworkResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), UserHomeworkResponse.class);
-        Assertions.assertEquals(response.getHomeworkTitle(),"test");
-        Assertions.assertEquals(response.getHomeworkContent(),"test");
-        Assertions.assertEquals(response.getHomeworkReturn(),null);
+            MvcResult result = resultActions
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn();
+            UserHomeworkResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), UserHomeworkResponse.class);
+            Assertions.assertEquals(response.getHomeworkTitle(), homeworks.get(i).getTitle());
+            Assertions.assertEquals(response.getHomeworkStart(), homeworks.get(i).getCreatedAt());
+            Assertions.assertEquals(response.getHomeworkEnd(), homeworks.get(i).getDeadline());
+            Assertions.assertEquals(response.getHomeworkSubmittedDate(), personalHomeworks.get(i).getSubmittedAt());
+            Assertions.assertEquals(response.getHomeworkContent(), homeworks.get(i).getContent());
+            Assertions.assertEquals(response.getHomeworkReturn(), personalHomeworks.get(i).getContent());
+            Assertions.assertEquals(response.getHomeworkFileName(), homeworks.get(i).getHomeworkFile());
+            Assertions.assertEquals(response.getPersonalHomeworkFileName(), personalHomeworks.get(i).getPersonalHomeworkFile());
+        }
     }
 
-    private ResultActions requestGetUserHomeworkContent(String username, int homeworkId) throws Exception {
-        return requestMvc(get("/homework/content/" + username +"/"+ homeworkId));
+    private ResultActions requestGetUserHomeworkContent(int homeworkId) throws Exception {
+        return requestMvc(get("/homework/content/" + homeworkId));
     }
 
     @Test
@@ -143,10 +157,11 @@ public class HomeworkApiTest extends IntegrationTest {
         List<String> userName = new ArrayList<>();
         userName.add(registeredUsername);
         AssignmentHomeworkRequest assignmentHomeworkRequest = AssignmentHomeworkRequest.builder()
-                .userName(userName)
+                .username(userName)
                 .homeworkTitle("test")
                 .homeworkContent("test")
                 .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
+                .homeworkFile(null)
                 .build();
         //when
         ResultActions resultActions = assignmentHomework(assignmentHomeworkRequest);
@@ -154,7 +169,17 @@ public class HomeworkApiTest extends IntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(print());
-        Assertions.assertEquals(personalHomeworkRepository.findByStudentUsername(registeredUsername).isEmpty(), false);
+
+        Homework homework = homeworkRepository.findAll().get(0);
+        PersonalHomework personalHomework = personalHomeworkRepository.findByStudentUsername(registeredUsername).get(0);
+
+        Assertions.assertEquals(homework.getTitle(), assignmentHomeworkRequest.getHomeworkTitle());
+        Assertions.assertEquals(homework.getContent(), assignmentHomeworkRequest.getHomeworkContent());
+        Assertions.assertEquals(homework.getHomeworkFile(), null);
+        Assertions.assertEquals(personalHomework.getStudentUsername(), assignmentHomeworkRequest.getUsername().get(0));
+        Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.ASSIGNED);
+        Assertions.assertEquals(personalHomework.getContent(), null);
+        Assertions.assertEquals(personalHomework.getPersonalHomeworkFile(), null);
     }
 
     private ResultActions assignmentHomework(AssignmentHomeworkRequest dto) throws Exception {
@@ -169,7 +194,6 @@ public class HomeworkApiTest extends IntegrationTest {
         this.addPersonalHomework(homework);
         int homeworkId = homework.getId();
         ReturnHomeworkRequest returnHomeworkRequest = ReturnHomeworkRequest.builder()
-                .userName(registeredUsername)
                 .homeworkId(homeworkId)
                 .homeworkContent("test")
                 .build();
@@ -198,7 +222,7 @@ public class HomeworkApiTest extends IntegrationTest {
         Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
         CompletionHomeworkRequest completionHomeworkRequest = CompletionHomeworkRequest.builder()
-                .userName(registeredUsername)
+                .username(registeredUsername)
                 .homeworkId(homework.getId())
                 .build();
         //when
@@ -224,7 +248,7 @@ public class HomeworkApiTest extends IntegrationTest {
         user.add(registeredUsername);
         ChangeHomeworkRequest changeHomeworkRequest = ChangeHomeworkRequest.builder()
                 .homeworkId(homework.getId())
-                .userName(user)
+                .username(user)
                 .homeworkTitle("newTest")
                 .homeworkContent("newTest")
                 .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))

@@ -15,8 +15,6 @@ import java.util.List;
 @Builder
 public class ReturnHomeworkRequest {
     @NotNull
-    private String userName;
-    @NotNull
     private Integer homeworkId;
     @NotNull
     private String homeworkContent;
