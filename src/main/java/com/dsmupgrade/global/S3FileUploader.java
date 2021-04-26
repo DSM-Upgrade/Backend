@@ -38,10 +38,7 @@ public abstract class S3FileUploader implements FileUploader {
     abstract protected String resolveFileName(MultipartFile multipart, String username);
 
     protected Optional<File> multipartToFile(MultipartFile multipart, String username) throws IOException {
-        String filename = resolveLocalFilePath(multipart, username);
-        System.out.println(filename);
-        File file = new File(filename);
-        System.out.println(file.getAbsolutePath());
+        File file = new File(resolveLocalFilePath(multipart, username));
         while (!file.createNewFile()) {
             removeLocalFile(file);
         }
