@@ -20,6 +20,7 @@ public class S3ImageUploader extends S3FileUploader {
     @Value("${file.path.profile-image}")
     private String filePath;
 
+    @Override
     protected void validateFileType(MultipartFile multipartFile) {
         String contentType = multipartFile.getContentType();
         if (contentType == null || !contentType.split("/")[0].equals("image")) {
@@ -29,11 +30,15 @@ public class S3ImageUploader extends S3FileUploader {
 
     @Override
     protected String resolveFileName(MultipartFile multipart, String username) {
-        return username + "." + FilenameUtils.getExtension(multipart.getOriginalFilename());
+        return multipartToFileName(multipart, username);
     }
 
     @Override
     protected String resolveLocalFilePath(MultipartFile multipart, String username) {
-        return filePath + "/" + username + "." + FilenameUtils.getExtension(multipart.getOriginalFilename());
+        return filePath + "/" + multipartToFileName(multipart, username);
+    }
+
+    private String multipartToFileName(MultipartFile multipart, String username) {
+        return username + "." + FilenameUtils.getExtension(multipart.getOriginalFilename());
     }
 }
