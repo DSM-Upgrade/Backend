@@ -45,7 +45,8 @@ public class StudentApiTest extends IntegrationTest {
                 .andExpect(jsonPath("username").value(student.getUsername()))
                 .andExpect(jsonPath("student_num").value(student.getStudentNum()))
                 .andExpect(jsonPath("name").value(student.getName()))
-                .andExpect(jsonPath("field").value(student.getField().getName()));
+                .andExpect(jsonPath("field.id").value(student.getField().getId()))
+                .andExpect(jsonPath("field.name").value(student.getField().getName()));
     }
 
     @Test
