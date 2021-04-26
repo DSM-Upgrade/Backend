@@ -41,6 +41,7 @@ public abstract class S3FileUploader implements FileUploader {
         String filename = resolveLocalFilePath(multipart, username);
         System.out.println(filename);
         File file = new File(filename);
+        System.out.println(file.getAbsolutePath());
         while (!file.createNewFile()) {
             removeLocalFile(file);
         }
