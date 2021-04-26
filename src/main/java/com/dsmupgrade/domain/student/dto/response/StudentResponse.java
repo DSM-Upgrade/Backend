@@ -19,12 +19,15 @@ public class StudentResponse {
 
     private final String field;
 
+    private final String profileImageName;
+
     public static StudentResponse from(Student student) {
         return StudentResponse.builder()
                 .name(student.getName())
                 .studentNum(student.getStudentNum())
                 .username(student.getUsername())
                 .field(student.getField().getName())
+                .profileImageName(student.getProfileImageName())
                 .build();
     }
 }
