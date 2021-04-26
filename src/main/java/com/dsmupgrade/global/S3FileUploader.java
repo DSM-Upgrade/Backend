@@ -38,14 +38,16 @@ public abstract class S3FileUploader implements FileUploader {
     abstract protected String resolveFileName(MultipartFile multipart, String username);
 
     protected Optional<File> multipartToFile(MultipartFile multipart, String username) throws IOException {
-        File file = new File(resolveLocalFilePath(multipart, username));
-        if (file.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(multipart.getBytes());
-            }
-            return Optional.of(file);
+        String filename = resolveLocalFilePath(multipart, username);
+        System.out.println(filename);
+        File file = new File(filename);
+        while (!file.createNewFile()) {
+            removeLocalFile(file);
         }
-        return Optional.empty();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(multipart.getBytes());
+        }
+        return Optional.of(file);
     }
 
     abstract protected String resolveLocalFilePath(MultipartFile multipart, String username);
