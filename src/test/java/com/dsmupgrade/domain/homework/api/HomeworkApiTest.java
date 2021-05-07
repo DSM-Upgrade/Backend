@@ -152,7 +152,7 @@ public class HomeworkApiTest extends IntegrationTest {
 
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제할당() throws Exception{
+    public void 파일없는_숙제할당() throws Exception{
         //given
         List<String> userName = new ArrayList<>();
         userName.add(registeredUsername);
@@ -240,7 +240,7 @@ public class HomeworkApiTest extends IntegrationTest {
 
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제변경() throws Exception{
+    public void 숙제변경_파일없이() throws Exception{
         //given
         Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
@@ -252,6 +252,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .homeworkTitle("newTest")
                 .homeworkContent("newTest")
                 .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
+                .homeworkFile(null)
                 .build();
         //when
         ResultActions resultActions = changeHomework(changeHomeworkRequest);
@@ -269,7 +270,7 @@ public class HomeworkApiTest extends IntegrationTest {
 
     @Test
     @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제삭제() throws Exception{
+    public void 숙제삭제_파일없이() throws Exception{
         //given
         Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
         this.addPersonalHomework(homework);
@@ -279,8 +280,8 @@ public class HomeworkApiTest extends IntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(print());
-        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).isEmpty(), true);
-        Assertions.assertEquals(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).isEmpty(), true);
+        Assertions.assertTrue(homeworkRepository.findById(homework.getId()).isEmpty());
+        Assertions.assertTrue(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).isEmpty());
     }
 
     private ResultActions deleteHomework(int homeworkId) throws Exception {
