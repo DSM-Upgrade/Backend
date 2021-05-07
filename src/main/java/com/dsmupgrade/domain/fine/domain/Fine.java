@@ -1,17 +1,17 @@
 package com.dsmupgrade.domain.fine.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Fine {
     @Id
@@ -22,7 +22,7 @@ public class Fine {
     private Integer amount;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDateTime date;
 
     @Column(nullable = false)
     private String reason;
@@ -32,4 +32,8 @@ public class Fine {
 
     @Column(nullable = false)
     private Boolean isSubmitted;
+
+    public void setIsSubmitted(Boolean isSubmitted){
+        this.isSubmitted = isSubmitted;
+    }
 }

@@ -1,14 +1,15 @@
 package com.dsmupgrade.domain.fine.dto.request;
 
 import com.sun.istack.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
+@Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ImpositionRequest {
     @NotNull
-    private String userName;
+    private String username;
     @NotNull
     private Integer fineAmount;
     @NotNull
