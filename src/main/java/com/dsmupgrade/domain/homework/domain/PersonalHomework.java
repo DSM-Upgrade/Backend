@@ -1,37 +1,38 @@
 package com.dsmupgrade.domain.homework.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
+import java.lang.invoke.StringConcatFactory;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
-@Entity
-@NoArgsConstructor
+@Builder
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-@IdClass(value = PersonalHomeworkPk.class)
+@Entity
 public class PersonalHomework {
     @Id
+    private String studentHomeworkId;
+
     @Column(nullable = false)
     private String studentUsername;
 
+    @Setter
     @Column(nullable = false)
-    private Boolean status;
+    private PersonalHomeworkStatus status;
 
     @Column(nullable = true)
-    private Date submittedAt;
+    private LocalDateTime submittedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
-    @Id
-    @Column(nullable = false)
-    private Integer homeworkId;
+    @ManyToOne
+    private Homework homework;
+
+    @OneToMany
+    private List<PersonalHomeworkFile> personalHomeworkFile;
 }

@@ -1,22 +1,20 @@
 package com.dsmupgrade.domain.homework.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
-@Entity
-@NoArgsConstructor
+@Builder
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Homework {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
@@ -26,8 +24,11 @@ public class Homework {
     private String content;
 
     @Column(nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private Date deadline;
+    private LocalDateTime deadline;
+
+    @OneToMany
+    private List<HomeworkFile> homeworkFile;
 }

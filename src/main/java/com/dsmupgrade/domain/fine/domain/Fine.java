@@ -1,31 +1,28 @@
 package com.dsmupgrade.domain.fine.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Fine {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
     private Integer amount;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDateTime date;
 
     @Column(nullable = false)
     private String reason;
@@ -35,4 +32,8 @@ public class Fine {
 
     @Column(nullable = false)
     private Boolean isSubmitted;
+
+    public void setIsSubmitted(Boolean isSubmitted){
+        this.isSubmitted = isSubmitted;
+    }
 }
