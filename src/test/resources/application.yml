@@ -17,9 +17,9 @@ auth:
       refresh: ${JWT_REFRESH_EXP:3600}
     header: ${JWT_HEADER:Authorization}
     prefix: ${JWT_PREFIX:Bearer}
-image:
-  file:
-    path: ${FILE_PATH:test-path}
+file:
+  path:
+    profile-image: ${PROFILE_IMAGE_PATH:profileImagePath}
 aws:
   s3:
     bucket: ${AWS_BUCKET:bucket}

@@ -36,7 +36,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
 
-    @Value("${image.file.path}")
+    @Value("${file.path.profile-image}")
     private String imagePath;
 
     private final NoticeRepository noticeRepository;

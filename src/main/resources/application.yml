@@ -38,7 +38,7 @@ auth:
     prefix: ${JWT_PREFIX:Bearer}
 file:
   path:
-    profile-image: ${PROFILE_IMAGE_PATH}
+    profile-image: ${PROFILE_IMAGE_PATH:}
 
 ---
 
@@ -67,6 +67,6 @@ auth:
       refresh: ${JWT_REFRESH_EXP:3600}
     header: ${JWT_HEADER:Authorization}
     prefix: ${JWT_PREFIX:Bearer}
-image:
-  file:
-    path: ${FILE_PATH:filepath}
+file:
+  path:
+    profile-image: ${PROFILE_IMAGE_PATH:}
