@@ -13,7 +13,7 @@ import java.util.List;
 public class Field {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(length = 15, nullable = false)
