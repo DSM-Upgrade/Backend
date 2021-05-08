@@ -38,7 +38,8 @@ auth:
     prefix: ${JWT_PREFIX:Bearer}
 file:
   path:
-    profile-image: ${PROFILE_IMAGE_PATH:}
+    profile-image: ${PROFILE_IMAGE_PATH:path}
+    homeworkfile-image: ${HOMEWORK_FILE_PATH:path}
 
 ---
 
@@ -70,3 +71,4 @@ auth:
 file:
   path:
     profile-image: ${PROFILE_IMAGE_PATH:}
+    homeworkfile-image: ${HOMEWORK_FILE_PATH:}

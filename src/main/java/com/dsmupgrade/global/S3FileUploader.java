@@ -60,7 +60,7 @@ public abstract class S3FileUploader implements FileUploader {
     protected String putS3(File uploadFile, String filename) {
         s3Client.putObject(new PutObjectRequest(bucket, filename, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         removeLocalFile(uploadFile);
-        return s3Client.getUrl(bucket, filename).toString();
+        return filename;
     }
 
     protected void removeLocalFile(File file) {
