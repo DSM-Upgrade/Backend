@@ -20,6 +20,7 @@ auth:
 file:
   path:
     profile-image: ${PROFILE_IMAGE_PATH:profileImagePath}
+    homeworkfile-image: ${HOMEWORK_FILE_PATH:homeworkFileImage}
 aws:
   s3:
     bucket: ${AWS_BUCKET:bucket}
