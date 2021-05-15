@@ -27,7 +27,7 @@ public class HomeworkController {
     private final HomeworkService homeworkService;
     private final AuthenticationFacade authenticationFacade;
 
-    @GetMapping("/list/{userName}")
+    @GetMapping("/list")
     public List<UserAllHomeworkListResponse> getHomeworkList(){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
         return homeworkService.getHomeworkList(authenticationFacade.getUsername());
     }
