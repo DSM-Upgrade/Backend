@@ -112,7 +112,7 @@ public class HomeworkApiTest extends IntegrationTest {
     }
 
     private ResultActions requestGetUserHomeworkList(String username) throws Exception {
-        return requestMvc(get("/homework/list/" + username));
+        return requestMvc(get("/homework/list/"));
     }
 
     @Test
