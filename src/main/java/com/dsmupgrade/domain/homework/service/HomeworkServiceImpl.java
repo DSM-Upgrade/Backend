@@ -33,7 +33,7 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     private void checkTimeOut(){
         List<PersonalHomework> homeworkList= personalHomeworkRepository.findAll();
-        homeworkList.stream().forEach(
+        homeworkList.forEach(
                 (homework) -> {
                     if(homework.getHomework().getDeadline().isBefore(LocalDateTime.now())
                             && homework.getStatus().equals(PersonalHomeworkStatus.ASSIGNED)){
@@ -67,7 +67,8 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Override
     @Transactional
     public void assignmentHomework(String requestUser, AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
-        studentRepository.existsByUsernameIn(assignmentHomeworkRequest.getUsername());
+        if(studentRepository.existsByUsernameIn(assignmentHomeworkRequest.getUsername()))
+            throw new StudentNotFoundException();
 
         List<HomeworkFile> homeworkFiles = assignmentHomeworkRequest.getHomeworkFile()==null
                 ? null : assignmentHomeworkRequest.getHomeworkFile().stream()
@@ -88,10 +89,8 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .build();
         homeworkRepository.save(homework);
         assignmentHomeworkRequest.getUsername()
-                .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
-                            .studentHomeworkId(homework+username)
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(null)
@@ -124,7 +123,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                             return personalHomeworkFile;
                         }).collect(Collectors.toList());
         PersonalHomework personalHomework = PersonalHomework.builder()
-                .studentHomeworkId(findPersonalHomework.getStudentHomeworkId())
+                .homeworkId(findPersonalHomework.getHomeworkId())
                 .homework(homework)
                 .studentUsername(requestUser)
                 .status(PersonalHomeworkStatus.SUBMITTED)
@@ -148,7 +147,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId, username));
 
         PersonalHomework personalHomework = PersonalHomework.builder()
-                .studentHomeworkId(findPersonalHomework.getStudentHomeworkId())
+                .homeworkId(findPersonalHomework.getHomeworkId())
                 .studentUsername(username)
                 .status(PersonalHomeworkStatus.FINISHED)
                 .submittedAt(findPersonalHomework.getSubmittedAt())
@@ -163,7 +162,9 @@ public class HomeworkServiceImpl implements HomeworkService{
     public void changeHomework(String requestUser, ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
         int homeworkId = changeHomeworkRequest.getHomeworkId();
         homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
-        studentRepository.existsByUsernameIn(changeHomeworkRequest.getUsername());
+        if(studentRepository.existsByUsernameIn(changeHomeworkRequest.getUsername())){
+            throw new StudentNotFoundException();
+        }
 
         personalHomeworkRepository.deleteByHomeworkId(homeworkId);
 
@@ -179,10 +180,8 @@ public class HomeworkServiceImpl implements HomeworkService{
         deletePersonalHomeworkFile(homeworkId);
 
         changeHomeworkRequest.getUsername()
-                .stream()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
-                            .studentHomeworkId(homework+username)
                             .studentUsername(username)
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(LocalDateTime.now())
@@ -219,11 +218,10 @@ public class HomeworkServiceImpl implements HomeworkService{
     }
 
     private void deletePersonalHomeworkFile(Integer homeworkId){
-        personalHomeworkRepository.findByHomeworkId(homeworkId)
-                .stream().forEach(
+        personalHomeworkRepository.findByHomeworkId(homeworkId).ifPresent(
                 (personalHomework)->{
                     if(!(personalHomework.getPersonalHomeworkFile()==null)) {
-                        personalHomework.getPersonalHomeworkFile().stream()
+                        personalHomework.getPersonalHomeworkFile()
                                 .forEach(
                                         (file) -> {
                                             fileUploader.delete(file.getName());

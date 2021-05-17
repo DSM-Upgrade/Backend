@@ -15,8 +15,8 @@ import java.util.List;
 @Entity
 public class PersonalHomework {
     @Id
-    @Column(name = "homework_id")
-    private String studentHomeworkId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer homeworkId;
 
     @Column(nullable = false)
     private String studentUsername;
