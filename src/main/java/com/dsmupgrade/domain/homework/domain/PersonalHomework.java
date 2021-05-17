@@ -15,6 +15,7 @@ import java.util.List;
 @Entity
 public class PersonalHomework {
     @Id
+    @Column(name = "homework_id")
     private String studentHomeworkId;
 
     @Column(nullable = false)
