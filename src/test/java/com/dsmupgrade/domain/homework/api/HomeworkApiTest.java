@@ -56,7 +56,6 @@ public class HomeworkApiTest extends IntegrationTest {
         usernameList.add(registeredUsername);
         for (String user : usernameList){
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentHomeworkId(homework+registeredUsername)
                     .studentUsername(user)
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
@@ -112,7 +111,7 @@ public class HomeworkApiTest extends IntegrationTest {
     }
 
     private ResultActions requestGetUserHomeworkList(String username) throws Exception {
-        return requestMvc(get("/homework/list/" + username));
+        return requestMvc(get("/homework/list/"));
     }
 
     @Test
