@@ -19,6 +19,7 @@ public class PersonalHomework {
 
     @Setter
     @Column(nullable = false, name = "status")
+    @Enumerated(EnumType.STRING)
     private PersonalHomeworkStatus status;
 
     @Column(nullable = true, name = "submitted_at")
