@@ -14,24 +14,21 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class PersonalHomework {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer homeworkId;
-
-    @Column(nullable = false)
-    private String studentUsername;
+    @EmbeddedId
+    private PersonalHomeworkPk id;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, name = "status")
     private PersonalHomeworkStatus status;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "submitted_at")
     private LocalDateTime submittedAt;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "content")
     private String content;
 
     @ManyToOne
+    @MapsId("homeworkId")
     private Homework homework;
 
     @OneToMany
