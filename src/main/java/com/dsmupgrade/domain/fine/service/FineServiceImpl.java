@@ -41,9 +41,6 @@ public class FineServiceImpl implements FineService {
     public void imposeFine(ImpositionRequest impositionRequest){ // 유저에 따른 벌금 부과
         studentRepository.findByUsername(impositionRequest.getUsername())
                 .orElseThrow(() -> new StudentNotFoundException(impositionRequest.getUsername()));
-        System.out.println(impositionRequest.getFineAmount());
-        System.out.println(impositionRequest.getUsername());
-        System.out.println(impositionRequest.getReason());
         Fine fine = Fine.builder()
                 .amount(impositionRequest.getFineAmount())
                 .date(LocalDateTime.now())

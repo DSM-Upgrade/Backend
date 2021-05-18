@@ -1,7 +1,5 @@
 package com.dsmupgrade.domain.homework.controller;
 
-import com.dsmupgrade.domain.fine.dto.request.CompletionFineRequest;
-import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.ChangeHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;
@@ -11,14 +9,10 @@ import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
 import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/homework")
 @RequiredArgsConstructor
