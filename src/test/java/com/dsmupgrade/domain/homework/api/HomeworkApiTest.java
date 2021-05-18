@@ -56,7 +56,7 @@ public class HomeworkApiTest extends IntegrationTest {
         usernameList.add(registeredUsername);
         for (String user : usernameList){
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .studentUsername(user)
+                    .id(new PersonalHomeworkPk(user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
                     .content("test")
@@ -170,12 +170,12 @@ public class HomeworkApiTest extends IntegrationTest {
                 .andDo(print());
 
         Homework homework = homeworkRepository.findAll().get(0);
-        PersonalHomework personalHomework = personalHomeworkRepository.findByStudentUsername(registeredUsername).get(0);
+        PersonalHomework personalHomework = personalHomeworkRepository.findByIdStudentUsername(registeredUsername).get(0);
 
         Assertions.assertEquals(homework.getTitle(), assignmentHomeworkRequest.getHomeworkTitle());
         Assertions.assertEquals(homework.getContent(), assignmentHomeworkRequest.getHomeworkContent());
         Assertions.assertEquals(homework.getHomeworkFile(), null);
-        Assertions.assertEquals(personalHomework.getStudentUsername(), assignmentHomeworkRequest.getUsername().get(0));
+        Assertions.assertEquals(personalHomework.getId().getStudentUsername(), assignmentHomeworkRequest.getUsername().get(0));
         Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.ASSIGNED);
         Assertions.assertEquals(personalHomework.getContent(), null);
         Assertions.assertEquals(personalHomework.getPersonalHomeworkFile(), null);
@@ -203,7 +203,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(print());
         homework = homeworkRepository.findById(homeworkId).get();
-        PersonalHomework personalHomework = personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).get();
+        PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(homeworkId, registeredUsername)).get();
         Assertions.assertEquals(personalHomework.getHomework().getId(), homeworkId);
         Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.SUBMITTED);
         Assertions.assertEquals(personalHomework.getContent(), "test");
@@ -230,7 +230,7 @@ public class HomeworkApiTest extends IntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(print());
-        Assertions.assertEquals(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername,homework).get().getStatus(), PersonalHomeworkStatus.FINISHED);
+        Assertions.assertEquals(personalHomeworkRepository.findById(new PersonalHomeworkPk(homework.getId(),registeredUsername)).get().getStatus(), PersonalHomeworkStatus.FINISHED);
     }
 
     private ResultActions comlpleteHomework(CompletionHomeworkRequest dto) throws Exception {
@@ -280,7 +280,7 @@ public class HomeworkApiTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(print());
         Assertions.assertTrue(homeworkRepository.findById(homework.getId()).isEmpty());
-        Assertions.assertTrue(personalHomeworkRepository.findByStudentUsernameAndHomework(registeredUsername, homework).isEmpty());
+        Assertions.assertTrue(personalHomeworkRepository.findById(new PersonalHomeworkPk(homework.getId(),registeredUsername)).isEmpty());
     }
 
     private ResultActions deleteHomework(int homeworkId) throws Exception {
