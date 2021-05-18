@@ -88,7 +88,7 @@ public class HomeworkApiTest extends IntegrationTest {
         //given
         List<Homework> homeworks = makeHomeworkList(10);
         //when
-        ResultActions resultActions = requestGetUserHomeworkList(registeredUsername);
+        ResultActions resultActions = requestGetUserHomeworkList();
 
         //then
         MvcResult result = resultActions
@@ -110,8 +110,8 @@ public class HomeworkApiTest extends IntegrationTest {
         }
     }
 
-    private ResultActions requestGetUserHomeworkList(String username) throws Exception {
-        return requestMvc(get("/homework/list/"));
+    private ResultActions requestGetUserHomeworkList() throws Exception {
+        return requestMvc(get("/homework/list"));
     }
 
     @Test

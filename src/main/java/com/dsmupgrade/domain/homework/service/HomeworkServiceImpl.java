@@ -36,7 +36,7 @@ public class HomeworkServiceImpl implements HomeworkService{
         homeworkList.forEach(
                 (homework) -> {
                     if(homework.getHomework().getDeadline().isBefore(LocalDateTime.now())
-                            && homework.getStatus().equals(PersonalHomeworkStatus.ASSIGNED)){
+                            && homework.getStatus() == PersonalHomeworkStatus.ASSIGNED){
                         homework.setStatus(PersonalHomeworkStatus.UN_SUBMITTED);
                     }
                     personalHomeworkRepository.save(homework);
