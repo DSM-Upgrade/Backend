@@ -32,12 +32,12 @@ public class HomeworkServiceImpl implements HomeworkService{
     private final PersonalHomeworkFileRepository personalHomeworkFileRepository;
 
     private void checkTimeOut(String username){
-        List<PersonalHomework> homeworkList= personalHomeworkRepository.findByIdStudentUsername(username);
-        homeworkList.forEach(
+        List<PersonalHomework> personalHomeworkList= personalHomeworkRepository.findByIdStudentUsername(username);
+        personalHomeworkList.forEach(
                 (personalHomework) -> {
                     if(personalHomework.getHomework().getDeadline().isBefore(LocalDateTime.now())
                             && personalHomework.getStatus() == PersonalHomeworkStatus.ASSIGNED){
-                        personalHomework.setStatus(PersonalHomeworkStatus.UN_SUBMITTED);
+                        personalHomework.setStatus(PersonalHomeworkStatus.UNSUBMITTED);
                         personalHomeworkRepository.save(personalHomework);
                     }
                 }
