@@ -15,14 +15,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 public class PersonalHomeworkPk implements Serializable {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "homework_id")
     private Integer homeworkId;
 
     @Column(name = "student_username")
     private String studentUsername;
-
-    public PersonalHomeworkPk(String studentUsername){
-        this.studentUsername = studentUsername;
-    }
 }

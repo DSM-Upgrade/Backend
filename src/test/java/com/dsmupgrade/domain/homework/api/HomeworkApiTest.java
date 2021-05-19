@@ -56,7 +56,7 @@ public class HomeworkApiTest extends IntegrationTest {
         usernameList.add(registeredUsername);
         for (String user : usernameList){
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .id(new PersonalHomeworkPk(user))
+                    .id(new PersonalHomeworkPk(homework.getId(), user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
                     .content("test")
