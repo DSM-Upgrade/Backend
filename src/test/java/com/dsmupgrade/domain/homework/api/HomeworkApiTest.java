@@ -56,7 +56,7 @@ public class HomeworkApiTest extends IntegrationTest {
         usernameList.add(registeredUsername);
         for (String user : usernameList){
             PersonalHomework personalHomework = PersonalHomework.builder()
-                    .id(new PersonalHomeworkPk(user))
+                    .id(new PersonalHomeworkPk(homework.getId(), user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
                     .content("test")
@@ -105,7 +105,7 @@ public class HomeworkApiTest extends IntegrationTest {
             Assertions.assertEquals(response.get(i).getHomeworkTitle(), homeworks.get(i).getTitle());
             Assertions.assertEquals(response.get(i).getHomeworkContent(), homeworks.get(i).getContent());
             if(response.get(i).getHomeworkEnd().isBefore(LocalDateTime.now()))
-                Assertions.assertEquals(response.get(i).getHomeworkStatus(), "UN_SUBMITTED");
+                Assertions.assertEquals(response.get(i).getHomeworkStatus(), "UNSUBMITTED");
             else Assertions.assertEquals(response.get(i).getHomeworkStatus(), "ASSIGNED");
         }
     }

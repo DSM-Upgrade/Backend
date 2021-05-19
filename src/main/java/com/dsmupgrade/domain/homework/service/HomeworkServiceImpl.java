@@ -31,22 +31,22 @@ public class HomeworkServiceImpl implements HomeworkService{
     private final HomeworkFileRepository homeworkFileRepository;
     private final PersonalHomeworkFileRepository personalHomeworkFileRepository;
 
-    private void checkTimeOut(){
-        List<PersonalHomework> homeworkList= personalHomeworkRepository.findAll();
-        homeworkList.forEach(
-                (homework) -> {
-                    if(homework.getHomework().getDeadline().isBefore(LocalDateTime.now())
-                            && homework.getStatus() == PersonalHomeworkStatus.ASSIGNED){
-                        homework.setStatus(PersonalHomeworkStatus.UN_SUBMITTED);
+    private void checkTimeOut(String username){
+        List<PersonalHomework> personalHomeworkList= personalHomeworkRepository.findByIdStudentUsername(username);
+        personalHomeworkList.forEach(
+                (personalHomework) -> {
+                    if(personalHomework.getHomework().getDeadline().isBefore(LocalDateTime.now())
+                            && personalHomework.getStatus() == PersonalHomeworkStatus.ASSIGNED){
+                        personalHomework.setStatus(PersonalHomeworkStatus.UNSUBMITTED);
+                        personalHomeworkRepository.save(personalHomework);
                     }
-                    personalHomeworkRepository.save(homework);
                 }
         );
     }
 
     @Override
     public List<UserAllHomeworkListResponse> getHomeworkList(String username){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        checkTimeOut();
+        checkTimeOut(username);
         return personalHomeworkRepository.findByIdStudentUsername(username)
                 .stream().map(UserAllHomeworkListResponse::from)
                 .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class HomeworkServiceImpl implements HomeworkService{
 
     @Override
     public UserHomeworkResponse getUserHomework (String username, int homeworkId){ // 유저마다 할당된 숙제의 내용을 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        checkTimeOut();
+        checkTimeOut(username);
         homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new HomeworkNotFoundException(homeworkId));
         studentRepository.findByUsername(username)
@@ -91,7 +91,7 @@ public class HomeworkServiceImpl implements HomeworkService{
         assignmentHomeworkRequest.getUsername()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
-                            .id(new PersonalHomeworkPk(requestUser))
+                            .id(new PersonalHomeworkPk(homework.getId(), requestUser))
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(null)
                             .content(null)
@@ -180,7 +180,7 @@ public class HomeworkServiceImpl implements HomeworkService{
         changeHomeworkRequest.getUsername()
                 .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
-                            .id(new PersonalHomeworkPk(username))
+                            .id(new PersonalHomeworkPk(homeworkId, username))
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(LocalDateTime.now())
                             .content(null)
