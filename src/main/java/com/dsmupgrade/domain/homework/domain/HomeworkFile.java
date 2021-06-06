@@ -13,11 +13,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 public class HomeworkFile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @EmbeddedId
+    private HomeworkFilePk id;
+
     private String name;
 
     @ManyToOne
-    private Homework homework;
+    @JoinColumn(name = "id")
+    private PersonalHomework personalHomework;
+
+
 }

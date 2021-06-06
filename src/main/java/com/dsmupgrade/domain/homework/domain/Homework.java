@@ -28,7 +28,4 @@ public class Homework {
 
     @Column(nullable = false)
     private LocalDateTime deadline;
-
-    @OneToMany
-    private List<HomeworkFile> homeworkFile;
 }

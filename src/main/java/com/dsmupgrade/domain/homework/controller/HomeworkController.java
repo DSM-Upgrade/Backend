@@ -1,14 +1,14 @@
 package com.dsmupgrade.domain.homework.controller;
 
-import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.ChangeHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.ReturnHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
-import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
+import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.UserRequest;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
 import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,38 +21,44 @@ public class HomeworkController {
     private final HomeworkService homeworkService;
     private final AuthenticationFacade authenticationFacade;
 
-    @GetMapping("/list")
-    public List<UserAllHomeworkListResponse> getHomeworkList(){ // 유저마다 할당된 숙제의 리스트를 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
+    @GetMapping
+    public List<HomeworkListResponse> getHomeworkList() {
         return homeworkService.getHomeworkList(authenticationFacade.getUsername());
     }
 
-    @GetMapping("/content/{homeworkId}")
-    public UserHomeworkResponse getUserHomework(@PathVariable("homeworkId") int homeworkId){ // 유저마다 할당된 숙제의 내용을 받아옴 (반환은 되었지만, 완료가 되지 않은 것도 포함)
-        return homeworkService.getUserHomework(authenticationFacade.getUsername(), homeworkId);
+    @GetMapping("/{id}")
+    public HomeworkContentResponse getHomeworkContent(@PathVariable("id") int id) {
+        return homeworkService.getHomeworkContent(authenticationFacade.getUsername(), id);
     }
 
-    @PostMapping("/assignment")
-    public void assignmentHomework(@RequestBody @Valid AssignmentHomeworkRequest assignmentHomeworkRequest){ // 유저에게 숙제 할당
-        homeworkService.assignmentHomework(authenticationFacade.getUsername(), assignmentHomeworkRequest);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public void assignmentHomework(@Valid @RequestBody HomeworkRequest requset) {
+        homeworkService.assignmentHomework(requset);
     }
 
-    @PostMapping("/return")
-    public void returnHomework(@RequestBody @Valid ReturnHomeworkRequest returnHomeworkRequest){ // 숙제 반환
-        homeworkService.returnHomework(authenticationFacade.getUsername(), returnHomeworkRequest);
+    @PutMapping("/{id}/personal-homework")
+    public void submitHomework(@PathVariable("id") int id, @Valid @RequestBody PersonalHomeworkRequest request) {
+        homeworkService.submitHomework(id, request);
     }
 
-    @PostMapping("/completion")
-    public void completionHomework(@RequestBody @Valid CompletionHomeworkRequest completionHomeworkRequest){ // 숙제 완료
-        homeworkService.completionHomework(completionHomeworkRequest);
+    @PostMapping("/{id}/personal-homework")
+    public void finishHomework(@PathVariable("id") int id, @Valid @RequestBody UserRequest request) {
+        homeworkService.finishHomework(id, request.getUsername());
     }
 
-    @PatchMapping("/change")
-    public void changeHomework(@RequestBody @Valid ChangeHomeworkRequest changeHomeworkRequest){ // 할당한 숙제의 내용을 변경
-        homeworkService.changeHomework(authenticationFacade.getUsername(), changeHomeworkRequest);
+    @PatchMapping("/{id}/personal-homework")
+    public void returnHomework(@PathVariable("id") int id, @Valid @RequestBody UserRequest request) {
+        homeworkService.returnHomework(id, request.getUsername());
     }
 
-    @DeleteMapping("/elimination/{homeworkId}")
-    public void deleteHomework(@PathVariable("homeworkId") Integer homeworkId){ // 숙제를 삭제
-        homeworkService.deleteHomework(homeworkId);
+    @PatchMapping("/{id}")
+    public void changeHomework(@PathVariable("id") int id, @Valid @RequestBody HomeworkRequest requset) {
+        homeworkService.changeHomework(id, requset);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteHomework(@PathVariable("id") int id) {
+        homeworkService.deleteHomework(id);
     }
 }
