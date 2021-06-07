@@ -38,23 +38,24 @@ public class HomeworkController {
     }
 
     @PutMapping("/{id}/personal-homework")
+    @ResponseStatus(HttpStatus.CREATED)
     public void submitHomework(@PathVariable("id") int id, @Valid @RequestBody PersonalHomeworkRequest request) {
-        homeworkService.submitHomework(id, request);
-    }
-
-    @PostMapping("/{id}/personal-homework")
-    public void finishHomework(@PathVariable("id") int id, @Valid @RequestBody UserRequest request) {
-        homeworkService.finishHomework(id, request.getUsername());
+        homeworkService.submitHomework(id, authenticationFacade.getUsername(), request);
     }
 
     @PatchMapping("/{id}/personal-homework")
-    public void returnHomework(@PathVariable("id") int id, @Valid @RequestBody UserRequest request) {
-        homeworkService.returnHomework(id, request.getUsername());
+    public void resubmitHomework(@PathVariable("id") int id, @Valid @RequestBody PersonalHomeworkRequest request) {
+        homeworkService.resubmitHomework(id, authenticationFacade.getUsername(), request);
+    }
+
+    @PostMapping("/{id}/personal-homework")
+    public void changeHomeworkStatus(@PathVariable("id") int id, @Valid @RequestBody UserRequest request) {
+        homeworkService.changeHomeworkStatus(id, request);
     }
 
     @PatchMapping("/{id}")
-    public void changeHomework(@PathVariable("id") int id, @Valid @RequestBody HomeworkRequest requset) {
-        homeworkService.changeHomework(id, requset);
+    public void changeHomework(@PathVariable("id") int id, @Valid @RequestBody HomeworkRequest request) {
+        homeworkService.changeHomework(id, request);
     }
 
     @DeleteMapping("/{id}")

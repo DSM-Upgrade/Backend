@@ -17,5 +17,8 @@ public class HomeworkFilePk implements Serializable {
     private Integer homeworkId;
 
     @Column(name = "username")
-    private String studentUsername;
+    private String username;
+
+    @Column(name = "name")
+    private String name;
 }

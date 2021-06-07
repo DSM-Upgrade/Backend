@@ -28,4 +28,7 @@ public class Homework {
 
     @Column(nullable = false)
     private LocalDateTime deadline;
+
+    @OneToMany(mappedBy = "homework")
+    List<PersonalHomework> personalHomeworks;
 }

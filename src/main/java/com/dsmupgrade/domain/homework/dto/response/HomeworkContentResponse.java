@@ -32,7 +32,7 @@ public class HomeworkContentResponse {
                 .content(homework.getContent())
                 .returnContent(personalHomework.getContent())
                 .files(personalHomework.getHomeworkFile()
-                        .stream().map(HomeworkFile::getName)
+                        .stream().map((homeworkFile)->homeworkFile.getId().getName())
                         .collect(Collectors.toList()))
                 .build();
     }

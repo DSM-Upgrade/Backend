@@ -16,8 +16,6 @@ public class HomeworkFile {
     @EmbeddedId
     private HomeworkFilePk id;
 
-    private String name;
-
     @ManyToOne
     @JoinColumn(name = "id")
     private PersonalHomework personalHomework;
