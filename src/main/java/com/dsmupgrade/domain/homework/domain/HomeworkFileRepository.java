@@ -5,8 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface HomeworkFileRepository extends JpaRepository<HomeworkFile, HomeworkFilePk> {
-    List<HomeworkFile> findByIdHomeworkIdAndUsername(int id, String username);
-    void deleteByIdHomeworkIdAndUsername(int id, String username);
+    List<HomeworkFile> findByIdHomeworkIdAndIdUsername(int id, String username);
+    void deleteByIdHomeworkIdAndIdUsername(int id, String username);
 }

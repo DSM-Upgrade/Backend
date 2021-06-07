@@ -17,7 +17,6 @@ public class HomeworkFile {
     private HomeworkFilePk id;
 
     @ManyToOne
-    @JoinColumn(name = "id")
     private PersonalHomework personalHomework;
 
 

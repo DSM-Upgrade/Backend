@@ -26,7 +26,7 @@ public class HomeworkListResponse {
                 .createdAt(homework.getCreatedAt())
                 .deadline(homework.getDeadline())
                 .content(homework.getContent())
-                .status(personalHomework.getStatus().toString())
+                .status(personalHomework.getStatus().name())
                 .build();
     }
 }

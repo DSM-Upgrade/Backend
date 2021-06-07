@@ -241,10 +241,10 @@ public class HomeworkServiceImpl implements HomeworkService{
     }
 
     private void deleteHomeworkFile(int id, String username){
-        homeworkFileRepository.findByIdHomeworkIdAndUsername(id, username)
+        homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username)
                 .forEach((file)->{
                     fileUploader.delete(file.getId().getName());
                 });
-        homeworkFileRepository.deleteByIdHomeworkIdAndUsername(id, username);
+        homeworkFileRepository.deleteByIdHomeworkIdAndIdUsername(id, username);
     }
 }
