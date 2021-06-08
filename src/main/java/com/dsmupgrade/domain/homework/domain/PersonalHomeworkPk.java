@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Embeddable
-public class PersonalHomeworkPk implements Serializable {
+    public class PersonalHomeworkPk implements Serializable {
     @Column(name = "homework_id")
     private int homeworkId;
 

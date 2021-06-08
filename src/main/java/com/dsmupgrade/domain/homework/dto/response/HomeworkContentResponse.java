@@ -24,6 +24,9 @@ public class HomeworkContentResponse {
 
     public static HomeworkContentResponse from(PersonalHomework personalHomework) {
         Homework homework = personalHomework.getHomework();
+        List<String> files = personalHomework.getHomeworkFile()==null ?
+            null : personalHomework.getHomeworkFile().stream().map(homeworkFile-> {return homeworkFile.getId().getName();})
+                    .collect(Collectors.toList());
         return HomeworkContentResponse.builder()
                 .title(homework.getTitle())
                 .createdAt(homework.getCreatedAt())
@@ -31,9 +34,7 @@ public class HomeworkContentResponse {
                 .returnAt(personalHomework.getSubmittedAt())
                 .content(homework.getContent())
                 .returnContent(personalHomework.getContent())
-                .files(personalHomework.getHomeworkFile()
-                        .stream().map((homeworkFile)->homeworkFile.getId().getName())
-                        .collect(Collectors.toList()))
+                .files(files)
                 .build();
     }
 }

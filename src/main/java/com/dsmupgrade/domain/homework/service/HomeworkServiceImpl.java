@@ -63,7 +63,7 @@ public class HomeworkServiceImpl implements HomeworkService{
     @Transactional
     public void assignmentHomework(HomeworkRequest request) {
 
-        if(studentRepository.existsByUsernameIn(request.getUsernames())) {
+        if(!studentRepository.existsByUsernameIn(request.getUsernames())) {
             throw new StudentNotFoundException();
         }
 
@@ -75,7 +75,7 @@ public class HomeworkServiceImpl implements HomeworkService{
                 .build();
         homeworkRepository.save(homework);
 
-        request.getUsernames().forEach((username)-> {
+        homework.setPersonalHomeworks(request.getUsernames().stream().map((username)-> {
             PersonalHomework personalHomework = PersonalHomework.builder()
                     .id(new PersonalHomeworkPk(homework.getId(), username))
                     .status(PersonalHomeworkStatus.ASSIGNED)
@@ -84,7 +84,10 @@ public class HomeworkServiceImpl implements HomeworkService{
                     .homework(homework)
                     .build();
             personalHomeworkRepository.save(personalHomework);
-        });
+            return personalHomework;
+        }).collect(Collectors.toList()));
+
+        homeworkRepository.save(homework);
 
     }
 
@@ -130,13 +133,18 @@ public class HomeworkServiceImpl implements HomeworkService{
     }
 
     private void submitHomeworkFile(int id, String username, PersonalHomeworkRequest request) {
-        request.getFiles().forEach((file)-> {
+        PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username))
+                .orElseThrow(()->new HomeworkNotFoundException(id, username));
+
+        personalHomework.setHomeworkFile(request.getFiles().stream().map((file)-> {
             HomeworkFile homeworkFile = HomeworkFile.builder()
                     .id(new HomeworkFilePk(id, username, uploadFile(username, file)))
                     .personalHomework(personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username)).get())
                     .build();
             homeworkFileRepository.save(homeworkFile);
-        });
+            return homeworkFile;
+        }).collect(Collectors.toList()));
+        personalHomeworkRepository.save(personalHomework);
     }
 
     @Override
@@ -187,13 +195,18 @@ public class HomeworkServiceImpl implements HomeworkService{
                     .build();
             personalHomeworkRepository.save(personalHomework);
         });
+        homework.setPersonalHomeworks(personalHomeworkRepository.findByIdHomeworkId(id));
+        homeworkRepository.save(homework);
     }
 
     private List<String> getOriginUsers(int id) {
         Homework homework = homeworkRepository.findById(id).orElseThrow(()-> new HomeworkNotFoundException(id));
-        return homework.getPersonalHomeworks()
-                .stream().map((personalHomework)-> personalHomework.getId().getStudentUsername())
-                .collect(Collectors.toList());
+        if(homework.getPersonalHomeworks() != null) {
+            return homework.getPersonalHomeworks()
+                    .stream().map((personalHomework) -> personalHomework.getId().getStudentUsername())
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
     private List<String> getDeleteUsers(List<String> users, List<String> originUsers) {
@@ -225,8 +238,10 @@ public class HomeworkServiceImpl implements HomeworkService{
         List<String> users = getOriginUsers(id);
 
         users.forEach((user)->{
+            if(!homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, user).isEmpty()){
                 deleteHomeworkFile(id, user);
-                personalHomeworkRepository.deleteById(new PersonalHomeworkPk(id, user));
+            }
+            personalHomeworkRepository.deleteById(new PersonalHomeworkPk(id, user));
         });
 
         homeworkRepository.deleteById(id);

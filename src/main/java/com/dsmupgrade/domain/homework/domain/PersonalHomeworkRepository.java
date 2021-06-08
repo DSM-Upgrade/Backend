@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PersonalHomeworkRepository extends JpaRepository<PersonalHomework, PersonalHomeworkPk> {
     List<PersonalHomework> findByIdStudentUsername(String username);
+    List<PersonalHomework> findByIdHomeworkId(int id);
     Optional<PersonalHomework> findById(PersonalHomeworkPk id);
     void deleteById(PersonalHomeworkPk id);
 }

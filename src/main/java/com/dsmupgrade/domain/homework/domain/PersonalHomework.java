@@ -30,8 +30,10 @@ public class PersonalHomework {
 
     @ManyToOne
     @MapsId("homeworkId")
+    @JoinColumn(name = "Homework_id")
     private Homework homework;
 
+    @Setter
     @OneToMany(mappedBy = "personalHomework")
     private List<HomeworkFile> homeworkFile;
 }
