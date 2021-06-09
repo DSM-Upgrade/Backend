@@ -2,17 +2,25 @@ package com.dsmupgrade.domain.homework.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.dsmupgrade.domain.homework.domain.HomeworkFileRepository;
+import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
 import com.dsmupgrade.global.S3FileUploader;
 import com.dsmupgrade.global.error.exception.InvalidFileTypeException;
+import com.dsmupgrade.global.error.exception.InvalidInputValueException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
 public class S3HomeworkFileUploader extends S3FileUploader {
+
+    private final HomeworkFileRepository homeworkFileRepository;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
@@ -20,8 +28,9 @@ public class S3HomeworkFileUploader extends S3FileUploader {
     @Value("${file.path.homeworkfile-image}")
     private String filePath;
 
-    public S3HomeworkFileUploader(AmazonS3Client s3Client) {
+    public S3HomeworkFileUploader(AmazonS3Client s3Client, HomeworkFileRepository homeworkFileRepository) {
         super(s3Client);
+        this.homeworkFileRepository = homeworkFileRepository;
     }
 
     @Override
@@ -54,5 +63,21 @@ public class S3HomeworkFileUploader extends S3FileUploader {
     public void delete(String filename){
         DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucket, filename);
         super.s3Client.deleteObject(deleteObjectRequest);
+    }
+
+    public String uploadFile(String username, MultipartFile file) {
+        try {
+            return upload(username, file, "homework");
+        } catch (IOException exception) {
+            throw new InvalidInputValueException();
+        }
+    }
+
+    public void deleteHomeworkFile(int id, String username) {
+        homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username)
+                .forEach((file) -> {
+                    delete(file.getId().getName());
+                });
+        homeworkFileRepository.deleteByIdHomeworkIdAndIdUsername(id, username);
     }
 }
