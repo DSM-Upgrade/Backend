@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,17 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AssignmentHomeworkRequest {
+public class HomeworkRequest {
     @NotNull
-    private List<String> username;
-    @NotNull
-    private String homeworkTitle;
-    @NotNull
-    private String homeworkContent;
+    private String title;
+
+    private String content;
 
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm:ss")
     private LocalDateTime deadline;
 
-    private List<MultipartFile> homeworkFile;
+    @NotNull
+    private List<String> usernames;
 }

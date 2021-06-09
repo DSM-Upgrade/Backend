@@ -15,20 +15,22 @@ import java.util.List;
 public class Homework {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "title")
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "content")
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "deadline")
     private LocalDateTime deadline;
 
-    @OneToMany
-    private List<HomeworkFile> homeworkFile;
+    @Setter
+    @OneToMany(mappedBy = "homework")
+    private List<PersonalHomework> personalHomeworks;
 }

@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface PersonalHomeworkRepository extends JpaRepository<PersonalHomework, Integer> {
-    Optional<PersonalHomework> findByHomeworkId(Integer integer);
+public interface PersonalHomeworkRepository extends JpaRepository<PersonalHomework, PersonalHomeworkPk> {
     List<PersonalHomework> findByIdStudentUsername(String username);
+    List<PersonalHomework> findByIdHomeworkId(int id);
     Optional<PersonalHomework> findById(PersonalHomeworkPk id);
-    void deleteByHomeworkId(Integer id);
+    void deleteById(PersonalHomeworkPk id);
 }
