@@ -6,10 +6,10 @@ import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
-import com.dsmupgrade.domain.homework.service.CheckFacade;
+import com.dsmupgrade.domain.homework.service.CheckHomeworkService;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
 import com.dsmupgrade.domain.homework.service.S3HomeworkFileUploader;
-import com.dsmupgrade.domain.homework.service.UsersFacade;
+import com.dsmupgrade.domain.homework.service.UsersRetrieveService;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.dsmupgrade.global.error.exception.InvalidInputValueException;
@@ -31,12 +31,12 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final S3HomeworkFileUploader fileUploader;
     private final HomeworkFileRepository homeworkFileRepository;
 
-    private final UsersFacade usersFacade;
-    private final CheckFacade checkFacade;
+    private final UsersRetrieveService usersRetrieveService;
+    private final CheckHomeworkService checkHomeworkService;
 
     @Override
     public List<HomeworkListResponse> getHomeworkList(String username) {
-        checkFacade.checkTimeOut(username);
+        checkHomeworkService.checkTimeOut(username);
         return personalHomeworkRepository.findByIdStudentUsername(username)
                 .stream().map(HomeworkListResponse::from)
                 .collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional
     public void submitHomework(int id, String username, PersonalHomeworkRequest request) {
-        checkFacade.checkPersonalHomework(id, username);
+        checkHomeworkService.checkPersonalHomework(id, username);
         submitPersonalHomework(id, username, request.getContent());
 
         if (request.getFiles() != null) {
@@ -98,7 +98,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional
     public void resubmitHomework(int id, String username, PersonalHomeworkRequest request) {
-        checkFacade.checkPersonalHomework(id, username);
+        checkHomeworkService.checkPersonalHomework(id, username);
         submitPersonalHomework(id, username, request.getContent());
 
         fileUploader.deleteHomeworkFile(id, username);
@@ -158,9 +158,9 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .orElseThrow(() -> new HomeworkNotFoundException(id));
 
         List<String> users = request.getUsernames();
-        List<String> originUsers = usersFacade.getOriginUsers(id);
-        List<String> deleteUsers = usersFacade.getDeleteUsers(users, originUsers);
-        List<String> addUsers = usersFacade.getAddUsers(users, originUsers);
+        List<String> originUsers = usersRetrieveService.getOriginUsers(id);
+        List<String> deleteUsers = usersRetrieveService.getDeleteUsers(users, originUsers);
+        List<String> addUsers = usersRetrieveService.getAddUsers(users, originUsers);
 
         for(String user : deleteUsers){
             fileUploader.deleteHomeworkFile(id, user);
@@ -195,7 +195,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override public void deleteHomework(int id) {
         homeworkRepository.findById(id).orElseThrow(() -> new HomeworkNotFoundException(id));
 
-        List<String> users = usersFacade.getOriginUsers(id);
+        List<String> users = usersRetrieveService.getOriginUsers(id);
 
         for(String user : users){
             if (!homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, user).isEmpty()) {

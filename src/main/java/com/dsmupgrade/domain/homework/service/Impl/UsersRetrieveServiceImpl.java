@@ -2,7 +2,7 @@ package com.dsmupgrade.domain.homework.service.Impl;
 
 import com.dsmupgrade.domain.homework.domain.Homework;
 import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
-import com.dsmupgrade.domain.homework.service.UsersFacade;
+import com.dsmupgrade.domain.homework.service.UsersRetrieveService;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UsersFacadeImpl implements UsersFacade {
+public class UsersRetrieveServiceImpl implements UsersRetrieveService {
 
     private final HomeworkRepository homeworkRepository;
 
