@@ -1,4 +1,4 @@
-package com.dsmupgrade.domain.homework.service;
+package com.dsmupgrade.domain.homework.service.Impl;
 
 import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
@@ -6,18 +6,19 @@ import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
+import com.dsmupgrade.domain.homework.service.CheckFacade;
+import com.dsmupgrade.domain.homework.service.HomeworkService;
+import com.dsmupgrade.domain.homework.service.S3HomeworkFileUploader;
+import com.dsmupgrade.domain.homework.service.UsersFacade;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.dsmupgrade.global.error.exception.InvalidInputValueException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,22 +31,12 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final S3HomeworkFileUploader fileUploader;
     private final HomeworkFileRepository homeworkFileRepository;
 
-    private void checkTimeOut(String username) {
-        List<PersonalHomework> personalHomeworkList = personalHomeworkRepository.findByIdStudentUsername(username);
-        personalHomeworkList.forEach(
-                (personalHomework) -> {
-                    if (personalHomework.getHomework().getDeadline().isBefore(LocalDateTime.now())
-                            && personalHomework.getStatus() == PersonalHomeworkStatus.ASSIGNED) {
-                        personalHomework.setStatus(PersonalHomeworkStatus.UNSUBMITTED);
-                        personalHomeworkRepository.save(personalHomework);
-                    }
-                }
-        );
-    }
+    private final UsersFacade usersFacade;
+    private final CheckFacade checkFacade;
 
     @Override
     public List<HomeworkListResponse> getHomeworkList(String username) {
-        checkTimeOut(username);
+        checkFacade.checkTimeOut(username);
         return personalHomeworkRepository.findByIdStudentUsername(username)
                 .stream().map(HomeworkListResponse::from)
                 .collect(Collectors.toList());
@@ -95,7 +86,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional
     public void submitHomework(int id, String username, PersonalHomeworkRequest request) {
-        checkPersonalHomework(id, username);
+        checkFacade.checkPersonalHomework(id, username);
         submitPersonalHomework(id, username, request.getContent());
 
         if (request.getFiles() != null) {
@@ -107,20 +98,15 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional
     public void resubmitHomework(int id, String username, PersonalHomeworkRequest request) {
-        checkPersonalHomework(id, username);
+        checkFacade.checkPersonalHomework(id, username);
         submitPersonalHomework(id, username, request.getContent());
 
-        deleteHomeworkFile(id, username);
+        fileUploader.deleteHomeworkFile(id, username);
 
         if (request.getFiles() != null) {
             submitHomeworkFile(id, username, request);
         }
 
-    }
-
-    private void checkPersonalHomework(int id, String username) {
-        personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username)).orElseThrow(
-                () -> new HomeworkNotFoundException(id, username));
     }
 
     private void submitPersonalHomework(int id, String username, String content) {
@@ -140,7 +126,7 @@ public class HomeworkServiceImpl implements HomeworkService {
         personalHomework.setHomeworkFile(
                 request.getFiles().stream().map((file) -> {
                     HomeworkFile homeworkFile = HomeworkFile.builder()
-                            .id(new HomeworkFilePk(id, username, uploadFile(username, file)))
+                            .id(new HomeworkFilePk(id, username, fileUploader.uploadFile(username, file)))
                             .personalHomework(personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username)).get())
                             .build();
                     homeworkFileRepository.save(homeworkFile);
@@ -172,14 +158,14 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .orElseThrow(() -> new HomeworkNotFoundException(id));
 
         List<String> users = request.getUsernames();
-        List<String> originUsers = getOriginUsers(id);
-        List<String> deleteUsers = getDeleteUsers(users, originUsers);
-        List<String> addUsers = getAddUsers(users, originUsers);
+        List<String> originUsers = usersFacade.getOriginUsers(id);
+        List<String> deleteUsers = usersFacade.getDeleteUsers(users, originUsers);
+        List<String> addUsers = usersFacade.getAddUsers(users, originUsers);
 
-        deleteUsers.forEach((user) -> {
-            deleteHomeworkFile(id, user);
+        for(String user : deleteUsers){
+            fileUploader.deleteHomeworkFile(id, user);
             personalHomeworkRepository.deleteById(new PersonalHomeworkPk(id, user));
-        });
+        }
 
         Homework homework = Homework.builder()
                 .id(id)
@@ -190,7 +176,7 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .build();
         homeworkRepository.save(homework);
 
-        addUsers.forEach((user) -> {
+        for(String user : addUsers){
             PersonalHomework personalHomework = PersonalHomework.builder()
                     .id(new PersonalHomeworkPk(id, user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
@@ -199,70 +185,25 @@ public class HomeworkServiceImpl implements HomeworkService {
                     .homework(homework)
                     .build();
             personalHomeworkRepository.save(personalHomework);
-        });
+        }
+
         homework.setPersonalHomeworks(personalHomeworkRepository.findByIdHomeworkId(id));
         homeworkRepository.save(homework);
-    }
-
-    private List<String> getOriginUsers(int id) {
-        Homework homework = homeworkRepository.findById(id).orElseThrow(() -> new HomeworkNotFoundException(id));
-        if (homework.getPersonalHomeworks() != null) {
-            return homework.getPersonalHomeworks()
-                    .stream().map((personalHomework) -> personalHomework.getId().getStudentUsername())
-                    .collect(Collectors.toList());
-        }
-        return new ArrayList<>();
-    }
-
-    private List<String> getDeleteUsers(List<String> users, List<String> originUsers) {
-        List<String> deleteUsers = new ArrayList<String>();
-        for (String value : originUsers) {
-            if (!users.contains(value)) {
-                deleteUsers.add(value);
-            }
-        }
-        return deleteUsers;
-    }
-
-    private List<String> getAddUsers(List<String> users, List<String> originUsers) {
-        List<String> addUsers = new ArrayList<String>();
-        for (String value : users) {
-            if (!originUsers.contains(value)) {
-                addUsers.add(value);
-            }
-        }
-        return addUsers;
     }
 
 
     @Override public void deleteHomework(int id) {
         homeworkRepository.findById(id).orElseThrow(() -> new HomeworkNotFoundException(id));
 
-        List<String> users = getOriginUsers(id);
+        List<String> users = usersFacade.getOriginUsers(id);
 
-        users.forEach((user) -> {
+        for(String user : users){
             if (!homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, user).isEmpty()) {
-                deleteHomeworkFile(id, user);
+                fileUploader.deleteHomeworkFile(id, user);
             }
             personalHomeworkRepository.deleteById(new PersonalHomeworkPk(id, user));
-        });
+        }
 
         homeworkRepository.deleteById(id);
-    }
-
-    private String uploadFile(String username, MultipartFile file) {
-        try {
-            return fileUploader.upload(username, file, "homework");
-        } catch (IOException exception) {
-            throw new InvalidInputValueException(); // TODO change exception
-        }
-    }
-
-    private void deleteHomeworkFile(int id, String username) {
-        homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username)
-                .forEach((file) -> {
-                    fileUploader.delete(file.getId().getName());
-                });
-        homeworkFileRepository.deleteByIdHomeworkIdAndIdUsername(id, username);
     }
 }
