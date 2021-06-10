@@ -12,10 +12,13 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Embeddable
-    public class PersonalHomeworkPk implements Serializable {
+public class HomeworkFilePk implements Serializable {
     @Column(name = "homework_id")
-    private int homeworkId;
+    private Integer homeworkId;
 
-    @Column(name = "student_username")
-    private String studentUsername;
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "name")
+    private String name;
 }

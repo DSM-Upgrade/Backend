@@ -5,4 +5,5 @@ public enum PersonalHomeworkStatus {
     SUBMITTED,
     UNSUBMITTED,
     FINISHED,
+    RETURNED,
 }

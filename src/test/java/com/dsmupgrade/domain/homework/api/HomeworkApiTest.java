@@ -2,14 +2,15 @@ package com.dsmupgrade.domain.homework.api;
 
 import com.dsmupgrade.IntegrationTest;
 import com.dsmupgrade.domain.homework.domain.*;
-import com.dsmupgrade.domain.homework.dto.request.AssignmentHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.ChangeHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.CompletionHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.ReturnHomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.response.UserAllHomeworkListResponse;
-import com.dsmupgrade.domain.homework.dto.response.UserHomeworkResponse;
+import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
+import com.dsmupgrade.domain.homework.dto.request.UserRequest;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
+import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.h2.engine.User;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,14 +31,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class HomeworkApiTest extends IntegrationTest {
 
-    private static final String registeredUsername = "register123";
-
     @Autowired
     private HomeworkRepository homeworkRepository;
     @Autowired
     private PersonalHomeworkRepository personalHomeworkRepository;
     @Autowired
+    private HomeworkFileRepository homeworkFileRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    private static final String registeredUsername = "register123";
+
+    @After
+    public void clenaup(){
+        homeworkFileRepository.deleteAll();
+        personalHomeworkRepository.deleteAll();
+        homeworkRepository.deleteAll();
+    }
 
     private Homework addHomework(LocalDateTime deadline){
         Homework homework = Homework.builder()
@@ -45,7 +56,6 @@ public class HomeworkApiTest extends IntegrationTest {
                 .content("test")
                 .createdAt(LocalDateTime.now())
                 .deadline(deadline)
-                .homeworkFile(null)
                 .build();
         homeworkRepository.save(homework);
         return homework;
@@ -61,16 +71,10 @@ public class HomeworkApiTest extends IntegrationTest {
                     .submittedAt(null)
                     .content("test")
                     .homework(homework)
-                    .personalHomeworkFile(null)
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }
-    }
-
-    @After
-    public void clenaup(){
-        personalHomeworkRepository.deleteAll();
-        homeworkRepository.deleteAll();
+        homework.setPersonalHomeworks(personalHomeworkRepository.findByIdHomeworkId(homework.getId()));
     }
 
     private List<Homework> makeHomeworkList(int amount){
@@ -82,208 +86,322 @@ public class HomeworkApiTest extends IntegrationTest {
         return homework;
     }
 
+
     @Test
     @WithMockUser(username = registeredUsername)
-    public void 유저_할당된_숙제리스트() throws Exception {
+    public void 숙제_리스트_받아오기_성공() throws Exception {
         //given
         List<Homework> homeworks = makeHomeworkList(10);
         //when
-        ResultActions resultActions = requestGetUserHomeworkList();
-
+        ResultActions resultActions = requestGetHomeworkList();
         //then
         MvcResult result = resultActions
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
 
-        List<UserAllHomeworkListResponse> response = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<List<UserAllHomeworkListResponse>>() {});
+        List<HomeworkListResponse> response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<HomeworkListResponse>>() {});
         for (int i=0; i<response.size(); i++) {
-            Assertions.assertEquals(response.get(i).getHomeworkId(), homeworks.get(i).getId());
-            Assertions.assertEquals(response.get(i).getHomeworkStart(), homeworks.get(i).getCreatedAt());
-            Assertions.assertEquals(response.get(i).getHomeworkEnd(), homeworks.get(i).getDeadline());
-            Assertions.assertEquals(response.get(i).getHomeworkTitle(), homeworks.get(i).getTitle());
-            Assertions.assertEquals(response.get(i).getHomeworkContent(), homeworks.get(i).getContent());
-            if(response.get(i).getHomeworkEnd().isBefore(LocalDateTime.now()))
-                Assertions.assertEquals(response.get(i).getHomeworkStatus(), "UNSUBMITTED");
-            else Assertions.assertEquals(response.get(i).getHomeworkStatus(), "ASSIGNED");
+            Assertions.assertEquals(response.get(i).getId(), homeworks.get(i).getId());
+            Assertions.assertEquals(response.get(i).getCreatedAt(), homeworks.get(i).getCreatedAt());
+            Assertions.assertEquals(response.get(i).getDeadline(), homeworks.get(i).getDeadline());
+            Assertions.assertEquals(response.get(i).getTitle(), homeworks.get(i).getTitle());
+            Assertions.assertEquals(response.get(i).getContent(), homeworks.get(i).getContent());
+            if(response.get(i).getDeadline().isBefore(LocalDateTime.now()))
+                Assertions.assertEquals(response.get(i).getStatus(), "UNSUBMITTED");
+            else Assertions.assertEquals(response.get(i).getStatus(), "ASSIGNED");
         }
     }
 
-    private ResultActions requestGetUserHomeworkList() throws Exception {
-        return requestMvc(get("/homework/list"));
+    private ResultActions requestGetHomeworkList() throws Exception {
+        return requestMvc(get("/homework"));
     }
 
     @Test
     @WithMockUser(username = registeredUsername)
-    public void 유저_할당된_숙제내용() throws Exception {
+    public void 숙제_내용_받아오기_성공() throws Exception {
         //given
-        List<Homework> homeworks = makeHomeworkList(10);
-        List<PersonalHomework> personalHomeworks = homeworks.stream().map(
-                (homework)->{
-                    return personalHomeworkRepository.findByHomeworkId(homework.getId()).get();
-                }
-        ).collect(Collectors.toList());
-
-        for(int i=0; i<=9; i++) {
+        Homework homework = makeHomeworkList(1).get(0);
         //when
-            ResultActions resultActions = requestGetUserHomeworkContent(homeworks.get(i).getId());
+        ResultActions resultActions = requestGetHomeworkContent(homework.getId());
         //then
-            MvcResult result = resultActions
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn();
-            UserHomeworkResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), UserHomeworkResponse.class);
-            Assertions.assertEquals(response.getHomeworkTitle(), homeworks.get(i).getTitle());
-            Assertions.assertEquals(response.getHomeworkStart(), homeworks.get(i).getCreatedAt());
-            Assertions.assertEquals(response.getHomeworkEnd(), homeworks.get(i).getDeadline());
-            Assertions.assertEquals(response.getHomeworkSubmittedDate(), personalHomeworks.get(i).getSubmittedAt());
-            Assertions.assertEquals(response.getHomeworkContent(), homeworks.get(i).getContent());
-            Assertions.assertEquals(response.getHomeworkReturn(), personalHomeworks.get(i).getContent());
-            Assertions.assertEquals(response.getHomeworkFileName(), homeworks.get(i).getHomeworkFile());
-            Assertions.assertEquals(response.getPersonalHomeworkFileName(), personalHomeworks.get(i).getPersonalHomeworkFile());
-        }
+        MvcResult result = resultActions.andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        HomeworkContentResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<Optional<HomeworkContentResponse>>() {})
+                .orElseThrow(()->new HomeworkNotFoundException(homework.getId()));
+
+        PersonalHomework personalHomework = personalHomeworkRepository
+                .findById(new PersonalHomeworkPk(homework.getId(), registeredUsername))
+                .orElseThrow(()->new HomeworkNotFoundException(homework.getId()));
+
+        Assertions.assertEquals(response.getTitle(), homework.getTitle());
+        Assertions.assertEquals(response.getCreatedAt(), homework.getCreatedAt());
+        Assertions.assertEquals(response.getDeadline(), homework.getDeadline());
+        Assertions.assertEquals(response.getReturnAt(), personalHomework.getSubmittedAt());
+        Assertions.assertEquals(response.getContent(), homework.getContent());
+        Assertions.assertEquals(response.getReturnContent(), personalHomework.getContent());
+        Assertions.assertNull(response.getFiles());
     }
 
-    private ResultActions requestGetUserHomeworkContent(int homeworkId) throws Exception {
-        return requestMvc(get("/homework/content/" + homeworkId));
+    private ResultActions requestGetHomeworkContent(int id) throws Exception {
+        return requestMvc(get("/homework/" + id));
     }
 
     @Test
-    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 파일없는_숙제할당() throws Exception{
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_할당_성공() throws Exception {
         //given
-        List<String> userName = new ArrayList<>();
-        userName.add(registeredUsername);
-        AssignmentHomeworkRequest assignmentHomeworkRequest = AssignmentHomeworkRequest.builder()
-                .username(userName)
-                .homeworkTitle("test")
-                .homeworkContent("test")
-                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
-                .homeworkFile(null)
+        List<String> users = new ArrayList<String>();
+        users.add(registeredUsername);
+        HomeworkRequest homeworkRequest = HomeworkRequest.builder()
+                .title("TestTitle")
+                .content("TestContent")
+                .deadline(LocalDateTime.of(LocalDateTime.now().getYear(), Month.JANUARY, LocalDateTime.now().getDayOfMonth()+1, 10, 10, 30))
+                .usernames(users)
                 .build();
         //when
-        ResultActions resultActions = assignmentHomework(assignmentHomeworkRequest);
+        ResultActions resultActions = requestAssignmentHomework(homeworkRequest);
         //then
-        resultActions
-                .andExpect(status().isOk())
+        resultActions.andExpect(status().isCreated())
                 .andDo(print());
 
-        Homework homework = homeworkRepository.findAll().get(0);
-        PersonalHomework personalHomework = personalHomeworkRepository.findByIdStudentUsername(registeredUsername).get(0);
-
-        Assertions.assertEquals(homework.getTitle(), assignmentHomeworkRequest.getHomeworkTitle());
-        Assertions.assertEquals(homework.getContent(), assignmentHomeworkRequest.getHomeworkContent());
-        Assertions.assertEquals(homework.getHomeworkFile(), null);
-        Assertions.assertEquals(personalHomework.getId().getStudentUsername(), assignmentHomeworkRequest.getUsername().get(0));
-        Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.ASSIGNED);
-        Assertions.assertEquals(personalHomework.getContent(), null);
-        Assertions.assertEquals(personalHomework.getPersonalHomeworkFile(), null);
-    }
-
-    private ResultActions assignmentHomework(AssignmentHomeworkRequest dto) throws Exception {
-        return requestMvc(post("/homework/assignment"), dto);
+        Assertions.assertFalse(homeworkRepository.findAll().isEmpty());
+        Assertions.assertFalse(personalHomeworkRepository.findByIdStudentUsername(registeredUsername).isEmpty());
     }
 
     @Test
-    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제반환() throws Exception{
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_할당_실패() throws Exception {
         //given
-        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
-        this.addPersonalHomework(homework);
-        int homeworkId = homework.getId();
-        ReturnHomeworkRequest returnHomeworkRequest = ReturnHomeworkRequest.builder()
-                .homeworkId(homeworkId)
-                .homeworkContent("test")
+        List<String> users = new ArrayList<String>();
+        users.add("테스트코드");
+        HomeworkRequest homeworkRequest = HomeworkRequest.builder()
+                .title("TestTitle")
+                .content("TestContent")
+                .deadline(LocalDateTime.of(LocalDateTime.now().getYear(), Month.JANUARY, LocalDateTime.now().getDayOfMonth()+1, 10, 10, 30))
+                .usernames(users)
                 .build();
         //when
-        ResultActions resultActions = returnHomework(returnHomeworkRequest);
+        ResultActions resultActions = requestAssignmentHomework(homeworkRequest);
         //then
-        resultActions
-                .andExpect(status().isOk())
+        resultActions.andExpect(status().is4xxClientError())
                 .andDo(print());
-        homework = homeworkRepository.findById(homeworkId).get();
-        PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(homeworkId, registeredUsername)).get();
-        Assertions.assertEquals(personalHomework.getHomework().getId(), homeworkId);
+    }
+
+    private ResultActions requestAssignmentHomework(HomeworkRequest dto) throws Exception {
+        return requestMvc(post("/homework"), dto);
+    }
+
+    // TODO 숙제 제출 (숙제 다시 제출 포함)
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_제출_파일없음_성공() throws Exception {
+        //given
+        int id = makeHomeworkList(1).get(0).getId();
+        PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
+                .content("SubmitContent")
+                .files(null)
+                .build();
+        //when
+        ResultActions resultActions = requestSubmitHomework(id, personalHomeworkRequest);
+        //then
+        resultActions.andExpect(status().isCreated());
+
+        PersonalHomework personalHomework =
+                personalHomeworkRepository.findById(new PersonalHomeworkPk(id, registeredUsername))
+                        .orElseThrow(()-> new HomeworkNotFoundException(id, registeredUsername));
+
+        Assertions.assertEquals(personalHomework.getContent(), "SubmitContent");
         Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.SUBMITTED);
-        Assertions.assertEquals(personalHomework.getContent(), "test");
-        Assertions.assertEquals(personalHomework.getSubmittedAt()==null, false);
-    }
-
-    private ResultActions returnHomework(ReturnHomeworkRequest dto) throws Exception {
-        return requestMvc(post("/homework/return"), dto);
     }
 
     @Test
-    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제완료() throws Exception{
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_제출_파일없음_실패() throws Exception {
         //given
-        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
-        this.addPersonalHomework(homework);
-        CompletionHomeworkRequest completionHomeworkRequest = CompletionHomeworkRequest.builder()
+        PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
+                .content("SubmitContent")
+                .files(null)
+                .build();
+        //when
+        ResultActions resultActions = requestSubmitHomework(1, personalHomeworkRequest);
+        //then
+        resultActions.andExpect(status().is4xxClientError());
+    }
+
+    private ResultActions requestSubmitHomework(int id, PersonalHomeworkRequest dto) throws Exception {
+        return requestMvc(put("/homework/" + id + "/personal-homework"), dto);
+    }
+    
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_재제출_파일없음_성공() throws Exception{
+        //given
+        int id = makeHomeworkList(1).get(0).getId();
+        PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
+                .content("ReSubmitContent")
+                .files(null)
+                .build();
+        //when
+        ResultActions resultActions = requestReSubmitHomework(id, personalHomeworkRequest);
+        //then
+        resultActions.andExpect(status().isOk());
+
+        PersonalHomework personalHomework =
+                personalHomeworkRepository.findById(new PersonalHomeworkPk(id, registeredUsername))
+                        .orElseThrow(()-> new HomeworkNotFoundException(id, registeredUsername));
+
+        Assertions.assertEquals(personalHomework.getContent(), "ReSubmitContent");
+        Assertions.assertEquals(personalHomework.getStatus(), PersonalHomeworkStatus.SUBMITTED);
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_재제출_파일없음_실패() throws Exception{
+        //given
+        PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
+                .content("ReSubmitContent")
+                .files(null)
+                .build();
+        //when
+        ResultActions resultActions = requestReSubmitHomework(1, personalHomeworkRequest);
+        //then
+        resultActions.andExpect(status().is4xxClientError());
+    }
+
+    private ResultActions requestReSubmitHomework(int id, PersonalHomeworkRequest dto) throws Exception {
+        return requestMvc(patch("/homework/" + id + "/personal-homework"), dto);
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_상태_변경_성공() throws Exception {
+        //given
+        List<Homework> homeworks = makeHomeworkList(2);
+        UserRequest userRequest1 = UserRequest.builder()
                 .username(registeredUsername)
-                .homeworkId(homework.getId())
+                .status("RETURN")
+                .build();
+        UserRequest userRequest2 = UserRequest.builder()
+                .username(registeredUsername)
+                .status("FINISH")
                 .build();
         //when
-        ResultActions resultActions = comlpleteHomework(completionHomeworkRequest);
+        ResultActions resultActions1 = requestChangeHomeworkStatus(homeworks.get(0).getId(), userRequest1);
+        ResultActions resultActions2 = requestChangeHomeworkStatus(homeworks.get(1).getId(), userRequest2);
         //then
-        resultActions
-                .andExpect(status().isOk())
-                .andDo(print());
-        Assertions.assertEquals(personalHomeworkRepository.findById(new PersonalHomeworkPk(homework.getId(),registeredUsername)).get().getStatus(), PersonalHomeworkStatus.FINISHED);
-    }
+        resultActions1.andExpect(status().isOk());
+        resultActions2.andExpect(status().isOk());
 
-    private ResultActions comlpleteHomework(CompletionHomeworkRequest dto) throws Exception {
-        return requestMvc(post("/homework/completion"), dto);
+        PersonalHomework personalHomework1 = personalHomeworkRepository
+                .findById(new PersonalHomeworkPk(homeworks.get(0).getId(), registeredUsername))
+                .orElseThrow(()->new HomeworkNotFoundException(homeworks.get(0).getId()));
+        PersonalHomework personalHomework2 = personalHomeworkRepository
+                .findById(new PersonalHomeworkPk(homeworks.get(1).getId(), registeredUsername))
+                .orElseThrow(()->new HomeworkNotFoundException(homeworks.get(1).getId()));
+
+        Assertions.assertEquals(personalHomework1.getStatus().name(), "RETURNED");
+        Assertions.assertEquals(personalHomework2.getStatus().name(), "FINISHED");
     }
 
     @Test
-    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제변경_파일없이() throws Exception{
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_상태_변경_실패() throws Exception {
         //given
-        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
-        this.addPersonalHomework(homework);
-        List<String> user = new ArrayList<>();
-        user.add(registeredUsername);
-        ChangeHomeworkRequest changeHomeworkRequest = ChangeHomeworkRequest.builder()
-                .homeworkId(homework.getId())
-                .username(user)
-                .homeworkTitle("newTest")
-                .homeworkContent("newTest")
-                .deadline(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30))
-                .homeworkFile(null)
+        UserRequest userRequest = UserRequest.builder()
+                .username(registeredUsername)
+                .status("RETURN")
                 .build();
         //when
-        ResultActions resultActions = changeHomework(changeHomeworkRequest);
+        ResultActions resultActions = requestChangeHomeworkStatus(1, userRequest);
         //then
-        resultActions
-                .andExpect(status().isOk())
-                .andDo(print());
-        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getTitle(), "newTest");
-        Assertions.assertEquals(homeworkRepository.findById(homework.getId()).get().getContent(), "newTest");
+        resultActions.andExpect(status().is4xxClientError());
     }
 
-    private ResultActions changeHomework(ChangeHomeworkRequest dto) throws Exception {
-        return requestMvc(patch("/homework/change"), dto);
+    private ResultActions requestChangeHomeworkStatus(int id, UserRequest dto) throws Exception {
+        return requestMvc(post("/homework/" + id + "/personal-homework"), dto);
     }
 
     @Test
-    @WithMockUser(username = registeredUsername, roles = { "ADMIN" })
-    public void 숙제삭제_파일없이() throws Exception{
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_변경_성공() throws Exception{
         //given
-        Homework homework = this.addHomework(LocalDateTime.of(2030, Month.JANUARY, 1, 10, 10, 30));
-        this.addPersonalHomework(homework);
+        Homework homework = makeHomeworkList(1).get(0);
+        List<String> users = new ArrayList<>();
+        users.add(registeredUsername);
+        HomeworkRequest homeworkRequest = HomeworkRequest.builder()
+                .title("ChangeTitle")
+                .content("ChangeContent")
+                .deadline(LocalDateTime.now())
+                .usernames(users)
+                .build();
         //when
-        ResultActions resultActions = deleteHomework(homework.getId());
+        ResultActions resultActions = requestChangeHomework(homework.getId(), homeworkRequest);
         //then
-        resultActions
-                .andExpect(status().isOk())
+        resultActions.andExpect(status().isOk())
                 .andDo(print());
+
+        Homework changedHomework = homeworkRepository.findById(homework.getId()).orElseThrow(()-> new HomeworkNotFoundException(homework.getId()));
+        Assertions.assertEquals(changedHomework.getTitle(), "ChangeTitle");
+        Assertions.assertEquals(changedHomework.getContent(), "ChangeContent");
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_변경_실패() throws Exception{
+        //given
+        List<String> users = new ArrayList<>();
+        users.add(registeredUsername);
+        HomeworkRequest homeworkRequest = HomeworkRequest.builder()
+                .title("ChangeTitle")
+                .content("ChangeContent")
+                .deadline(LocalDateTime.now())
+                .usernames(users)
+                .build();
+        //when
+        ResultActions resultActions = requestChangeHomework(1, homeworkRequest);
+        //then
+        resultActions.andExpect(status().is4xxClientError())
+                .andDo(print());
+    }
+
+    private ResultActions requestChangeHomework(int id, HomeworkRequest dto) throws Exception {
+        return requestMvc(patch("/homework/" + id), dto);
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_삭제_성공() throws Exception {
+        //given
+        Homework homework = makeHomeworkList(1).get(0);
+
+        //when
+        ResultActions resultActions = requestDeleteHomework(homework.getId());
+        //then
+        resultActions.andExpect(status().isOk())
+                .andDo(print());
+
         Assertions.assertTrue(homeworkRepository.findById(homework.getId()).isEmpty());
-        Assertions.assertTrue(personalHomeworkRepository.findById(new PersonalHomeworkPk(homework.getId(),registeredUsername)).isEmpty());
+        Assertions.assertTrue(personalHomeworkRepository.findByIdHomeworkId(homework.getId()).isEmpty());
     }
 
-    private ResultActions deleteHomework(int homeworkId) throws Exception {
-        return requestMvc(delete("/homework/elimination/" + homeworkId));
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_삭제_실패() throws Exception {
+        //given
+        //when
+        ResultActions resultActions = requestDeleteHomework(1);
+        //then
+        resultActions.andExpect(status().is4xxClientError())
+                .andDo(print());
+    }
+
+    private ResultActions requestDeleteHomework(int id) throws Exception {
+        return requestMvc(delete("/homework/" + id));
     }
 }

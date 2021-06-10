@@ -13,11 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReturnHomeworkRequest {
+public class PersonalHomeworkRequest {
     @NotNull
-    private Integer homeworkId;
-    @NotNull
-    private String homeworkContent;
+    private String content;
 
-    private List<MultipartFile> personalHomeworkFile;
+    private List<MultipartFile> files;
 }
