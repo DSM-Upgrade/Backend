@@ -66,8 +66,8 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .build();
         homeworkRepository.save(homework);
 
-        homework.setPersonalHomeworks(
-                request.getUsernames().stream().map((username) -> {
+        request.getUsernames()
+                .forEach((username) -> {
                     PersonalHomework personalHomework = PersonalHomework.builder()
                             .id(new PersonalHomeworkPk(homework.getId(), username))
                             .status(PersonalHomeworkStatus.ASSIGNED)
@@ -76,9 +76,9 @@ public class HomeworkServiceImpl implements HomeworkService {
                             .homework(homework)
                             .build();
                     personalHomeworkRepository.save(personalHomework);
-                    return personalHomework;
-                }).collect(Collectors.toList()));
+                });
 
+        homework.setPersonalHomeworks(personalHomeworkRepository.findByIdHomeworkId(homework.getId()));
         homeworkRepository.save(homework);
 
     }
@@ -123,15 +123,14 @@ public class HomeworkServiceImpl implements HomeworkService {
         PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username))
                 .orElseThrow(() -> new HomeworkNotFoundException(id, username));
 
-        personalHomework.setHomeworkFile(
-                request.getFiles().stream().map((file) -> {
-                    HomeworkFile homeworkFile = HomeworkFile.builder()
-                            .id(new HomeworkFilePk(id, username, fileUploader.uploadFile(username, file)))
-                            .personalHomework(personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username)).get())
-                            .build();
-                    homeworkFileRepository.save(homeworkFile);
-                    return homeworkFile;
-                }).collect(Collectors.toList()));
+        request.getFiles().forEach((file) -> {
+            HomeworkFile homeworkFile = HomeworkFile.builder()
+                    .id(new HomeworkFilePk(id, username, fileUploader.uploadFile(username, file)))
+                    .build();
+            homeworkFileRepository.save(homeworkFile);
+        });
+
+        personalHomework.setHomeworkFile(homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username));
         personalHomeworkRepository.save(personalHomework);
     }
 
@@ -150,6 +149,7 @@ public class HomeworkServiceImpl implements HomeworkService {
             default:
                 throw new InvalidInputValueException();
         }
+        personalHomeworkRepository.save(personalHomework);
     }
 
     @Override
