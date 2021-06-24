@@ -15,9 +15,4 @@ import javax.persistence.*;
 public class HomeworkFile {
     @EmbeddedId
     private HomeworkFilePk id;
-
-    @ManyToOne
-    private PersonalHomework personalHomework;
-
-
 }
