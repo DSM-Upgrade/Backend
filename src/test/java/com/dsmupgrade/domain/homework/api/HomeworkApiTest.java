@@ -10,7 +10,6 @@ import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.h2.engine.User;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
