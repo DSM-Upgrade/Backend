@@ -89,7 +89,7 @@ public class HomeworkServiceImpl implements HomeworkService {
         checkHomeworkService.checkPersonalHomework(id, username);
         submitPersonalHomework(id, username, request.getContent());
 
-        if (request.getFiles() != null) {
+        if (!request.getFiles().isEmpty()) {
             submitHomeworkFile(id, username, request);
         }
 
@@ -103,7 +103,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 
         fileUploader.deleteHomeworkFile(id, username);
 
-        if (request.getFiles() != null) {
+        if (!request.getFiles().isEmpty()) {
             submitHomeworkFile(id, username, request);
         }
 
