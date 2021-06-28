@@ -15,4 +15,9 @@ import javax.persistence.*;
 public class HomeworkFile {
     @EmbeddedId
     private HomeworkFilePk id;
+
+    @ManyToOne
+    @MapsId("homeworkId")
+    @JoinColumn(name = "homework_id")
+    private Homework homework;
 }
