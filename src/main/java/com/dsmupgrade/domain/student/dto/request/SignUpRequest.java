@@ -15,15 +15,19 @@ import javax.validation.constraints.Pattern;
 public class SignUpRequest {
 
     @Pattern(regexp = "^[A-za-z0-9]{6,16}$")
+    @NotNull
     private String username;
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$")
+    @NotNull
     private String password;
 
     @Pattern(regexp = "^[1-3][1-4]([01][0-9]|2[0-1])$")
+    @NotNull
     private String studentNum;
 
     @Pattern(regexp = "^[가-힣]{2,4}$")
+    @NotNull
     private String name;
 
     @NotNull
