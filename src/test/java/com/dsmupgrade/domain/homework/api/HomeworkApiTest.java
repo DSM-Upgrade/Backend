@@ -20,9 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -70,6 +68,7 @@ public class HomeworkApiTest extends IntegrationTest {
                     .submittedAt(null)
                     .content("test")
                     .homework(homework)
+                    .homeworkFile(Collections.emptyList())
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }
@@ -77,12 +76,15 @@ public class HomeworkApiTest extends IntegrationTest {
     }
 
     private List<Homework> makeHomeworkList(int amount){
-        List<Homework> homework = new ArrayList<>();
         for(int i=0; i<amount; i++){
-            homework.add(this.addHomework(LocalDateTime.of(LocalDateTime.now().getYear()+4-((int)((Math.random()*10000)%10)), Month.JANUARY, 1, 10, 10, 30)));
-            this.addPersonalHomework(homework.get(i));
+            Homework homework = this.addHomework(LocalDateTime.of(LocalDateTime.now().getYear()+4-((int)((Math.random()*10000)%10)),
+                    Month.JANUARY, 1, 10, 10, 30));
+            this.addPersonalHomework(homework);
+            Homework newHomework = homeworkRepository.findById(homework.getId()).get();
+            newHomework.setPersonalHomeworks(personalHomeworkRepository.findByIdHomeworkId(homework.getId()));
+            homeworkRepository.save(newHomework);
         }
-        return homework;
+        return homeworkRepository.findAll();
     }
 
 
@@ -143,7 +145,7 @@ public class HomeworkApiTest extends IntegrationTest {
         Assertions.assertEquals(response.getReturnAt(), personalHomework.getSubmittedAt());
         Assertions.assertEquals(response.getContent(), homework.getContent());
         Assertions.assertEquals(response.getReturnContent(), personalHomework.getContent());
-        Assertions.assertNull(response.getFiles());
+        Assertions.assertTrue(response.getFiles().isEmpty());
     }
 
     private ResultActions requestGetHomeworkContent(int id) throws Exception {
@@ -204,7 +206,7 @@ public class HomeworkApiTest extends IntegrationTest {
         int id = makeHomeworkList(1).get(0).getId();
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("SubmitContent")
-                .files(null)
+                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestSubmitHomework(id, personalHomeworkRequest);
@@ -225,7 +227,7 @@ public class HomeworkApiTest extends IntegrationTest {
         //given
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("SubmitContent")
-                .files(null)
+                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestSubmitHomework(1, personalHomeworkRequest);
@@ -244,7 +246,7 @@ public class HomeworkApiTest extends IntegrationTest {
         int id = makeHomeworkList(1).get(0).getId();
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("ReSubmitContent")
-                .files(null)
+                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestReSubmitHomework(id, personalHomeworkRequest);
