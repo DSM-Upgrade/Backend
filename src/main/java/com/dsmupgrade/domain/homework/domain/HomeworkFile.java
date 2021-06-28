@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "homework_file")
 public class HomeworkFile {
     @EmbeddedId
     private HomeworkFilePk id;

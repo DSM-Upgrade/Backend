@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "homework")
 public class Homework {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

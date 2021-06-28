@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.function.Consumer;
 
-@Entity
+@Entity(name = "student")
 @Setter(AccessLevel.PRIVATE)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
