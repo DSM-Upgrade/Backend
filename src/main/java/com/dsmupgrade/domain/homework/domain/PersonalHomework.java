@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "personal_homework")
 public class PersonalHomework {
     @EmbeddedId
     private PersonalHomeworkPk id;

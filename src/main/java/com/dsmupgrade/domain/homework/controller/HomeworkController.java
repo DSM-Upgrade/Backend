@@ -33,8 +33,8 @@ public class HomeworkController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void assignmentHomework(@Valid @RequestBody HomeworkRequest requset) {
-        homeworkService.assignmentHomework(requset);
+    public void assignmentHomework(@Valid @RequestBody HomeworkRequest request) {
+        homeworkService.assignmentHomework(request);
     }
 
     @PutMapping("/{id}/personal-homework")

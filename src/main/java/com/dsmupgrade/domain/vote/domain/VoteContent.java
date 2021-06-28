@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "vote_content")
 @Getter
 @Setter
 @Builder
