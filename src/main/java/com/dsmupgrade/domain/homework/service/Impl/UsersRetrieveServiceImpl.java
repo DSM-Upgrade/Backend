@@ -20,7 +20,7 @@ public class UsersRetrieveServiceImpl implements UsersRetrieveService {
     @Override
     public List<String> getOriginUsers(int id) {
         Homework homework = homeworkRepository.findById(id).orElseThrow(() -> new HomeworkNotFoundException(id));
-        if (homework.getPersonalHomeworks().isEmpty()) {
+        if (!homework.getPersonalHomeworks().isEmpty()) {
             return homework.getPersonalHomeworks()
                     .stream().map((personalHomework) -> personalHomework.getId().getStudentUsername())
                     .collect(Collectors.toList());
