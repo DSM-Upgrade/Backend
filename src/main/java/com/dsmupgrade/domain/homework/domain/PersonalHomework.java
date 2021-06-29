@@ -34,6 +34,6 @@ public class PersonalHomework {
     private Homework homework;
 
     @Setter
-    @OneToMany
+    @OneToMany(mappedBy = "personalHomework")
     private List<HomeworkFile> homeworkFile;
 }

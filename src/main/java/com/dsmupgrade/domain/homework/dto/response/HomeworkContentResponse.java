@@ -26,7 +26,7 @@ public class HomeworkContentResponse {
     public static HomeworkContentResponse from(PersonalHomework personalHomework) {
         Homework homework = personalHomework.getHomework();
         List<String> files = personalHomework.getHomeworkFile().isEmpty() ?
-            Collections.emptyList() : personalHomework.getHomeworkFile().stream().map(homeworkFile-> {return homeworkFile.getId().getName();})
+            Collections.emptyList() : personalHomework.getHomeworkFile().stream().map(homeworkFile -> homeworkFile.getId().getName())
                     .collect(Collectors.toList());
         return HomeworkContentResponse.builder()
                 .title(homework.getTitle())

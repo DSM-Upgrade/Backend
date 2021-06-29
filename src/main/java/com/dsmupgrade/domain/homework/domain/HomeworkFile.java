@@ -18,5 +18,9 @@ public class HomeworkFile {
 
     @ManyToOne
     @MapsId("personalHomeworkPk")
+    @JoinColumns({
+            @JoinColumn(name = "homework_id"),
+            @JoinColumn(name = "username")
+    })
     private PersonalHomework personalHomework;
 }
