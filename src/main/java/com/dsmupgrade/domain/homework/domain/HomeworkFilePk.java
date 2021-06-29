@@ -1,6 +1,7 @@
 package com.dsmupgrade.domain.homework.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,13 +13,13 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Embeddable
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class HomeworkFilePk implements Serializable {
-    @Column(name = "homework_id")
-    private Integer homeworkId;
 
-    @Column(name = "username")
-    private String username;
+    @EqualsAndHashCode.Include
+    private PersonalHomeworkPk personalHomeworkPk;
 
+    @EqualsAndHashCode.Include
     @Column(name = "name")
     private String name;
 }
