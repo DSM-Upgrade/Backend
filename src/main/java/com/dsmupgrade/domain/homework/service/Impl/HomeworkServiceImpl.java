@@ -122,15 +122,16 @@ public class HomeworkServiceImpl implements HomeworkService {
     private void submitHomeworkFile(int id, String username, PersonalHomeworkRequest request) {
         PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username))
                 .orElseThrow(() -> new HomeworkNotFoundException(id, username));
+        PersonalHomeworkPk personalHomeworkPk = new PersonalHomeworkPk(id, username);
 
         request.getFiles().forEach((file) -> {
             HomeworkFile homeworkFile = HomeworkFile.builder()
-                    .id(new HomeworkFilePk(id, username, fileUploader.uploadFile(username, file)))
+                    .id(new HomeworkFilePk(personalHomeworkPk, fileUploader.uploadFile(username, file)))
                     .build();
             homeworkFileRepository.save(homeworkFile);
         });
 
-        personalHomework.setHomeworkFile(homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username));
+        personalHomework.setHomeworkFile(homeworkFileRepository.findByIdPersonalHomeworkPk(personalHomeworkPk));
         personalHomeworkRepository.save(personalHomework);
     }
 
@@ -198,7 +199,7 @@ public class HomeworkServiceImpl implements HomeworkService {
         List<String> users = usersRetrieveService.getOriginUsers(id);
 
         for(String user : users){
-            if (!homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, user).isEmpty()) {
+            if (!homeworkFileRepository.findByIdPersonalHomeworkPk(new PersonalHomeworkPk(id, user)).isEmpty()) {
                 fileUploader.deleteHomeworkFile(id, user);
             }
             personalHomeworkRepository.deleteById(new PersonalHomeworkPk(id, user));

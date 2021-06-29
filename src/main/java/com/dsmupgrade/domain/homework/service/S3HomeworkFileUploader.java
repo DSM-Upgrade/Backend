@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.dsmupgrade.domain.homework.domain.HomeworkFileRepository;
 import com.dsmupgrade.domain.homework.domain.HomeworkRepository;
+import com.dsmupgrade.domain.homework.domain.PersonalHomeworkPk;
 import com.dsmupgrade.global.S3FileUploader;
 import com.dsmupgrade.global.error.exception.InvalidFileTypeException;
 import com.dsmupgrade.global.error.exception.InvalidInputValueException;
@@ -74,10 +75,11 @@ public class S3HomeworkFileUploader extends S3FileUploader {
     }
 
     public void deleteHomeworkFile(int id, String username) {
-        homeworkFileRepository.findByIdHomeworkIdAndIdUsername(id, username)
+        PersonalHomeworkPk personalHomeworkPk = new PersonalHomeworkPk(id, username);
+        homeworkFileRepository.findByIdPersonalHomeworkPk(personalHomeworkPk)
                 .forEach((file) -> {
                     delete(file.getId().getName());
                 });
-        homeworkFileRepository.deleteByIdHomeworkIdAndIdUsername(id, username);
+        homeworkFileRepository.deleteByIdPersonalHomeworkPk(personalHomeworkPk);
     }
 }
