@@ -21,7 +21,7 @@ public class HomeworkRequest {
     private String content;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd`T`HH:mm")
     private LocalDateTime deadline;
 
     @NotNull
