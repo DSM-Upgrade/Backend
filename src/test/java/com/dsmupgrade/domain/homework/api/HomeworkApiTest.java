@@ -1,6 +1,8 @@
 package com.dsmupgrade.domain.homework.api;
 
 import com.dsmupgrade.IntegrationTest;
+import com.dsmupgrade.domain.homework.api.dto.HomeworkContentFakeResponse;
+import com.dsmupgrade.domain.homework.api.dto.HomeworkListFakeResponse;
 import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -103,15 +106,18 @@ public class HomeworkApiTest extends IntegrationTest {
                 .andDo(print())
                 .andReturn();
 
-        List<HomeworkListResponse> response = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<List<HomeworkListResponse>>() {});
+        List<HomeworkListFakeResponse> response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<HomeworkListFakeResponse>>() {});
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         for (int i=0; i<response.size(); i++) {
             Assertions.assertEquals(response.get(i).getId(), homeworks.get(i).getId());
-            Assertions.assertEquals(response.get(i).getCreatedAt(), homeworks.get(i).getCreatedAt());
-            Assertions.assertEquals(response.get(i).getDeadline(), homeworks.get(i).getDeadline());
+            Assertions.assertEquals(response.get(i).getCreatedAt(), homeworks.get(i).getCreatedAt().format(formatter));
+            Assertions.assertEquals(response.get(i).getDeadline(), homeworks.get(i).getDeadline().format(formatter));
             Assertions.assertEquals(response.get(i).getTitle(), homeworks.get(i).getTitle());
             Assertions.assertEquals(response.get(i).getContent(), homeworks.get(i).getContent());
-            if(response.get(i).getDeadline().isBefore(LocalDateTime.now()))
+            LocalDateTime date = LocalDateTime.parse(response.get(i).getDeadline(),formatter);
+            if(date.isBefore(LocalDateTime.now()))
                 Assertions.assertEquals(response.get(i).getStatus(), "UNSUBMITTED");
             else Assertions.assertEquals(response.get(i).getStatus(), "ASSIGNED");
         }
@@ -133,18 +139,18 @@ public class HomeworkApiTest extends IntegrationTest {
                 .andDo(print())
                 .andReturn();
 
-        HomeworkContentResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<Optional<HomeworkContentResponse>>() {})
+        HomeworkContentFakeResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<Optional<HomeworkContentFakeResponse>>() {})
                 .orElseThrow(()->new HomeworkNotFoundException(homework.getId()));
 
         PersonalHomework personalHomework = personalHomeworkRepository
                 .findById(new PersonalHomeworkPk(homework.getId(), registeredUsername))
                 .orElseThrow(()->new HomeworkNotFoundException(homework.getId()));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         Assertions.assertEquals(response.getTitle(), homework.getTitle());
-        Assertions.assertEquals(response.getCreatedAt(), homework.getCreatedAt());
-        Assertions.assertEquals(response.getDeadline(), homework.getDeadline());
-        Assertions.assertEquals(response.getReturnAt(), personalHomework.getSubmittedAt());
+        Assertions.assertEquals(response.getCreatedAt(), homework.getCreatedAt().format(formatter));
+        Assertions.assertEquals(response.getDeadline(), homework.getDeadline().format(formatter));
         Assertions.assertEquals(response.getContent(), homework.getContent());
         Assertions.assertEquals(response.getReturnContent(), personalHomework.getContent());
         Assertions.assertTrue(response.getFiles().isEmpty());

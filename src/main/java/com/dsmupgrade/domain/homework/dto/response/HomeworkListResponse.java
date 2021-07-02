@@ -2,6 +2,7 @@ package com.dsmupgrade.domain.homework.dto.response;
 
 import com.dsmupgrade.domain.homework.domain.Homework;
 import com.dsmupgrade.domain.homework.domain.PersonalHomework;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,9 @@ import java.time.LocalDateTime;
 public class HomeworkListResponse {
     private int id;
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime deadline;
     private String content;
     private String status;
