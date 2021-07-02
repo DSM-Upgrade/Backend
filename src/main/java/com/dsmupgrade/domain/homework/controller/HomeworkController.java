@@ -3,6 +3,7 @@ package com.dsmupgrade.domain.homework.controller;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkAdminResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
@@ -29,6 +30,16 @@ public class HomeworkController {
     @GetMapping("/{id}")
     public HomeworkContentResponse getHomeworkContent(@PathVariable("id") int id) {
         return homeworkService.getHomeworkContent(authenticationFacade.getUsername(), id);
+    }
+
+    @GetMapping("/all")
+    public List<HomeworkAdminResponse> getHomeworkAllList() {
+        return homeworkService.getHomeworkAllList();
+    }
+
+    @GetMapping("/admin/{id}")
+    public HomeworkAdminResponse getHomeworkContentAdmin(@PathVariable("id") int id) {
+        return homeworkService.getHomeworkContentAdmin(id);
     }
 
     @PostMapping

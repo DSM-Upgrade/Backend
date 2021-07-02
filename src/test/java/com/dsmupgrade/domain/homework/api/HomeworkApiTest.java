@@ -5,6 +5,7 @@ import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkAdminResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
@@ -24,6 +25,7 @@ import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class HomeworkApiTest extends IntegrationTest {
@@ -150,6 +152,51 @@ public class HomeworkApiTest extends IntegrationTest {
 
     private ResultActions requestGetHomeworkContent(int id) throws Exception {
         return requestMvc(get("/homework/" + id));
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_모든리스트_받아오기_성공() throws Exception {
+        // given
+        makeHomeworkList(10);
+
+        // when
+        ResultActions resultActions = requestGetHomeworkAllList();
+
+        // then
+        MvcResult result = resultActions.andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        List<HomeworkAdminResponse> response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<List<HomeworkAdminResponse>>() {});
+
+        Assertions.assertEquals(response.size(), 10);
+    }
+
+    private ResultActions requestGetHomeworkAllList() throws Exception {
+        return requestMvc(get("/homework/all"));
+    }
+
+    @Test
+    @WithMockUser(username = registeredUsername)
+    public void 숙제_어드민_받아오기_성공() throws Exception {
+        // given
+        Homework homework = makeHomeworkList(1).get(0);
+
+        // when
+        ResultActions resultActions = requestGetHomeworkContentAdmin(homework.getId());
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(homework.getId()))
+                .andExpect(jsonPath("title").value(homework.getTitle()))
+                .andExpect(jsonPath("content").value(homework.getContent()));
+
+    }
+
+    private ResultActions requestGetHomeworkContentAdmin(int id) throws Exception {
+        return requestMvc(get("/homework/admin/" + id));
     }
 
     @Test
