@@ -2,7 +2,6 @@ package com.dsmupgrade.domain.homework.service.Impl;
 
 import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
-import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkAdminResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
@@ -17,6 +16,8 @@ import com.dsmupgrade.global.error.exception.InvalidInputValueException;
 import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -101,26 +102,26 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     @Override
     @Transactional
-    public void submitHomework(int id, String username, PersonalHomeworkRequest request) {
+    public void submitHomework(int id, String username, String content, List<MultipartFile> files) {
         checkHomeworkService.checkPersonalHomework(id, username);
-        submitPersonalHomework(id, username, request.getContent());
+        submitPersonalHomework(id, username, content);
 
-        if (!request.getFiles().isEmpty()) {
-            submitHomeworkFile(id, username, request);
+        if (!CollectionUtils.isEmpty(files)) {
+            submitHomeworkFile(id, username, content, files);
         }
 
     }
 
     @Override
     @Transactional
-    public void resubmitHomework(int id, String username, PersonalHomeworkRequest request) {
+    public void resubmitHomework(int id, String username, String content, List<MultipartFile> files) {
         checkHomeworkService.checkPersonalHomework(id, username);
-        submitPersonalHomework(id, username, request.getContent());
+        submitPersonalHomework(id, username, content);
 
         fileUploader.deleteHomeworkFile(id, username);
 
-        if (!request.getFiles().isEmpty()) {
-            submitHomeworkFile(id, username, request);
+        if (!CollectionUtils.isEmpty(files)) {
+            submitHomeworkFile(id, username, content, files);
         }
 
     }
@@ -135,12 +136,12 @@ public class HomeworkServiceImpl implements HomeworkService {
         personalHomeworkRepository.save(personalHomework);
     }
 
-    private void submitHomeworkFile(int id, String username, PersonalHomeworkRequest request) {
+    private void submitHomeworkFile(int id, String username, String content, List<MultipartFile> files) {
         PersonalHomework personalHomework = personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username))
                 .orElseThrow(() -> new HomeworkNotFoundException(id, username));
         PersonalHomeworkPk personalHomeworkPk = new PersonalHomeworkPk(id, username);
 
-        request.getFiles().forEach((file) -> {
+        files.forEach((file) -> {
             HomeworkFile homeworkFile = HomeworkFile.builder()
                     .id(new HomeworkFilePk(personalHomeworkPk, fileUploader.uploadFile(username, file)))
                     .build();

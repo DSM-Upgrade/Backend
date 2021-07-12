@@ -259,7 +259,6 @@ public class HomeworkApiTest extends IntegrationTest {
         int id = makeHomeworkList(1).get(0).getId();
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("SubmitContent")
-                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestSubmitHomework(id, personalHomeworkRequest);
@@ -280,7 +279,6 @@ public class HomeworkApiTest extends IntegrationTest {
         //given
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("SubmitContent")
-                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestSubmitHomework(1, personalHomeworkRequest);
@@ -299,7 +297,6 @@ public class HomeworkApiTest extends IntegrationTest {
         int id = makeHomeworkList(1).get(0).getId();
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("ReSubmitContent")
-                .files(Collections.emptyList())
                 .build();
         //when
         ResultActions resultActions = requestReSubmitHomework(id, personalHomeworkRequest);
@@ -320,7 +317,6 @@ public class HomeworkApiTest extends IntegrationTest {
         //given
         PersonalHomeworkRequest personalHomeworkRequest = PersonalHomeworkRequest.builder()
                 .content("ReSubmitContent")
-                .files(null)
                 .build();
         //when
         ResultActions resultActions = requestReSubmitHomework(1, personalHomeworkRequest);

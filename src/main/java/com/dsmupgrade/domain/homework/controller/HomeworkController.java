@@ -11,6 +11,7 @@ import com.dsmupgrade.global.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -50,13 +51,16 @@ public class HomeworkController {
 
     @PutMapping("/{id}/personal-homework")
     @ResponseStatus(HttpStatus.CREATED)
-    public void submitHomework(@PathVariable("id") int id, @Valid @RequestBody PersonalHomeworkRequest request) {
-        homeworkService.submitHomework(id, authenticationFacade.getUsername(), request);
+    public void submitHomework(@PathVariable("id") int id, @Valid @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                               @Valid @RequestBody PersonalHomeworkRequest request) {
+        System.out.println("여기" + request.getContent() + files);
+        homeworkService.submitHomework(id, authenticationFacade.getUsername(), request.getContent(), files);
     }
 
     @PatchMapping("/{id}/personal-homework")
-    public void resubmitHomework(@PathVariable("id") int id, @Valid @RequestBody PersonalHomeworkRequest request) {
-        homeworkService.resubmitHomework(id, authenticationFacade.getUsername(), request);
+    public void resubmitHomework(@PathVariable("id") int id, @Valid @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                 @Valid @RequestBody PersonalHomeworkRequest request) {
+        homeworkService.resubmitHomework(id, authenticationFacade.getUsername(), request.getContent(), files);
     }
 
     @PostMapping("/{id}/personal-homework")
