@@ -189,20 +189,24 @@ public class HomeworkApiTest extends IntegrationTest {
     public void 숙제_어드민_받아오기_성공() throws Exception {
         // given
         Homework homework = makeHomeworkList(1).get(0);
+        PersonalHomework personalHomework = PersonalHomework.builder()
+                .id(new PersonalHomeworkPk(homework.getId(), "testUser"))
+                .status(PersonalHomeworkStatus.ASSIGNED)
+                .homework(homework)
+                .build();
+        personalHomeworkRepository.save(personalHomework);
 
         // when
-        ResultActions resultActions = requestGetHomeworkContentAdmin(homework.getId());
+        ResultActions resultActions = requestGetHomeworkContentAdmin("testUser",homework.getId());
 
         // then
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(homework.getId()))
-                .andExpect(jsonPath("title").value(homework.getTitle()))
-                .andExpect(jsonPath("content").value(homework.getContent()));
+                .andDo(print());
 
     }
 
-    private ResultActions requestGetHomeworkContentAdmin(int id) throws Exception {
-        return requestMvc(get("/homework/admin/" + id));
+    private ResultActions requestGetHomeworkContentAdmin(String user, int id) throws Exception {
+        return requestMvc(get("/homework/admin/" + user + "/"+ id));
     }
 
     @Test

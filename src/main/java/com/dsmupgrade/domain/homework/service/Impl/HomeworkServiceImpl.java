@@ -4,6 +4,7 @@ import com.dsmupgrade.domain.homework.domain.*;
 import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkAdminResponse;
+import com.dsmupgrade.domain.homework.dto.response.HomeworkContentAdminResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
 import com.dsmupgrade.domain.homework.service.CheckHomeworkService;
@@ -54,17 +55,16 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     @Override
     public List<HomeworkAdminResponse> getHomeworkAllList(){
-        return homeworkRepository.findAll()
+        return personalHomeworkRepository.findAll()
                 .stream().map(HomeworkAdminResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public HomeworkAdminResponse getHomeworkContentAdmin(int id) {
-        return HomeworkAdminResponse.from(
-                homeworkRepository.findById(id)
-                .orElseThrow(()-> new HomeworkNotFoundException(id))
-        );
+    public List<HomeworkContentAdminResponse> getHomeworkContentAdmin(String username, int id) {
+        return personalHomeworkRepository.findById(new PersonalHomeworkPk(id, username))
+                .stream().map(HomeworkContentAdminResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Override
