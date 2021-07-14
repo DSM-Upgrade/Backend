@@ -24,24 +24,15 @@ public class HomeworkContentAdminResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime returnAt;
     private String content;
-    private List<String> files;
 
     public static HomeworkContentAdminResponse from(PersonalHomework personalHomework) {
         Homework homework = personalHomework.getHomework();
-        List<HomeworkFile> files = personalHomework.getHomeworkFile();
-        List<String> resultFiles = null;
-        if(!CollectionUtils.isEmpty(files)){
-                resultFiles = files.stream().map(
-                        homeworkFile-> homeworkFile.getId().getName()
-                ).collect(Collectors.toList());
-        }
         return HomeworkContentAdminResponse.builder()
                 .title(homework.getTitle())
                 .createdAt(homework.getCreatedAt())
                 .deadline(homework.getDeadline())
                 .returnAt(personalHomework.getSubmittedAt())
                 .content(personalHomework.getContent())
-                .files(resultFiles)
                 .build();
     }
 }
