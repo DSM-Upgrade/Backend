@@ -21,7 +21,7 @@ public class HomeworkAdminResponse {
         Homework homework = personalHomework.getHomework();
         return HomeworkAdminResponse.builder()
                 .id(homework.getId())
-                .username(personalHomework.getId().getStudentUsername())
+                .username(personalHomework.getStudent().getName())
                 .title(homework.getTitle())
                 .createdAt(homework.getCreatedAt())
                 .status(personalHomework.getStatus().name())
