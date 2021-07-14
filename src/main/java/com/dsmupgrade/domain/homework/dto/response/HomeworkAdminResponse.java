@@ -15,8 +15,6 @@ public class HomeworkAdminResponse {
     private String username;
     private String title;
     private LocalDateTime createdAt;
-    private LocalDateTime deadline;
-    private String content;
     private String status;
 
     public static HomeworkAdminResponse from(PersonalHomework personalHomework){
@@ -26,8 +24,6 @@ public class HomeworkAdminResponse {
                 .username(personalHomework.getId().getStudentUsername())
                 .title(homework.getTitle())
                 .createdAt(homework.getCreatedAt())
-                .deadline(homework.getDeadline())
-                .content(homework.getContent())
                 .status(personalHomework.getStatus().name())
                 .build();
     }

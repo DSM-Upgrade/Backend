@@ -1,5 +1,6 @@
 package com.dsmupgrade.domain.homework.domain;
 
+import com.dsmupgrade.domain.student.domain.Student;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,6 +33,11 @@ public class PersonalHomework {
     @MapsId("homeworkId")
     @JoinColumn(name = "homework_id")
     private Homework homework;
+
+    @ManyToOne
+    @MapsId("studentUsername")
+    @JoinColumn(name = "student_username")
+    private Student student;
 
     @Setter
     @OneToMany(mappedBy = "personalHomework")

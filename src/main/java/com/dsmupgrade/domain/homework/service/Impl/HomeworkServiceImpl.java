@@ -11,6 +11,7 @@ import com.dsmupgrade.domain.homework.service.CheckHomeworkService;
 import com.dsmupgrade.domain.homework.service.HomeworkService;
 import com.dsmupgrade.domain.homework.service.S3HomeworkFileUploader;
 import com.dsmupgrade.domain.homework.service.UsersRetrieveService;
+import com.dsmupgrade.domain.student.domain.Student;
 import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
 import com.dsmupgrade.global.error.exception.InvalidInputValueException;
@@ -85,12 +86,15 @@ public class HomeworkServiceImpl implements HomeworkService {
 
         request.getUsernames()
                 .forEach((username) -> {
+                    Student student = studentRepository.findByUsername(username)
+                            .orElseThrow(StudentNotFoundException::new);
                     PersonalHomework personalHomework = PersonalHomework.builder()
                             .id(new PersonalHomeworkPk(homework.getId(), username))
                             .status(PersonalHomeworkStatus.ASSIGNED)
                             .submittedAt(null)
                             .content(null)
                             .homework(homework)
+                            .student(student)
                             .build();
                     personalHomeworkRepository.save(personalHomework);
                 });
@@ -195,12 +199,15 @@ public class HomeworkServiceImpl implements HomeworkService {
         homeworkRepository.save(homework);
 
         for(String user : addUsers){
+            Student student = studentRepository.findByUsername(user)
+                    .orElseThrow(StudentNotFoundException::new);
             PersonalHomework personalHomework = PersonalHomework.builder()
                     .id(new PersonalHomeworkPk(id, user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
                     .submittedAt(null)
                     .content(null)
                     .homework(homework)
+                    .student(student)
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }

@@ -8,9 +8,10 @@ import com.dsmupgrade.domain.homework.dto.request.HomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.PersonalHomeworkRequest;
 import com.dsmupgrade.domain.homework.dto.request.UserRequest;
 import com.dsmupgrade.domain.homework.dto.response.HomeworkAdminResponse;
-import com.dsmupgrade.domain.homework.dto.response.HomeworkContentResponse;
-import com.dsmupgrade.domain.homework.dto.response.HomeworkListResponse;
+import com.dsmupgrade.domain.student.domain.Student;
+import com.dsmupgrade.domain.student.domain.StudentRepository;
 import com.dsmupgrade.global.error.exception.HomeworkNotFoundException;
+import com.dsmupgrade.global.error.exception.StudentNotFoundException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -24,11 +25,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class HomeworkApiTest extends IntegrationTest {
@@ -39,6 +42,8 @@ public class HomeworkApiTest extends IntegrationTest {
     private PersonalHomeworkRepository personalHomeworkRepository;
     @Autowired
     private HomeworkFileRepository homeworkFileRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -67,6 +72,8 @@ public class HomeworkApiTest extends IntegrationTest {
         List<String> usernameList = new ArrayList<String>();
         usernameList.add(registeredUsername);
         for (String user : usernameList){
+            Student student = studentRepository.findByUsername(user)
+                    .orElseThrow(StudentNotFoundException::new);
             PersonalHomework personalHomework = PersonalHomework.builder()
                     .id(new PersonalHomeworkPk(homework.getId(), user))
                     .status(PersonalHomeworkStatus.ASSIGNED)
@@ -74,6 +81,7 @@ public class HomeworkApiTest extends IntegrationTest {
                     .content("test")
                     .homework(homework)
                     .homeworkFile(Collections.emptyList())
+                    .student(student)
                     .build();
             personalHomeworkRepository.save(personalHomework);
         }
@@ -189,15 +197,10 @@ public class HomeworkApiTest extends IntegrationTest {
     public void 숙제_어드민_받아오기_성공() throws Exception {
         // given
         Homework homework = makeHomeworkList(1).get(0);
-        PersonalHomework personalHomework = PersonalHomework.builder()
-                .id(new PersonalHomeworkPk(homework.getId(), "testUser"))
-                .status(PersonalHomeworkStatus.ASSIGNED)
-                .homework(homework)
-                .build();
-        personalHomeworkRepository.save(personalHomework);
+        addPersonalHomework(homework);
 
         // when
-        ResultActions resultActions = requestGetHomeworkContentAdmin("testUser",homework.getId());
+        ResultActions resultActions = requestGetHomeworkContentAdmin(registeredUsername,homework.getId());
 
         // then
         resultActions.andExpect(status().isOk())
